@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/3">
+            <code-name-base>org.gcto.objectdb</code-name-base>
+            <suite-component/>
+            <module-dependencies/>
+            <public-packages>
+                <package>com.objectdb</package>
+                <package>com.objectdb.jdo</package>
+                <package>com.objectdb.jpa</package>
+                <package>com.objectdb.jpa.attr</package>
+                <package>com.objectdb.jpa.criteria</package>
+                <package>com.objectdb.jpa.type</package>
+                <package>com.objectdb.o</package>
+                <package>com.objectdb.spi</package>
+                <package>javax.jdo</package>
+                <package>javax.jdo.annotations</package>
+                <package>javax.jdo.datastore</package>
+                <package>javax.jdo.identity</package>
+                <package>javax.jdo.listener</package>
+                <package>javax.jdo.spi</package>
+                <package>javax.persistence</package>
+                <package>javax.persistence.criteria</package>
+                <package>javax.persistence.metamodel</package>
+                <package>javax.persistence.spi</package>
+                <package>javax.transaction</package>
+                <package>javax.transaction.xa</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/objectdb.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/objectdb.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.apisupport.project</type>
+    <configuration>
+        <data xmlns="http://www.netbeans.org/ns/nb-module-project/3">
+            <code-name-base>org.gcto.ballonTip</code-name-base>
+            <suite-component/>
+            <module-dependencies/>
+            <public-packages>
+                <package>net.java.balloontip</package>
+                <package>net.java.balloontip.positioners</package>
+                <package>net.java.balloontip.styles</package>
+                <package>net.java.balloontip.utils</package>
+                <package>org.gcto.ballonTip.main.java.net.java.balloontip</package>
+                <package>org.gcto.ballonTip.main.java.net.java.balloontip.positioners</package>
+                <package>org.gcto.ballonTip.main.java.net.java.balloontip.styles</package>
+                <package>org.gcto.ballonTip.main.java.net.java.balloontip.utils</package>
+            </public-packages>
+            <class-path-extension>
+                <runtime-relative-path>ext/balloontip-1.2.4.jar</runtime-relative-path>
+                <binary-origin>release/modules/ext/balloontip-1.2.4.jar</binary-origin>
+            </class-path-extension>
+        </data>
+    </configuration>
+</project>

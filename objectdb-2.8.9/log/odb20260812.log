@@ -1,0 +1,49 @@
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-08-12 17:07:04 #1 store] 
+Database 'C:\Users\camilo\Documents\pruebaConNom\Nominales.odb' is opened by 18276@camilo_w81
+
+[2026-08-12 17:07:04 #2 store] 
+Configuration path: C:\Users\camilo\Dropbox\aflc\objectdb-2.8.9\objectdb.conf
+
+[2026-08-12 17:07:11 #3 store] 
+Database 'C:\Users\camilo\Documents\pruebaConNom\Nominales.odb' is closed by 18276@camilo_w81
+
+[2026-08-12 17:07:26 #4 store] 
+Database 'C:\Users\camilo\Documents\pruebaConNom\bdProyecto.odb' is opened by 18276@camilo_w81
+
+[2026-08-12 17:07:26 #5 store] 
+Configuration path: C:\Users\camilo\Dropbox\aflc\objectdb-2.8.9\objectdb.conf
+
+[2026-08-12 17:08:04 #6 store] 
+Database 'C:\Users\camilo\Documents\pruebaConNom\bdProyecto.odb' is closed by 18276@camilo_w81
+
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-08-12 17:08:10 #1 store] 
+Database 'C:\Users\camilo\Documents\pruebaConNom\bdProyecto.odb' is opened by 11844@camilo_w81
+
+[2026-08-12 17:08:10 #2 store] 
+Configuration path: C:\Users\camilo\Dropbox\aflc\objectdb-2.8.9\objectdb.conf
+
+[2026-08-12 17:08:23 #3 store] 
+Database 'C:\Users\camilo\Documents\pruebaConNom\bdProyecto.odb' is closed by 11844@camilo_w81
+
+[2026-08-12 17:08:23 #4 store] 
+Database 'C:\Users\camilo\Documents\pruebaConNom\baseElems.odb' is opened by 11844@camilo_w81
+
+[2026-08-12 17:08:23 #5 store] 
+Configuration path: C:\Users\camilo\Dropbox\aflc\objectdb-2.8.9\objectdb.conf
+
+[2026-08-12 17:09:18 #6 store] 
+Database 'C:\Users\camilo\Documents\pruebaConNom\baseElems.odb' is closed by 11844@camilo_w81
+
+[2026-08-12 17:09:18 #7 store] 
+Database 'C:\Users\camilo\Documents\pruebaConNom\Nominales.odb' is opened by 11844@camilo_w81
+
+[2026-08-12 17:09:18 #8 store] 
+Configuration path: C:\Users\camilo\Dropbox\aflc\objectdb-2.8.9\objectdb.conf
+
+[2026-08-12 17:09:30 #9 store] 
+Database 'C:\Users\camilo\Documents\pruebaConNom\Nominales.odb' is closed by 11844@camilo_w81
+

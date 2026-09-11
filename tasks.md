@@ -1,0 +1,27 @@
+# Tasks
+
+- [x] Create initial DataAccTopComponent.
+- [x] Optimize DataAccTopComponent for large datasets (1M rows) using SwingWorker.
+- [x] Implement dynamic column structure based on CSV header (3-row header support).
+- [x] Implement specific column renderers (Date, Time, Percentage, Decimal).
+- [x] Implement multiple row selection and batch deletion.
+- [x] Implement efficient CSV parsing using BufferedReader.
+- [x] Implement Binary Session Persistence (.vdm) for near-instant loading.
+- [x] Implement Native Progress Bar (ProgressHandle) with real-time percentage tracking.
+- [x] Create `verCorrientes` action in `dataVDM` module with dynamic state.
+- [x] Implement calculated columns for Reactive Power (QA, QB, QC, QSum).
+- [x] Implement calculated columns for Phase-to-Phase Voltage (UAB, UBC, UAC).
+- [x] Implement data transfer from `dataTopComponent` to `corrientesTopComponent`.
+- [x] Design `corrientesTopComponent` UI for current analysis.
+- [x] Implement high-performance Line Chart using Java2D (optimized for 1M+ points).
+- [x] Add "Downsampling" logic to maintain UI responsiveness during chart rendering.
+- [x] Synchronize Table selection with Chart view (Range & Zoom synchronization).
+- [x] Implement interactive Trend Lines (Arithmetic Average & Average Above % Level) with visual feedback.
+- [x] Create `tensionesTopComponent` for voltage analysis using `baseTopComponent`.
+- [x] Refine Statistics Table with descriptive names and custom column visibility per analysis type.
+- [x] Implement Export functionality (Image and CSV subset).
+- [x] Create `potAparenteTopComponent` for apparent power analysis.
+- [x] Create `potActivaTopComponent` for active power analysis.
+- [x] Create `potReactivaTopComponent` for reactive power analysis with IEEE 1459 quality classification.
+- [x] Implement `fpTopComponent` for Power Factor analysis including calculated FP Average.
+- [ ] Create additional analysis forms (Harmonics) using `baseTopComponent`.

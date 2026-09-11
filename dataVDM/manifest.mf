@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+AutoUpdate-Show-In-Client: true
+OpenIDE-Module: org.gcto.dataVDM
+OpenIDE-Module-Layer: org/gcto/dataVDM/layer.xml
+OpenIDE-Module-Localizing-Bundle: org/gcto/dataVDM/Bundle.properties
+OpenIDE-Module-Requires: org.openide.windows.WindowManager
+OpenIDE-Module-Specification-Version: 1.0
+
