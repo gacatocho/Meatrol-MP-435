@@ -734,13 +734,9 @@ public final class dataTopComponent extends TopComponent
 
     private String[] augmentData(String[] headers, List<String[]> data)
     {
-        // Verificar si ya está aumentado (buscamos cualquiera de las nuevas columnas)
-        for (String h : headers)
-        {
-            if (h.contains("ReactivePowerCalc") || h.contains("Voltage(V) UAB") || h.contains("Current(A): In") || h.contains("FP promedio"))
-            {
-                return headers;
-            }
+        // Verificar si ya está aumentado (buscamos específicamente la última añadida: FP promedio)
+        for (String h : headers) {
+            if (h.contains("FP promedio")) return headers;
         }
 
         // --- DETECCIÓN DE COLUMNAS DE POTENCIA ---
@@ -763,54 +759,25 @@ public final class dataTopComponent extends TopComponent
             String h = headers[i].toUpperCase();
 
             // Potencia Aparente (S)
-            if (matchesStrict(h, "SA", "APPARENT"))
-            {
-                idxSA = i;
-            }
-            if (matchesStrict(h, "SB", "APPARENT"))
-            {
-                idxSB = i;
-            }
-            if (matchesStrict(h, "SC", "APPARENT"))
-            {
-                idxSC = i;
-            }
-            if (h.contains("APPARENT") && (h.contains("SSUM") || h.contains("S SUM")))
-            {
-                idxSSum = i;
-            }
+            if (matchesStrict(h, "SA", "APPARENT")) idxSA = i;
+            else if (matchesStrict(h, "SB", "APPARENT")) idxSB = i;
+            else if (matchesStrict(h, "SC", "APPARENT")) idxSC = i;
+           // else if (h.contains("APPARENT") && (h.contains("SUM") || h.contains("TOTAL"))) idxSSum = i;
+            //else if (h.contains("APPARENT") && (h.contains("SSUM"))) idxSSum = i;
+             else if (matchesStrict(h, "SSUM", "APPARENT")) idxSSum = i;
 
             // Potencia Activa (P)
-            if (matchesStrict(h, "PA", "ACTIVE"))
-            {
-                idxPA = i;
-            }
-            if (matchesStrict(h, "PB", "ACTIVE"))
-            {
-                idxPB = i;
-            }
-            if (matchesStrict(h, "PC", "ACTIVE"))
-            {
-                idxPC = i;
-            }
-            if (h.contains("ACTIVE") && (h.contains("PSUM") || h.contains("P SUM")))
-            {
-                idxPSum = i;
-            }
+            if (matchesStrict(h, "PA", "ACTIVE")) idxPA = i;
+            else if (matchesStrict(h, "PB", "ACTIVE")) idxPB = i;
+            else if (matchesStrict(h, "PC", "ACTIVE")) idxPC = i;
+            //else if (h.contains("ACTIVE") && (h.contains("SUM") || h.contains("TOTAL"))) idxPSum = i;
+           //else if (h.contains("ACTIVE") && (h.contains("PSUM") )) idxPSum = i;
+            else if (matchesStrict(h, "PSUM", "ACTIVE")) idxPSum = i;
 
             // Potencia Reactiva (Q)
-            if (matchesStrict(h, "QA", "REACTIVE"))
-            {
-                idxQA = i;
-            }
-            if (matchesStrict(h, "QB", "REACTIVE"))
-            {
-                idxQB = i;
-            }
-            if (matchesStrict(h, "QC", "REACTIVE"))
-            {
-                idxQC = i;
-            }
+            if (matchesStrict(h, "QA", "REACTIVE")) idxQA = i;
+            else if (matchesStrict(h, "QB", "REACTIVE")) idxQB = i;
+            else if (matchesStrict(h, "QC", "REACTIVE")) idxQC = i;
 
             // Buscar QSum original
             if (h.contains("REACTIVE") && (h.contains("QSUM") || h.contains("Q SUM")) && !h.contains("ENERGY") && !h.contains("VARH"))
@@ -819,43 +786,25 @@ public final class dataTopComponent extends TopComponent
             }
 
             // Tensiones de Fase (U)
-            if (matchesStrict(h, "UA", "VOLTAGE"))
-            {
-                idxUA = i;
-            }
-            if (matchesStrict(h, "UB", "VOLTAGE"))
-            {
-                idxUB = i;
-            }
-            if (matchesStrict(h, "UC", "VOLTAGE"))
-            {
-                idxUC = i;
-            }
+            if (matchesStrict(h, "UA", "VOLTAGE")) idxUA = i;
+            else if (matchesStrict(h, "UB", "VOLTAGE")) idxUB = i;
+            else if (matchesStrict(h, "UC", "VOLTAGE")) idxUC = i;
 
             // Corrientes (I)
-            if (matchesStrict(h, "IA", "CURRENT"))
-            {
-                idxIA = i;
-            }
-            if (matchesStrict(h, "IB", "CURRENT"))
-            {
-                idxIB = i;
-            }
-            if (matchesStrict(h, "IC", "CURRENT"))
-            {
-                idxIC = i;
-            }
+            if (matchesStrict(h, "IA", "CURRENT")) idxIA = i;
+            else if (matchesStrict(h, "IB", "CURRENT")) idxIB = i;
+            else if (matchesStrict(h, "IC", "CURRENT")) idxIC = i;
 
             // Factor de Potencia (FP)
-            if (matchesStrict(h, "FPA", "POWER FACTOR") || matchesStrict(h, "FP L1", "POWER FACTOR") || matchesStrict(h, "FP A", "POWER FACTOR"))
+            if (matchesStrict(h, "PFA", "POWER FACTOR") || matchesStrict(h, "FP L1", "POWER FACTOR") || matchesStrict(h, "FP A", "POWER FACTOR"))
             {
                 idxFPA = i;
             }
-            if (matchesStrict(h, "FPB", "POWER FACTOR") || matchesStrict(h, "FP L2", "POWER FACTOR") || matchesStrict(h, "FP B", "POWER FACTOR"))
+            if (matchesStrict(h, "PFB", "POWER FACTOR") || matchesStrict(h, "FP L2", "POWER FACTOR") || matchesStrict(h, "FP B", "POWER FACTOR"))
             {
                 idxFPB = i;
             }
-            if (matchesStrict(h, "FPC", "POWER FACTOR") || matchesStrict(h, "FP L3", "POWER FACTOR") || matchesStrict(h, "FP C", "POWER FACTOR"))
+            if (matchesStrict(h, "PFC", "POWER FACTOR") || matchesStrict(h, "FP L3", "POWER FACTOR") || matchesStrict(h, "FP C", "POWER FACTOR"))
             {
                 idxFPC = i;
             }
@@ -866,22 +815,10 @@ public final class dataTopComponent extends TopComponent
 
         // Actualizar numFases basado en lo detectado (prioridad a reactiva o tensión)
         int detectedFases = 0;
-        if (idxQA >= 0 || idxUA >= 0 || idxIA >= 0)
-        {
-            detectedFases = 1;
-        }
-        if (idxQB >= 0 || idxUB >= 0 || idxIB >= 0)
-        {
-            detectedFases = 2;
-        }
-        if (idxQC >= 0 || idxUC >= 0 || idxIC >= 0)
-        {
-            detectedFases = 3;
-        }
-        if (detectedFases > 0)
-        {
-            glb.numFases = detectedFases;
-        }
+        if (idxQA >= 0 || idxUA >= 0 || idxIA >= 0) detectedFases = 1;
+        if (idxQB >= 0 || idxUB >= 0 || idxIB >= 0) detectedFases = 2;
+        if (idxQC >= 0 || idxUC >= 0 || idxIC >= 0) detectedFases = 3;
+        if (detectedFases > 0) glb.numFases = detectedFases;
 
         int numFases = glb.numFases;
 
@@ -958,7 +895,7 @@ public final class dataTopComponent extends TopComponent
             if (i == lastFPIdx && lastFPIdx != -1)
             {
                 fpPromPos = newHeadersList.size();
-                newHeadersList.add("Power Factor: FP promedio");
+                newHeadersList.add("Power Factor: PF Average");
             }
         }
 
@@ -967,6 +904,12 @@ public final class dataTopComponent extends TopComponent
         {
             qSumPos = newHeadersList.size();
             newHeadersList.add("ReactivePowerCalc(Var) QSum");
+        }
+        
+        // Fallback FP Promedio: Si no se insertó y tenemos PSum/SSum, añadir al final
+        if (fpPromPos == -1 && idxPSum != -1 && idxSSum != -1) {
+            fpPromPos = newHeadersList.size();
+            newHeadersList.add("Power Factor: PF Average");
         }
 
         // --- PROCESAMIENTO DE DATOS ---
@@ -1005,18 +948,7 @@ public final class dataTopComponent extends TopComponent
                 int qIdx = qCalcPositions.indexOf(c);
                 if (qIdx != -1)
                 {
-                    int[][] qSources =
-                    {
-                        {
-                            idxSA, idxPA, idxQA
-                        }, 
-                        {
-                            idxSB, idxPB, idxQB
-                        }, 
-                        {
-                            idxSC, idxPC, idxQC
-                        }
-                    };
+                    int[][] qSources = {{idxSA, idxPA, idxQA}, {idxSB, idxPB, idxQB}, {idxSC, idxPC, idxQC}};
                     double val = calculateQValue(oldRow, qSources[qIdx][0], qSources[qIdx][1], qSources[qIdx][2]);
                     newRow[c] = String.valueOf(val);
                     qSum += val;
@@ -1034,16 +966,9 @@ public final class dataTopComponent extends TopComponent
                 int uIdx = uCalcPositions.indexOf(c);
                 if (uIdx != -1)
                 {
-                    if (uIdx == 0)
-                    {
-                        newRow[c] = String.valueOf(glb.UAB);
-                    } else if (uIdx == 1)
-                    {
-                        newRow[c] = String.valueOf(glb.UBC);
-                    } else if (uIdx == 2)
-                    {
-                        newRow[c] = String.valueOf(glb.UAC);
-                    }
+                    if (uIdx == 0) newRow[c] = String.valueOf(glb.UAB);
+                    else if (uIdx == 1) newRow[c] = String.valueOf(glb.UBC);
+                    else if (uIdx == 2) newRow[c] = String.valueOf(glb.UAC);
                     continue;
                 }
 

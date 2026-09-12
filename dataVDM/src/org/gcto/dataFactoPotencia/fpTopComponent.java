@@ -25,8 +25,8 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.windows.WindowManager;
 
 /**
- * Top component que visualiza el análisis de Factor de Potencia.
- * Incluye FPA, FPB, FPC y el FP Promedio calculado (Psum/Ssum).
+ * Top component que visualiza el análisis de Factor de Potencia. Incluye FPA,
+ * FPB, FPC y el FP Promedio calculado (Psum/Ssum).
  */
 @ConvertAsProperties(
         dtd = "-//org.gcto.dataFactoPotencia//fp//EN",
@@ -59,7 +59,7 @@ public final class fpTopComponent extends baseTopComponent
     {
         setName(Bundle.CTL_fpTopComponent());
         setToolTipText(Bundle.HINT_fpTopComponent());
-        
+
         // Ocultar columnas de Promedio sobre % (7), % de Nivel (8) y Ver promedio sobre % (9)
         hideStatsColumns(7, 8, 9);
     }
@@ -80,14 +80,22 @@ public final class fpTopComponent extends baseTopComponent
             String h = masterHeaders[i].toUpperCase();
 
             Color c = null;
-            
-            // Factores de Potencia por Fase
-            if (isStrictFP(h, "FPA")) c = glb.colorA;
-            else if (isStrictFP(h, "FPB")) c = glb.colorB;
-            else if (isStrictFP(h, "FPC")) c = glb.colorC;
-            
-            // Factor de Potencia Promedio (Calculado en dataTopComponent)
-            else if (h.contains("POWER FACTOR") && h.contains("FP PROMEDIO")) c = Color.WHITE;
+
+            // Factores de Potencia por Fase (Mapeo Flexible)
+            if (isStrictFP(h, "PFA"))
+            {
+                c = glb.colorA;
+            } else if (isStrictFP(h, "PFB"))
+            {
+                c = glb.colorB;
+            } else if (isStrictFP(h, "PFC"))
+            {
+                c = glb.colorC;
+            } // Factor de Potencia Promedio (Calculado en dataTopComponent)
+            else if (isStrictFP(h,"AVERAGE"))
+            {
+                c = Color.WHITE;
+            }
 
             if (c != null)
             {
@@ -128,9 +136,31 @@ public final class fpTopComponent extends baseTopComponent
         pnlPhaseSelection.revalidate();
         pnlPhaseSelection.repaint();
     }
-    
-    private boolean isStrictFP(String h, String key) {
-        if (!h.contains("POWER FACTOR")) return false;
+
+    private boolean isStrictFP(String h, String key)
+    {
+        if (!h.contains("POWER FACTOR"))
+        {
+            return false;
+        }
+        String k = key.toUpperCase();
+        // Mapeo flexible para FPA, FPB, FPC
+        if (k.equals("PFA"))
+        {
+            return h.contains("PFA");
+        }
+        if (k.equals("PFB"))
+        {
+            return h.contains("PFB");
+        }
+        if (k.equals("PFC"))
+        {
+            return h.contains("PFC");
+        }
+        if(k.equals("AVERAGE"))
+        {
+            return h.contains("AVERAGE");
+        }
         return h.contains(" " + key) || h.contains(": " + key) || h.endsWith(" " + key) || h.endsWith(":" + key);
     }
 
@@ -164,9 +194,13 @@ public final class fpTopComponent extends baseTopComponent
         updateChartData();
         updateStatistics();
     }
-    
-    private void updateChartData() {
-        if (masterData.isEmpty()) return;
+
+    private void updateChartData()
+    {
+        if (masterData.isEmpty())
+        {
+            return;
+        }
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
         chartPanel.setData(masterData, sIdx, eIdx);
@@ -183,7 +217,7 @@ public final class fpTopComponent extends baseTopComponent
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
 
         List<FastChartPanel.TrendLine> trendLines = new ArrayList<>();
-        
+
         int rowInModel = 0;
         for (int i = 0; i < phaseControls.size(); i++)
         {
@@ -229,14 +263,18 @@ public final class fpTopComponent extends baseTopComponent
             statsModel.setValueAt(dateMax, rowInModel, 6);
 
             boolean showP = (boolean) statsModel.getValueAt(rowInModel, 4);
-            if (showP) {
-                trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, 
-                    new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{10, 5}, 0)));
+            if (showP)
+            {
+                trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color,
+                        new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
+                        {
+                            10, 5
+                }, 0)));
             }
 
             rowInModel++;
         }
-        
+
         chartPanel.setTrendLines(trendLines);
     }
 
@@ -284,12 +322,12 @@ public final class fpTopComponent extends baseTopComponent
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 400, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(0, 300, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
