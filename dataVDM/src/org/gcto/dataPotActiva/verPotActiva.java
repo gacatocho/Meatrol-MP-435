@@ -31,6 +31,10 @@ import org.openide.windows.WindowManager;
 @Messages("CTL_verPotActiva=ver potencia activa")
 public final class verPotActiva extends CallableSystemAction
 {
+    public verPotActiva()
+    {
+        setEnabled(false);
+    }
 
     @Override
     public void performAction()
@@ -45,8 +49,8 @@ public final class verPotActiva extends CallableSystemAction
             if (potTC instanceof potActivaTopComponent) {
                 potActivaTopComponent ptc = (potActivaTopComponent) potTC;
                 ptc.setData(headers, data);
-                ptc.open();
-                ptc.requestActive();
+                potTC.open();
+                potTC.requestActive();
             }
         }
     }

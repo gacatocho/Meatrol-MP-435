@@ -16,7 +16,6 @@ import javax.persistence.Entity;
  * @author camilo
  */
 @Entity
-
 public class DatosProy
 {
 

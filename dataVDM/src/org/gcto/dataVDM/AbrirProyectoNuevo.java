@@ -4,13 +4,19 @@
  */
 package org.gcto.dataVDM;
 
+import java.awt.Color;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import org.gcto.dataGlobal.ETipoRED;
+import org.gcto.dataGlobal.glb;
+
 /**
  *
  * @author camilo
  */
 public class AbrirProyectoNuevo extends javax.swing.JDialog
 {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AbrirProyectoNuevo.class.getName());
 
     /**
@@ -20,6 +26,23 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
     {
         super(parent, modal);
         initComponents();
+        //crear arranca deshabilitado, se habilita al estar completa la  informacion
+        btnCrear.setEnabled(false);
+
+        // Filtro para archivos de texto
+        FileNameExtensionFilter filterCSV = new FileNameExtensionFilter("Archivos CSV", "csv");
+        fCCSV.setFileFilter(filterCSV);
+        FileNameExtensionFilter filterVDM = new FileNameExtensionFilter("Archivos VMD", "vdm");
+        fCVMD.setFileFilter(filterVDM);
+        //datos iniciales para no dejar en blanco las cosas
+       txtName.setText("Entre nombre del proyecto");
+       txtCity.setText("Ciudad");
+       txtTec.setText("Operador técnico");
+       txtUbica.setText("Ubicación");
+       txtTab.setText("Tablero TGA");
+       spnPeriod.setValue(1);
+       cmbRelBob.setSelectedIndex(0);
+
     }
 
     /**
@@ -37,7 +60,7 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
         tabbPnl = new javax.swing.JTabbedPane();
         pnlCrearProy = new javax.swing.JPanel();
         lblTitCSV = new javax.swing.JLabel();
-        flieChoosserCSV = new javax.swing.JFileChooser();
+        fCCSV = new javax.swing.JFileChooser();
         pnlProy = new javax.swing.JPanel();
         pnlDatos = new javax.swing.JPanel();
         lbl3ph4w = new javax.swing.JLabel();
@@ -73,16 +96,17 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
         lblRelTension = new javax.swing.JLabel();
         txtRelPrim = new javax.swing.JTextField();
         lblA = new javax.swing.JLabel();
-        txtRelPrim1 = new javax.swing.JTextField();
+        txtRelSec = new javax.swing.JTextField();
         lblPeriod = new javax.swing.JLabel();
         spnPeriod = new javax.swing.JSpinner();
         jLabel1 = new javax.swing.JLabel();
         btnCrear = new javax.swing.JButton();
         pnlAbrirProy = new javax.swing.JPanel();
         lblTitVMD = new javax.swing.JLabel();
-        fileCooserVMD = new javax.swing.JFileChooser();
+        fCVMD = new javax.swing.JFileChooser();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(501, 814));
 
         lblTit.setBackground(new java.awt.Color(204, 255, 255));
         lblTit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gcto/dataVDM/abirCSV.png"))); // NOI18N
@@ -95,6 +119,14 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
 
         lblTitCSV.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(lblTitCSV, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.lblTitCSV.text")); // NOI18N
+
+        fCCSV.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                fCCSVActionPerformed(evt);
+            }
+        });
 
         pnlProy.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.pnlProy.border.title"))); // NOI18N
         pnlProy.setToolTipText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.datosProy.toolTipText")); // NOI18N
@@ -110,6 +142,7 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
 
         btnGrp.add(rb3ph4w);
         rb3ph4w.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        rb3ph4w.setSelected(true);
         org.openide.awt.Mnemonics.setLocalizedText(rb3ph4w, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.rb3ph4w.text")); // NOI18N
         rb3ph4w.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         rb3ph4w.addActionListener(new java.awt.event.ActionListener()
@@ -145,6 +178,13 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
 
         btnGrp.add(rb1ph2wLN);
         org.openide.awt.Mnemonics.setLocalizedText(rb1ph2wLN, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.rb1ph2wLN.text")); // NOI18N
+        rb1ph2wLN.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                rb1ph2wLNActionPerformed(evt);
+            }
+        });
 
         lbl1ph2wll.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
         lbl1ph2wll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gcto/dataVDM/1PH2W-LL.png"))); // NOI18N
@@ -170,6 +210,13 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
 
         btnGrp.add(rb1ph3wLLN);
         org.openide.awt.Mnemonics.setLocalizedText(rb1ph3wLLN, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.rb1ph3wLLN.text")); // NOI18N
+        rb1ph3wLLN.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                rb1ph3wLLNActionPerformed(evt);
+            }
+        });
 
         btnGrp.add(rb3ph3wLLN);
         rb3ph3wLLN.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
@@ -209,41 +256,50 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
         pnlDatos.setLayout(pnlDatosLayout);
         pnlDatosLayout.setHorizontalGroup(
             pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlDatosLayout.createSequentialGroup()
+            .addGroup(pnlDatosLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbl3ph4w)
                     .addGroup(pnlDatosLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lbl3ph4w)
-                        .addGap(18, 18, 18)
-                        .addComponent(lbl3ph3w)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lbl3ph3wlln)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lbl3ph3wlN)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lbl1ph2wln)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lbl1ph2wll))
+                        .addGap(6, 6, 6)
+                        .addComponent(rb3ph4w)))
+                .addGap(18, 18, 18)
+                .addGroup(pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbl3ph3w)
                     .addGroup(pnlDatosLayout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addComponent(rb3ph4w)
-                        .addGap(48, 48, 48)
-                        .addComponent(rb3ph3w)
-                        .addGap(47, 47, 47)
-                        .addComponent(rb3ph3wLLN)
-                        .addGap(43, 43, 43)
-                        .addComponent(rb3ph2wLN)
-                        .addGap(41, 41, 41)
-                        .addComponent(rb1ph2wLN)
-                        .addGap(42, 42, 42)
-                        .addComponent(rb1ph3wLLN)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(6, 6, 6)
+                        .addComponent(rb3ph3w)))
+                .addGap(18, 18, 18)
                 .addGroup(pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlDatosLayout.createSequentialGroup()
                         .addGap(6, 6, 6)
-                        .addComponent(rb1ph2wLL))
-                    .addComponent(lbl1ph3wlln))
-                .addGap(85, 85, 85))
+                        .addComponent(rb3ph3wLLN))
+                    .addComponent(lbl3ph3wlln))
+                .addGap(18, 18, 18)
+                .addGroup(pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbl3ph3wlN)
+                    .addGroup(pnlDatosLayout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(rb3ph2wLN)))
+                .addGap(18, 18, 18)
+                .addGroup(pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbl1ph2wln)
+                    .addGroup(pnlDatosLayout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(rb1ph2wLN)))
+                .addGap(18, 18, 18)
+                .addGroup(pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(pnlDatosLayout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(rb1ph3wLLN))
+                    .addComponent(lbl1ph2wll))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbl1ph3wlln)
+                    .addGroup(pnlDatosLayout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(rb1ph2wLL)))
+                .addGap(102, 102, 102))
         );
         pnlDatosLayout.setVerticalGroup(
             pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -274,26 +330,32 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
         org.openide.awt.Mnemonics.setLocalizedText(lblName, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.lblName.text")); // NOI18N
 
         txtName.setText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtName.text")); // NOI18N
+        txtName.setToolTipText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtName.toolTipText")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(lblUbica, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.lblUbica.text")); // NOI18N
 
         txtUbica.setText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtUbica.text")); // NOI18N
+        txtUbica.setToolTipText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtUbica.toolTipText")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(lblTec, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.lblTec.text")); // NOI18N
 
         txtTec.setText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtTec.text")); // NOI18N
+        txtTec.setToolTipText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtTec.toolTipText")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(lblCity, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.lblCity.text")); // NOI18N
 
         txtCity.setText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtCity.text")); // NOI18N
+        txtCity.setToolTipText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtCity.toolTipText")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(lblTab, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.lblTab.text")); // NOI18N
 
         txtTab.setText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtTab.text")); // NOI18N
+        txtTab.setToolTipText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtTab.toolTipText")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(lblTitRuta, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.lblTitRuta.text")); // NOI18N
 
         txtRutaCSV.setText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtRutaCSV.text")); // NOI18N
+        txtRutaCSV.setToolTipText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtRutaCSV.toolTipText")); // NOI18N
         txtRutaCSV.setEnabled(false);
 
         javax.swing.GroupLayout pnlDatosProyLayout = new javax.swing.GroupLayout(pnlDatosProy);
@@ -322,7 +384,7 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
                                 .addGroup(pnlDatosProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtTab)
                                     .addComponent(txtCity)))
-                            .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 360, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtName)))
                     .addGroup(pnlDatosProyLayout.createSequentialGroup()
                         .addComponent(lblTitRuta)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -369,8 +431,8 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
 
         org.openide.awt.Mnemonics.setLocalizedText(lblA, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.lblA.text")); // NOI18N
 
-        txtRelPrim1.setText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtRelPrim1.text")); // NOI18N
-        txtRelPrim1.setToolTipText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtRelPrim1.toolTipText")); // NOI18N
+        txtRelSec.setText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtRelSec.text")); // NOI18N
+        txtRelSec.setToolTipText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.txtRelSec.toolTipText")); // NOI18N
 
         org.openide.awt.Mnemonics.setLocalizedText(lblPeriod, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.lblPeriod.text")); // NOI18N
 
@@ -383,6 +445,13 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
         btnCrear.setBackground(new java.awt.Color(153, 255, 255));
         org.openide.awt.Mnemonics.setLocalizedText(btnCrear, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.btnCrear.text")); // NOI18N
         btnCrear.setToolTipText(org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.btnCrear.toolTipText")); // NOI18N
+        btnCrear.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                btnCrearActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnlDatoME435Layout = new javax.swing.GroupLayout(pnlDatoME435);
         pnlDatoME435.setLayout(pnlDatoME435Layout);
@@ -403,14 +472,14 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(lblA)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txtRelPrim1, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtRelSec, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(pnlDatoME435Layout.createSequentialGroup()
                         .addComponent(lblPeriod)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(spnPeriod, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(79, 79, 79)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(55, 55, 55)
                 .addComponent(btnCrear)
                 .addContainerGap())
         );
@@ -429,7 +498,7 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
                             .addGroup(pnlDatoME435Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(txtRelPrim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(lblA)
-                                .addComponent(txtRelPrim1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(txtRelSec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(pnlDatoME435Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(spnPeriod, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -446,11 +515,11 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
             pnlProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlProyLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnlProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(pnlDatoME435, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pnlDatos, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(pnlDatosProy, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(pnlProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(pnlDatos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlDatosProy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlDatoME435, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         pnlProyLayout.setVerticalGroup(
             pnlProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -473,10 +542,9 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
                 .addGroup(pnlCrearProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(pnlProy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(pnlCrearProyLayout.createSequentialGroup()
-                        .addGroup(pnlCrearProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(flieChoosserCSV, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblTitCSV))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(lblTitCSV)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(fCCSV, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
         pnlCrearProyLayout.setVerticalGroup(
@@ -484,7 +552,7 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
             .addGroup(pnlCrearProyLayout.createSequentialGroup()
                 .addComponent(lblTitCSV)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(flieChoosserCSV, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(fCCSV, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pnlProy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -498,6 +566,14 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
         lblTitVMD.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(lblTitVMD, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.lblTitVMD.text")); // NOI18N
 
+        fCVMD.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                fCVMDActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlAbrirProyLayout = new javax.swing.GroupLayout(pnlAbrirProy);
         pnlAbrirProy.setLayout(pnlAbrirProyLayout);
         pnlAbrirProyLayout.setHorizontalGroup(
@@ -505,8 +581,8 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
             .addGroup(pnlAbrirProyLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnlAbrirProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(fileCooserVMD, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(lblTitVMD, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE))
+                    .addComponent(fCVMD, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(lblTitVMD, javax.swing.GroupLayout.DEFAULT_SIZE, 585, Short.MAX_VALUE))
                 .addContainerGap())
         );
         pnlAbrirProyLayout.setVerticalGroup(
@@ -514,7 +590,7 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
             .addGroup(pnlAbrirProyLayout.createSequentialGroup()
                 .addComponent(lblTitVMD)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fileCooserVMD, javax.swing.GroupLayout.DEFAULT_SIZE, 687, Short.MAX_VALUE)
+                .addComponent(fCVMD, javax.swing.GroupLayout.DEFAULT_SIZE, 687, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -548,28 +624,119 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
 
     private void rb3ph3wActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_rb3ph3wActionPerformed
     {//GEN-HEADEREND:event_rb3ph3wActionPerformed
-        // TODO add your handling code here:
+        glb.dp.setTipoRed(ETipoRED.tresFases_FFF);
     }//GEN-LAST:event_rb3ph3wActionPerformed
 
     private void rb3ph3wLLNActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_rb3ph3wLLNActionPerformed
     {//GEN-HEADEREND:event_rb3ph3wLLNActionPerformed
-        // TODO add your handling code here:
+        glb.dp.setTipoRed(ETipoRED.tresFases_FFN);
     }//GEN-LAST:event_rb3ph3wLLNActionPerformed
 
     private void rb3ph4wActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_rb3ph4wActionPerformed
     {//GEN-HEADEREND:event_rb3ph4wActionPerformed
-        // TODO add your handling code here:
+        glb.dp.setTipoRed(ETipoRED.tresFases_FFFN);
     }//GEN-LAST:event_rb3ph4wActionPerformed
 
     private void rb3ph2wLNActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_rb3ph2wLNActionPerformed
     {//GEN-HEADEREND:event_rb3ph2wLNActionPerformed
-        // TODO add your handling code here:
+        glb.dp.setTipoRed(ETipoRED.tresFases_FN);
     }//GEN-LAST:event_rb3ph2wLNActionPerformed
 
     private void rb1ph2wLLActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_rb1ph2wLLActionPerformed
     {//GEN-HEADEREND:event_rb1ph2wLLActionPerformed
-        // TODO add your handling code here:
+        glb.dp.setTipoRed(ETipoRED.monoFase_FF);
     }//GEN-LAST:event_rb1ph2wLLActionPerformed
+
+    private void fCCSVActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_fCCSVActionPerformed
+    {//GEN-HEADEREND:event_fCCSVActionPerformed
+
+        int result = 0;
+        if (result == fCCSV.APPROVE_OPTION)
+        {
+            String rutaArchivo = fCCSV.getSelectedFile().getAbsolutePath();
+            if (rutaArchivo != null)
+            {
+                //capturamos al ruta del archivo
+                txtRutaCSV.setText(rutaArchivo);
+                glb.dp.setCsvName(rutaArchivo);
+                //podemos dar el crear al proyecto.
+                btnCrear.setEnabled(true);
+                //carga el file de csv
+                glb.selectedFileCSV=fCCSV.getSelectedFile();
+            }
+        }
+
+    }//GEN-LAST:event_fCCSVActionPerformed
+
+    private void rb1ph2wLNActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_rb1ph2wLNActionPerformed
+    {//GEN-HEADEREND:event_rb1ph2wLNActionPerformed
+        glb.dp.setTipoRed(ETipoRED.monFase_FN);
+    }//GEN-LAST:event_rb1ph2wLNActionPerformed
+
+    private void rb1ph3wLLNActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_rb1ph3wLLNActionPerformed
+    {//GEN-HEADEREND:event_rb1ph3wLLNActionPerformed
+        glb.dp.setTipoRed(ETipoRED.monoFase_FFN);
+    }//GEN-LAST:event_rb1ph3wLLNActionPerformed
+
+    private void btnCrearActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnCrearActionPerformed
+    {//GEN-HEADEREND:event_btnCrearActionPerformed
+       //aqui se acaba de carga la clase da datos del proyecto con la informcio nsuminstrada
+        //datos generales del proyecto // la ruta queda cargada por file chosser
+        glb.dp.setNombreProy(txtName.getText());
+        glb.dp.setUbicacionProy(txtUbica.getText());
+        glb.dp.setCiudadProy(txtCity.getText());
+        glb.dp.setOperadorME(txtTec.getText());
+        glb.dp.setTablero(txtTab.getText());
+        
+
+//datos de medicion
+        glb.dp.setRelacionBobina(Integer.parseInt(cmbRelBob.getSelectedItem().toString()));
+        
+        try        
+        {
+            int relPrime = Integer.parseInt(txtRelPrim.getText());
+            glb.dp.setRelacionTensionPrim(relPrime);
+        } catch (NumberFormatException numberFormatException)
+        {
+            JOptionPane.showMessageDialog(null , "Debe ser un numero entero", "Formato erroneo", JOptionPane.WARNING_MESSAGE);
+            txtRelPrim.setBackground(Color.red);
+        }
+        
+        try        
+        {
+            int relSec = Integer.parseInt(txtRelSec.getText());
+            glb.dp.setRelacionTensionSec(relSec);
+        } catch (NumberFormatException numberFormatException)
+        {
+            JOptionPane.showMessageDialog(null , "Debe ser un numero entero", "Formato erroneo", JOptionPane.WARNING_MESSAGE);
+            txtRelSec.setBackground(Color.red);
+        }
+        
+        glb.dp.setPeriodoSD((int) spnPeriod.getModel().getValue());
+        
+        //cierra el formualrio
+        this.dispose();
+        
+        
+    }//GEN-LAST:event_btnCrearActionPerformed
+
+    private void fCVMDActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_fCVMDActionPerformed
+    {//GEN-HEADEREND:event_fCVMDActionPerformed
+        int result = 0;
+        if (result == fCVMD.APPROVE_OPTION)
+        {
+            String rutaArchivo = fCVMD.getSelectedFile().getAbsolutePath();
+            if (rutaArchivo != null)
+            {
+    
+                //carga el file de VMD de una pero 
+                glb.seletedFileVDM=fCVMD.getSelectedFile();
+            }
+        }
+        
+        //cierra el formualrio
+        this.dispose();
+    }//GEN-LAST:event_fCVMDActionPerformed
 
     /**
      * @param args the command line arguments
@@ -621,8 +788,8 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
     private javax.swing.JButton btnCrear;
     private javax.swing.ButtonGroup btnGrp;
     private javax.swing.JComboBox<String> cmbRelBob;
-    private javax.swing.JFileChooser fileCooserVMD;
-    private javax.swing.JFileChooser flieChoosserCSV;
+    public javax.swing.JFileChooser fCCSV;
+    private javax.swing.JFileChooser fCVMD;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lbl1ph2wll;
     private javax.swing.JLabel lbl1ph2wln;
@@ -662,7 +829,7 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
     private javax.swing.JTextField txtCity;
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtRelPrim;
-    private javax.swing.JTextField txtRelPrim1;
+    private javax.swing.JTextField txtRelSec;
     private javax.swing.JTextField txtRutaCSV;
     private javax.swing.JTextField txtTab;
     private javax.swing.JTextField txtTec;

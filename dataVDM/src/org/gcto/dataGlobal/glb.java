@@ -5,8 +5,7 @@
 package org.gcto.dataGlobal;
 
 import java.awt.Color;
-import java.awt.List;
-import java.util.ArrayList;
+import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -280,5 +279,20 @@ public class glb
             "Presencia típica de cargas electrónicas industriales (drivers, VFDs, iluminación LED). Requiere monitoreo.",
             "Alta contaminación armónica. Calentamiento en transformadores, disparo fortuito de protecciones y vibraciones en motores.",
             "Riesgo alto de fallo de equipos, sobrecalentamiento de cables neutros y resonancia destructiva si hay bancos de condensadores.");
+    
+    /**
+     * clase opciones generales del programa
+     */
+    public static Opciones opc=new Opciones();
+    
+    /**
+     * clase que maniene los datos generales del proyecto.
+     */
+    public static DatosProy dp = new DatosProy();
+    
+    public static File selectedFileCSV;
+    
+    public static File seletedFileVDM;
+    
 
 }
