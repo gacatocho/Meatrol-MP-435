@@ -66,6 +66,8 @@ public final class potReactivaTopComponent extends baseTopComponent
         
         // Activar escalado simétrico para ver claramente + y - (Inductivo/Capacitivo)
         chartPanel.setSymmetricY(true);
+        // Mostrar rótulos IND / CAP
+        chartPanel.setShowIndCapLabels(true);
         
         // Añadir columnas especiales a la tabla de estadísticas
         statsModel.addColumn("Distorsión %");

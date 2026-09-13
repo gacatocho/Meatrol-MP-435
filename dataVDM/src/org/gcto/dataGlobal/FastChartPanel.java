@@ -42,6 +42,8 @@ public class FastChartPanel extends JPanel {
     
     // Propiedades de visualización
     private boolean symmetricY = false;
+    private boolean powerFactorMode = false;
+    private boolean showIndCapLabels = false;
     
     private final int MARGIN_LEFT = 90; 
     private final int MARGIN_RIGHT = 30;
@@ -123,6 +125,18 @@ public class FastChartPanel extends JPanel {
         calculateRange();
         repaint();
     }
+    
+    public void setPowerFactorMode(boolean enabled) {
+        this.powerFactorMode = enabled;
+        this.showIndCapLabels = enabled;
+        calculateRange();
+        repaint();
+    }
+    
+    public void setShowIndCapLabels(boolean show) {
+        this.showIndCapLabels = show;
+        repaint();
+    }
 
     public void setRangeSelectionListener(RangeSelectionListener listener) {
         this.selectionListener = listener;
@@ -140,6 +154,22 @@ public class FastChartPanel extends JPanel {
         series.clear();
         for (int i = 0; i < columnIndices.size(); i++) {
             series.add(new ChartSeries(names.get(i), columnIndices.get(i), colors.get(i)));
+        }
+        calculateRange();
+        repaint();
+    }
+    
+    /**
+     * Configura una serie con una columna de signo opcional.
+     */
+    public void setSeriesWithSign(List<Integer> columnIndices, List<Integer> signIndices, List<String> names, List<Color> colors) {
+        series.clear();
+        for (int i = 0; i < columnIndices.size(); i++) {
+            ChartSeries s = new ChartSeries(names.get(i), columnIndices.get(i), colors.get(i));
+            if (signIndices != null && i < signIndices.size()) {
+                s.signColIdx = signIndices.get(i);
+            }
+            series.add(s);
         }
         calculateRange();
         repaint();
@@ -162,6 +192,12 @@ public class FastChartPanel extends JPanel {
     }
     
     private void calculateRange() {
+        if (powerFactorMode) {
+            currentMaxVal = 1.1;
+            currentMinVal = -1.1;
+            return;
+        }
+        
         if (data == null || data.isEmpty() || series.isEmpty()) {
             currentMaxVal = 1.0;
             currentMinVal = 0.0;
@@ -178,6 +214,13 @@ public class FastChartPanel extends JPanel {
             for (int i = startIndex; i <= endIndex; i++) {
                 if (i >= data.size()) break;
                 double val = glb.parseDoubleSafe(data.get(i)[s.colIdx]);
+                
+                // Aplicar signo si existe columna de referencia
+                if (s.signColIdx != -1) {
+                    double q = glb.parseDoubleSafe(data.get(i)[s.signColIdx]);
+                    if (q < 0) val = -val;
+                }
+                
                 if (val > max) max = val;
                 if (val < min) min = val;
             }
@@ -263,6 +306,13 @@ public class FastChartPanel extends JPanel {
                 for (int i = iStart; i <= iEnd; i++) {
                     if (i >= data.size()) break;
                     double val = glb.parseDoubleSafe(data.get(i)[s.colIdx]);
+                    
+                    // Aplicar signo si existe columna de referencia
+                    if (s.signColIdx != -1) {
+                        double q = glb.parseDoubleSafe(data.get(i)[s.signColIdx]);
+                        if (q < 0) val = -val;
+                    }
+                    
                     if (val < minBucket) minBucket = val;
                     if (val > maxBucket) maxBucket = val;
                 }
@@ -339,18 +389,21 @@ public class FastChartPanel extends JPanel {
         g2.setColor(new Color(80, 80, 80));
         g2.drawRect(MARGIN_LEFT, MARGIN_TOP, chartW, chartH);
         
-        // Línea de Cero (Referencia Crítica para Reactiva)
+        // Línea de Cero (Referencia Crítica - Más Visible)
         if (currentMinVal <= 0 && currentMaxVal >= 0) {
             int yZero = valToY(0, chartH);
-            g2.setColor(new Color(180, 180, 180));
-            g2.setStroke(new BasicStroke(2.0f));
+            g2.setColor(Color.WHITE); // Blanco puro para máxima visibilidad
+            g2.setStroke(new BasicStroke(2.5f)); // Un poco más gruesa
             g2.drawLine(MARGIN_LEFT, yZero, MARGIN_LEFT + chartW, yZero);
         }
 
         g2.setFont(new Font("Dialog", Font.BOLD, 12));
         double range = currentMaxVal - currentMinVal;
-        for (int i = 0; i <= 10; i++) {
-            double val = currentMinVal + (range * i / 10.0);
+        
+        int numTicks = powerFactorMode ? 22 : 10; // Más ticks para FP (0.1 en 0.1)
+        
+        for (int i = 0; i <= numTicks; i++) {
+            double val = currentMinVal + (range * i / (double)numTicks);
             int y = valToY(val, chartH);
             
             g2.setColor(new Color(50, 50, 50)); 
@@ -358,9 +411,19 @@ public class FastChartPanel extends JPanel {
             
             g2.setColor(Color.WHITE);
             g2.drawLine(MARGIN_LEFT - 5, y, MARGIN_LEFT, y);
-            String labelStr = String.format("%.1f", val);
+            
+            // En modo FP, mostramos valor absoluto
+            String labelStr = powerFactorMode ? String.format("%.1f", Math.abs(val)) : String.format("%.1f", val);
             int strW = g2.getFontMetrics().stringWidth(labelStr);
             g2.drawString(labelStr, MARGIN_LEFT - 10 - strW, y + 5);
+        }
+        
+        // Rótulos IND / CAP
+        if (showIndCapLabels) {
+            g2.setFont(new Font("Dialog", Font.BOLD, 14));
+            g2.setColor(Color.LIGHT_GRAY);
+            g2.drawString("IND", MARGIN_LEFT + 5, MARGIN_TOP + 20);
+            g2.drawString("CAP", MARGIN_LEFT + 5, MARGIN_TOP + chartH - 10);
         }
 
         int numTimeLabels = 10; 
@@ -422,7 +485,12 @@ public class FastChartPanel extends JPanel {
         for (ChartSeries s : series) {
             if (s.visible) {
                 double val = glb.parseDoubleSafe(row[s.colIdx]);
-                lines.add(s.name + ": " + String.format("%.2f", val));
+                String suffix = "";
+                if (s.signColIdx != -1) {
+                    double q = glb.parseDoubleSafe(row[s.signColIdx]);
+                    suffix = (q >= 0) ? " (IND)" : " (CAP)";
+                }
+                lines.add(s.name + ": " + String.format("%.3f", val) + suffix);
             }
         }
         
@@ -473,6 +541,7 @@ public class FastChartPanel extends JPanel {
     private static class ChartSeries {
         String name;
         int colIdx;
+        int signColIdx = -1; // Columna que determina el signo (ej: Reactiva Q)
         Color color;
         boolean visible = true;
 

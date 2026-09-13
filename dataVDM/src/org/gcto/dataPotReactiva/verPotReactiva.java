@@ -31,6 +31,10 @@ import org.openide.windows.WindowManager;
 @Messages("CTL_verPotReactiva=ver potencia reactiva")
 public final class verPotReactiva extends CallableSystemAction
 {
+    public verPotReactiva()
+    {
+        setEnabled(false);
+    }
 
     @Override
     public void performAction()

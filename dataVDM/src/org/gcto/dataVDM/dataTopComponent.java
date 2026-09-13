@@ -18,6 +18,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -79,11 +80,11 @@ import org.openide.util.actions.SystemAction;
         })
 public final class dataTopComponent extends TopComponent
 {
-
+    
     private static final Logger LOG = Logger.getLogger(dataTopComponent.class.getName());
     private final DataTableModel tableModel;
     private final DecimalFormat decimalFormat = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
-
+    
     private final DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer()
     {
         @Override
@@ -108,30 +109,30 @@ public final class dataTopComponent extends TopComponent
             return super.getTableCellRendererComponent(table, displayValue, isSelected, hasFocus, row, column);
         }
     };
-
+    
     private final DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
     private String productSN = "";
-
+    
     public dataTopComponent()
     {
         initComponents();
         setName(Bundle.CTL_dataTopComponent());
         setToolTipText(Bundle.HINT_dataTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-
+        
         tableModel = new DataTableModel();
         dataTable.setModel(tableModel);
 
         // Deshabilitar ordenamiento de forma absoluta
         dataTable.setAutoCreateRowSorter(false);
         dataTable.setRowSorter(null);
-
+        
         dataTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         // Configuración para scroll horizontal
         dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
+        
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -141,7 +142,7 @@ public final class dataTopComponent extends TopComponent
         deleteItem.addActionListener(e -> btnDeleteRowActionPerformed(null));
         popup.add(deleteItem);
         dataTable.setComponentPopupMenu(popup);
-
+        
         updateStatus();
     }
 
@@ -154,12 +155,12 @@ public final class dataTopComponent extends TopComponent
     {
         return tableModel != null && tableModel.getRowCount() > 0;
     }
-
+    
     public String[] getHeaders()
     {
         return tableModel.getColumnNames();
     }
-
+    
     public List<String[]> getDataList()
     {
         return tableModel.getDataList();
@@ -292,11 +293,11 @@ public final class dataTopComponent extends TopComponent
 
     private void btnLoadActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnLoadActionPerformed
     {
-
+        
         AbrirProyectoNuevo apn = new AbrirProyectoNuevo(null, true);
         apn.setLocationRelativeTo(null);
         apn.setVisible(true);
-
+        
         if (glb.selectedFileCSV != null)
         {
             loadCsv(glb.selectedFileCSV);
@@ -328,7 +329,7 @@ public final class dataTopComponent extends TopComponent
         {
             return;
         }
-
+        
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("Sesión VistaDatos (.vdm)", "vdm"));
         int result = fileChooser.showSaveDialog(this);
@@ -368,29 +369,29 @@ public final class dataTopComponent extends TopComponent
         {
             return;
         }
-
+        
         int confirm = JOptionPane.showConfirmDialog(this,
                 "¿Desea eliminar automáticamente todas las filas que contienen solo ceros?",
                 "Limpiar Datos", JOptionPane.YES_NO_OPTION);
-
+        
         if (confirm == JOptionPane.YES_OPTION)
         {
             tableModel.clearZeroRows();
             updateStatus();
         }
     }//GEN-LAST:event_btnClearZerosActionPerformed
-
+    
     private void btnFitColumnsActionPerformed(java.awt.event.ActionEvent evt)
     {
         applyRenderers();
     }
-
+    
     private void loadCsv(File file)
     {
         setUIEnabled(false);
         String msg = NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.loading");
         lblStatus.setText(msg);
-
+        
         final ProgressHandle ph = ProgressHandle.createHandle(msg);
         ph.start(100); // 100 unidades de trabajo (porcentaje)
 
@@ -399,13 +400,13 @@ public final class dataTopComponent extends TopComponent
             private String[] combinedColumns;
             private String sn = "";
             private final List<String[]> data = new ArrayList<>(1000000);
-
+            
             @Override
             protected Void doInBackground() throws Exception
             {
                 long totalBytes = file.length();
                 long readBytes = 0;
-
+                
                 try (BufferedReader br = new BufferedReader(new FileReader(file)))
                 {
                     String lineSN = br.readLine();
@@ -414,7 +415,7 @@ public final class dataTopComponent extends TopComponent
                         sn = lineSN.trim();
                         readBytes += lineSN.length() + 1;
                     }
-
+                    
                     String lineMain = br.readLine();
                     if (lineMain != null)
                     {
@@ -425,13 +426,13 @@ public final class dataTopComponent extends TopComponent
                     {
                         readBytes += lineSub.length() + 1;
                     }
-
+                    
                     if (lineMain != null && lineSub != null)
                     {
                         String[] mainHeaders = lineMain.split(",", -1);
                         String[] subHeaders = lineSub.split(",", -1);
                         combinedColumns = new String[subHeaders.length];
-
+                        
                         String currentMain = "";
                         for (int i = 0; i < subHeaders.length; i++)
                         {
@@ -443,14 +444,14 @@ public final class dataTopComponent extends TopComponent
                             combinedColumns[i] = currentMain.isEmpty() ? sub : currentMain + ": " + sub;
                         }
                     }
-
+                    
                     String line;
                     int lastProgress = 0;
                     while ((line = br.readLine()) != null)
                     {
                         data.add(line.split(",", -1));
                         readBytes += line.length() + 1;
-
+                        
                         int progress = (int) ((readBytes * 100) / totalBytes);
                         if (progress > lastProgress)
                         {
@@ -464,7 +465,7 @@ public final class dataTopComponent extends TopComponent
                 }
                 return null;
             }
-
+            
             @Override
             protected void process(List<Integer> chunks)
             {
@@ -473,7 +474,7 @@ public final class dataTopComponent extends TopComponent
                     ph.progress(progress);
                 }
             }
-
+            
             @Override
             protected void done()
             {
@@ -496,17 +497,17 @@ public final class dataTopComponent extends TopComponent
             }
         }.execute();
     }
-
+    
     private void saveBinary(File file)
     {
         setUIEnabled(false);
         String msg = NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.saving");
         lblStatus.setText(msg);
-
+        
         final ProgressHandle ph = ProgressHandle.createHandle(msg);
         final List<String[]> dataList = tableModel.getDataList();
         ph.start(100);
-
+        
         new SwingWorker<Void, Integer>()
         {
             @Override
@@ -519,12 +520,12 @@ public final class dataTopComponent extends TopComponent
 
                     // Escribimos el tamaño de la lista
                     oos.writeInt(dataList.size());
-
+                    
                     int lastProgress = 0;
                     for (int i = 0; i < dataList.size(); i++)
                     {
                         oos.writeObject(dataList.get(i));
-
+                        
                         int progress = (int) ((i * 100.0) / dataList.size());
                         if (progress > lastProgress)
                         {
@@ -535,7 +536,7 @@ public final class dataTopComponent extends TopComponent
                 }
                 return null;
             }
-
+            
             @Override
             protected void process(List<Integer> chunks)
             {
@@ -544,7 +545,7 @@ public final class dataTopComponent extends TopComponent
                     ph.progress(progress);
                 }
             }
-
+            
             @Override
             protected void done()
             {
@@ -563,22 +564,22 @@ public final class dataTopComponent extends TopComponent
             }
         }.execute();
     }
-
+    
     private void loadBinary(File file)
     {
         setUIEnabled(false);
         String msg = NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.loading");
         lblStatus.setText(msg);
-
+        
         final ProgressHandle ph = ProgressHandle.createHandle(msg);
         ph.start(100);
-
+        
         new SwingWorker<Void, Integer>()
         {
             private String sn;
             private String[] cols;
             private List<String[]> data;
-
+            
             @Override
             protected Void doInBackground() throws Exception
             {
@@ -586,15 +587,15 @@ public final class dataTopComponent extends TopComponent
                 {
                     sn = ois.readUTF();
                     cols = (String[]) ois.readObject();
-
+                    
                     int size = ois.readInt();
                     data = new ArrayList<>(size);
-
+                    
                     int lastProgress = 0;
                     for (int i = 0; i < size; i++)
                     {
                         data.add((String[]) ois.readObject());
-
+                        
                         int progress = (int) ((i * 100.0) / size);
                         if (progress > lastProgress)
                         {
@@ -608,7 +609,7 @@ public final class dataTopComponent extends TopComponent
                 }
                 return null;
             }
-
+            
             @Override
             protected void process(List<Integer> chunks)
             {
@@ -617,7 +618,7 @@ public final class dataTopComponent extends TopComponent
                     ph.progress(progress);
                 }
             }
-
+            
             @Override
             protected void done()
             {
@@ -640,7 +641,7 @@ public final class dataTopComponent extends TopComponent
             }
         }.execute();
     }
-
+    
     private void setUIEnabled(boolean enabled)
     {
         btnLoad.setEnabled(enabled);
@@ -649,25 +650,25 @@ public final class dataTopComponent extends TopComponent
         btnClearZeros.setEnabled(enabled);
         btnFitColumns.setEnabled(enabled);
     }
-
+    
     private void showError(String msg, Exception e)
     {
         JOptionPane.showMessageDialog(this, msg + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         lblStatus.setText("Error.");
     }
-
+    
     private void applyRenderers()
     {
         if (tableModel.getColumnCount() == 0)
         {
             return;
         }
-
+        
         dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         TableColumnModel columnModel = dataTable.getColumnModel();
         java.awt.FontMetrics fm = dataTable.getFontMetrics(dataTable.getFont());
         java.awt.FontMetrics headerFm = dataTable.getTableHeader().getFontMetrics(dataTable.getTableHeader().getFont());
-
+        
         for (int i = 0; i < columnModel.getColumnCount(); i++)
         {
             String colName = tableModel.getColumnName(i);
@@ -690,13 +691,13 @@ public final class dataTopComponent extends TopComponent
                     }
                 }
             }
-
+            
             width = Math.max(width, maxContentWidth);
             // Asegurar un ancho mínimo razonable
             width = Math.max(width, 100);
-
+            
             columnModel.getColumn(i).setPreferredWidth(width);
-
+            
             String colNameLower = colName.toLowerCase();
             if (colNameLower.contains("date") || colNameLower.contains("time") || colNameLower.contains("tiempo") || colNameLower.contains("fecha"))
             {
@@ -707,7 +708,7 @@ public final class dataTopComponent extends TopComponent
             }
         }
     }
-
+    
     private void updateStatus()
     {
         int rows = tableModel.getRowCount();
@@ -716,7 +717,7 @@ public final class dataTopComponent extends TopComponent
         lblStatus.setText(status);
         updateActionState();
     }
-
+    
     private void updateActionState()
     {
         boolean dataPresent = hasData();
@@ -732,11 +733,35 @@ public final class dataTopComponent extends TopComponent
         });
     }
 
+    /**
+     * averigua si una columna ya existe para no duplicarla en la carga de un
+     * archivo ya procesado
+     *
+     * @param headers
+     * @param columnName
+     * @return true: columna si existe - fasle: columna no existe
+     */
+    private boolean columnaEXiste(String[] headers, String columnName)
+    {
+        for (String name : headers)
+        {
+            if (name.equals(columnName))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     private String[] augmentData(String[] headers, List<String[]> data)
     {
-        // Verificar si ya está aumentado (buscamos específicamente la última añadida: FP promedio)
-        for (String h : headers) {
-            if (h.contains("FP promedio")) return headers;
+        // Verificar si ya está aumentado (buscamos específicamente la última añadida: PF Average)
+        for (String h : headers)
+        {
+            if (h.contains("PF Average"))
+            {
+                return headers;
+            }
         }
 
         // --- DETECCIÓN DE COLUMNAS DE POTENCIA ---
@@ -753,73 +778,120 @@ public final class dataTopComponent extends TopComponent
 
         // --- DETECCIÓN DE COLUMNAS DE FACTOR DE POTENCIA ---
         int idxFPA = -1, idxFPB = -1, idxFPC = -1;
-
+        
         for (int i = 0; i < headers.length; i++)
         {
             String h = headers[i].toUpperCase();
 
             // Potencia Aparente (S)
-            if (matchesStrict(h, "SA", "APPARENT")) idxSA = i;
-            else if (matchesStrict(h, "SB", "APPARENT")) idxSB = i;
-            else if (matchesStrict(h, "SC", "APPARENT")) idxSC = i;
-           // else if (h.contains("APPARENT") && (h.contains("SUM") || h.contains("TOTAL"))) idxSSum = i;
-            //else if (h.contains("APPARENT") && (h.contains("SSUM"))) idxSSum = i;
-             else if (matchesStrict(h, "SSUM", "APPARENT")) idxSSum = i;
+            if (matchesStrict(h, "SA", "APPARENT") || matchesStrict(h, "S L1", "APPARENT"))
+            {
+                idxSA = i;
+            } else if (matchesStrict(h, "SB", "APPARENT") || matchesStrict(h, "S L2", "APPARENT"))
+            {
+                idxSB = i;
+            } else if (matchesStrict(h, "SC", "APPARENT") || matchesStrict(h, "S L3", "APPARENT"))
+            {
+                idxSC = i;
+            } else if (h.contains("APPARENT") && h.contains("(VA)") && h.contains("SSUM"))
+            {
+                idxSSum = i;
+            }
 
             // Potencia Activa (P)
-            if (matchesStrict(h, "PA", "ACTIVE")) idxPA = i;
-            else if (matchesStrict(h, "PB", "ACTIVE")) idxPB = i;
-            else if (matchesStrict(h, "PC", "ACTIVE")) idxPC = i;
-            //else if (h.contains("ACTIVE") && (h.contains("SUM") || h.contains("TOTAL"))) idxPSum = i;
-           //else if (h.contains("ACTIVE") && (h.contains("PSUM") )) idxPSum = i;
-            else if (matchesStrict(h, "PSUM", "ACTIVE")) idxPSum = i;
+            if (matchesStrict(h, "PA", "ACTIVE") || matchesStrict(h, "P L1", "ACTIVE"))
+            {
+                idxPA = i;
+            } else if (matchesStrict(h, "PB", "ACTIVE") || matchesStrict(h, "P L2", "ACTIVE"))
+            {
+                idxPB = i;
+            } else if (matchesStrict(h, "PC", "ACTIVE") || matchesStrict(h, "P L3", "ACTIVE"))
+            {
+                idxPC = i;
+            } else if (h.contains("ACTIVE") && h.contains("PSUM") && h.contains("(W)"))
+            {
+                idxPSum = i;
+            }
 
             // Potencia Reactiva (Q)
-            if (matchesStrict(h, "QA", "REACTIVE")) idxQA = i;
-            else if (matchesStrict(h, "QB", "REACTIVE")) idxQB = i;
-            else if (matchesStrict(h, "QC", "REACTIVE")) idxQC = i;
+            if (matchesStrict(h, "QA", "REACTIVE") || matchesStrict(h, "Q L1", "REACTIVE"))
+            {
+                idxQA = i;
+            } else if (matchesStrict(h, "QB", "REACTIVE") || matchesStrict(h, "Q L2", "REACTIVE"))
+            {
+                idxQB = i;
+            } else if (matchesStrict(h, "QC", "REACTIVE") || matchesStrict(h, "Q L3", "REACTIVE"))
+            {
+                idxQC = i;
+            }
 
             // Buscar QSum original
-            if (h.contains("REACTIVE") && (h.contains("QSUM") || h.contains("Q SUM")) && !h.contains("ENERGY") && !h.contains("VARH"))
+            if (h.contains("REACTIVE") && (h.contains("QSUM") || h.contains("Q SUM") || h.contains("Q TOTAL")) && !h.contains("ENERGY") && !h.contains("VARH"))
             {
                 idxQSumOrig = i;
             }
 
             // Tensiones de Fase (U)
-            if (matchesStrict(h, "UA", "VOLTAGE")) idxUA = i;
-            else if (matchesStrict(h, "UB", "VOLTAGE")) idxUB = i;
-            else if (matchesStrict(h, "UC", "VOLTAGE")) idxUC = i;
+            if (matchesStrict(h, "UA", "VOLTAGE") || matchesStrict(h, "U L1", "VOLTAGE"))
+            {
+                idxUA = i;
+            } else if (matchesStrict(h, "UB", "VOLTAGE") || matchesStrict(h, "U L2", "VOLTAGE"))
+            {
+                idxUB = i;
+            } else if (matchesStrict(h, "UC", "VOLTAGE") || matchesStrict(h, "U L3", "VOLTAGE"))
+            {
+                idxUC = i;
+            }
 
             // Corrientes (I)
-            if (matchesStrict(h, "IA", "CURRENT")) idxIA = i;
-            else if (matchesStrict(h, "IB", "CURRENT")) idxIB = i;
-            else if (matchesStrict(h, "IC", "CURRENT")) idxIC = i;
+            if (matchesStrict(h, "IA", "CURRENT") || matchesStrict(h, "I L1", "CURRENT"))
+            {
+                idxIA = i;
+            } else if (matchesStrict(h, "IB", "CURRENT") || matchesStrict(h, "I L2", "CURRENT"))
+            {
+                idxIB = i;
+            } else if (matchesStrict(h, "IC", "CURRENT") || matchesStrict(h, "I L3", "CURRENT"))
+            {
+                idxIC = i;
+            }
 
-            // Factor de Potencia (FP)
-            if (matchesStrict(h, "PFA", "POWER FACTOR") || matchesStrict(h, "FP L1", "POWER FACTOR") || matchesStrict(h, "FP A", "POWER FACTOR"))
+            // Factor de Potencia (FP) - Detección Flexible
+            if (matchesStrict(h, "PFA", "POWER FACTOR"))
             {
                 idxFPA = i;
             }
-            if (matchesStrict(h, "PFB", "POWER FACTOR") || matchesStrict(h, "FP L2", "POWER FACTOR") || matchesStrict(h, "FP B", "POWER FACTOR"))
+            if (matchesStrict(h, "PFB", "POWER FACTOR"))
             {
                 idxFPB = i;
             }
-            if (matchesStrict(h, "PFC", "POWER FACTOR") || matchesStrict(h, "FP L3", "POWER FACTOR") || matchesStrict(h, "FP C", "POWER FACTOR"))
+            if (matchesStrict(h, "PFC", "POWER FACTOR"))
             {
                 idxFPC = i;
             }
         }
-
+        
         LOG.info(String.format("AugmentData: S(%d,%d,%d,%d) P(%d,%d,%d,%d) Q(%d,%d,%d) U(%d,%d,%d) I(%d,%d,%d) FP(%d,%d,%d)",
                 idxSA, idxSB, idxSC, idxSSum, idxPA, idxPB, idxPC, idxPSum, idxQA, idxQB, idxQC, idxUA, idxUB, idxUC, idxIA, idxIB, idxIC, idxFPA, idxFPB, idxFPC));
 
         // Actualizar numFases basado en lo detectado (prioridad a reactiva o tensión)
         int detectedFases = 0;
-        if (idxQA >= 0 || idxUA >= 0 || idxIA >= 0) detectedFases = 1;
-        if (idxQB >= 0 || idxUB >= 0 || idxIB >= 0) detectedFases = 2;
-        if (idxQC >= 0 || idxUC >= 0 || idxIC >= 0) detectedFases = 3;
-        if (detectedFases > 0) glb.numFases = detectedFases;
-
+        if (idxQA >= 0 || idxUA >= 0 || idxIA >= 0)
+        {
+            detectedFases = 1;
+        }
+        if (idxQB >= 0 || idxUB >= 0 || idxIB >= 0)
+        {
+            detectedFases = 2;
+        }
+        if (idxQC >= 0 || idxUC >= 0 || idxIC >= 0)
+        {
+            detectedFases = 3;
+        }
+        if (detectedFases > 0)
+        {
+            glb.numFases = detectedFases;
+        }
+        
         int numFases = glb.numFases;
 
         // --- CONSTRUCCIÓN DE NUEVOS ENCABEZADOS ---
@@ -840,74 +912,114 @@ public final class dataTopComponent extends TopComponent
                 || glb.tipoRed == ETipoRED.tresFases_FFFN;
         int lastCurrentIdx = Math.max(idxIA, Math.max(idxIB, idxIC));
 
-        // Mapeo para FP Promedio
+        // Mapeo para PF Average
         int fpPromPos = -1;
         int lastFPIdx = Math.max(idxFPA, Math.max(idxFPB, idxFPC));
 
+        //solo vuiendo la QA sabemos el resto
+        boolean QCalcExist = columnaEXiste(headers, "ReactivePowerCalc(Var) QA");
+        //con esta ansion FASE FASE sabemos lo demas
+        boolean UABExist = columnaEXiste(headers, "Voltage(V) UAB");
+        //averiguamos si la corriente de neutro existe
+        boolean INExist = columnaEXiste(headers, "Current(A): In");
+        //averigua si el power factor existe en promedio
+        boolean PFAvrgExist = columnaEXiste(headers, "Power Factor: PF Average");
+        
         for (int i = 0; i < headers.length; i++)
         {
             newHeadersList.add(headers[i]);
 
             // Inserción de Reactiva Calculada (al lado de cada original)
-            if (i == idxQA && numFases >= 1)
+            //pero se debe preguntar primero si lo trae pues si no lo duplica
+            //al salvar el VDM este ya lleva estas columnas // solo viendo la A se sabe si ya esta esto calculado
+            if (!QCalcExist)
             {
-                qCalcPositions.add(newHeadersList.size());
-                newHeadersList.add("ReactivePowerCalc(Var) QA");
-            }
-            if (i == idxQB && numFases >= 2)
-            {
-                qCalcPositions.add(newHeadersList.size());
-                newHeadersList.add("ReactivePowerCalc(Var) QB");
-            }
-            if (i == idxQC && numFases >= 3)
-            {
-                qCalcPositions.add(newHeadersList.size());
-                newHeadersList.add("ReactivePowerCalc(Var) QC");
-            }
-            if (i == idxQSumOrig)
-            {
-                qSumPos = newHeadersList.size();
-                newHeadersList.add("ReactivePowerCalc(Var) QSum");
-            }
-
-            // Inserción de Tensiones FF (después del grupo UA, UB, UC)
-            if (i == lastVoltageIdx && numFases >= 2)
-            {
-                uCalcPositions.add(newHeadersList.size());
-                newHeadersList.add("Voltage(V) UAB");
-                if (numFases >= 3)
+                if (i == idxQA && numFases >= 1)
                 {
-                    uCalcPositions.add(newHeadersList.size());
-                    newHeadersList.add("Voltage(V) UBC");
-                    uCalcPositions.add(newHeadersList.size());
-                    newHeadersList.add("Voltage(V) UAC");
+                    qCalcPositions.add(newHeadersList.size());
+                    newHeadersList.add("ReactivePowerCalc(Var) QA");
+                }
+                
+                if (i == idxQB && numFases >= 2)
+                {
+                    qCalcPositions.add(newHeadersList.size());
+                    newHeadersList.add("ReactivePowerCalc(Var) QB");
+                }
+                
+                if (i == idxQC && numFases >= 3)
+                {
+                    qCalcPositions.add(newHeadersList.size());
+                    newHeadersList.add("ReactivePowerCalc(Var) QC");
+                }
+                
+                if (i == idxQSumOrig)
+                {
+                    qSumPos = newHeadersList.size();
+                    newHeadersList.add("ReactivePowerCalc(Var) QSum");
                 }
             }
 
-            // Inserción de Neutro (después del grupo IA, IB, IC)
-            if (i == lastCurrentIdx && allowIn && idxIA >= 0)
+            // Inserción de Tensiones FF (después del grupo UA, UB, UC)
+            //se debe preguntar si las columnas no existen pues el VDM salvado
+            //puede  que las traiga ya creadas
+            if (!UABExist)
             {
-                inPos = newHeadersList.size();
-                newHeadersList.add("Current(A): In");
+                if (!headers[i].equals("Voltage(V) UAB"))
+                {
+                    if (i == lastVoltageIdx && numFases >= 2)
+                    {
+                        uCalcPositions.add(newHeadersList.size());
+                        newHeadersList.add("Voltage(V) UAB");
+                        if (numFases >= 3)
+                        {
+                            uCalcPositions.add(newHeadersList.size());
+                            newHeadersList.add("Voltage(V) UBC");
+                            uCalcPositions.add(newHeadersList.size());
+                            newHeadersList.add("Voltage(V) UAC");
+                        }
+                    }
+                }
             }
-
-            // Inserción de FP Promedio (después del grupo FPA, FPB, FPC)
-            if (i == lastFPIdx && lastFPIdx != -1)
+            
+            if (!INExist)
             {
-                fpPromPos = newHeadersList.size();
-                newHeadersList.add("Power Factor: PF Average");
+                // Inserción de Neutro (después del grupo IA, IB, IC)
+                //se pregunta si no existe antes de proceder con esta compracion
+                if (!headers[i].equals("Current(A): In"))
+                {
+                    if (i == lastCurrentIdx && allowIn && idxIA >= 0)
+                    {
+                        inPos = newHeadersList.size();
+                        newHeadersList.add("Current(A): In");
+                    }
+                }
             }
+            
+            if (!PFAvrgExist)
+            {
+                // Inserción de PF Average (después del grupo FPA, FPB, FPC)
+                //si el vdm se habia salvado con estas se va a duplicar
+                if (!headers[i].equals("Power Factor: PF Average"))
+                {
+                    if (i == lastFPIdx && lastFPIdx != -1)
+                    {
+                        fpPromPos = newHeadersList.size();
+                        newHeadersList.add("Power Factor: PF Average");
+                    }
+                }
+            }
+            
         }
 
-        // Fallback QSum
-        if (qSumPos == -1 && idxQA >= 0)
+//        // Fallback QSum
+//        if (qSumPos == -1 && idxQA >= 0)
+//        {
+//            qSumPos = newHeadersList.size();
+//            newHeadersList.add("ReactivePowerCalc(Var) QSum");
+//        }
+// Fallback PF Average: Si no se insertó y tenemos PSum/SSum, añadir al final
+        if (fpPromPos == -1 && idxPSum != -1 && idxSSum != -1)
         {
-            qSumPos = newHeadersList.size();
-            newHeadersList.add("ReactivePowerCalc(Var) QSum");
-        }
-        
-        // Fallback FP Promedio: Si no se insertó y tenemos PSum/SSum, añadir al final
-        if (fpPromPos == -1 && idxPSum != -1 && idxSSum != -1) {
             fpPromPos = newHeadersList.size();
             newHeadersList.add("Power Factor: PF Average");
         }
@@ -938,17 +1050,28 @@ public final class dataTopComponent extends TopComponent
                 double qa = (idxQA >= 0 && idxQA < oldRow.length) ? glb.parseDoubleSafe(oldRow[idxQA]) : 0;
                 double qb = (idxQB >= 0 && idxQB < oldRow.length) ? glb.parseDoubleSafe(oldRow[idxQB]) : 0;
                 double qc = (idxQC >= 0 && idxQC < oldRow.length) ? glb.parseDoubleSafe(oldRow[idxQC]) : 0;
-
+                
                 glb.calculoNeutro(ia, ib, ic, fpa, fpb, fpc, qa, qb, qc);
             }
-
+            
             for (int c = 0; c < newRow.length; c++)
             {
                 // ¿Es una columna de Reactiva Calculada?
                 int qIdx = qCalcPositions.indexOf(c);
                 if (qIdx != -1)
                 {
-                    int[][] qSources = {{idxSA, idxPA, idxQA}, {idxSB, idxPB, idxQB}, {idxSC, idxPC, idxQC}};
+                    int[][] qSources =
+                    {
+                        {
+                            idxSA, idxPA, idxQA
+                        },
+                        {
+                            idxSB, idxPB, idxQB
+                        },
+                        {
+                            idxSC, idxPC, idxQC
+                        }
+                    };
                     double val = calculateQValue(oldRow, qSources[qIdx][0], qSources[qIdx][1], qSources[qIdx][2]);
                     newRow[c] = String.valueOf(val);
                     qSum += val;
@@ -966,9 +1089,16 @@ public final class dataTopComponent extends TopComponent
                 int uIdx = uCalcPositions.indexOf(c);
                 if (uIdx != -1)
                 {
-                    if (uIdx == 0) newRow[c] = String.valueOf(glb.UAB);
-                    else if (uIdx == 1) newRow[c] = String.valueOf(glb.UBC);
-                    else if (uIdx == 2) newRow[c] = String.valueOf(glb.UAC);
+                    if (uIdx == 0)
+                    {
+                        newRow[c] = String.valueOf(glb.UAB);
+                    } else if (uIdx == 1)
+                    {
+                        newRow[c] = String.valueOf(glb.UBC);
+                    } else if (uIdx == 2)
+                    {
+                        newRow[c] = String.valueOf(glb.UAC);
+                    }
                     continue;
                 }
 
@@ -979,12 +1109,18 @@ public final class dataTopComponent extends TopComponent
                     continue;
                 }
 
-                // ¿Es FP Promedio?
+                // ¿Es PF Average?
                 if (c == fpPromPos)
                 {
                     double pSum = (idxPSum >= 0 && idxPSum < oldRow.length) ? glb.parseDoubleSafe(oldRow[idxPSum]) : 0;
                     double sSum = (idxSSum >= 0 && idxSSum < oldRow.length) ? glb.parseDoubleSafe(oldRow[idxSSum]) : 0;
-                    newRow[c] = (sSum != 0) ? String.valueOf(pSum / sSum) : "0";
+                    double qSumVal = (idxQSumOrig >= 0) ? glb.parseDoubleSafe(oldRow[idxQSumOrig]) : qSum;
+                    double pf = (sSum != 0) ? (pSum / sSum) : 0;
+                    if (qSumVal < 0)
+                    {
+                        pf = -pf; // Aplicar signo basado en QSum (IND/CAP)
+                    }
+                    newRow[c] = String.valueOf(pf);
                     continue;
                 }
 
@@ -996,10 +1132,10 @@ public final class dataTopComponent extends TopComponent
             }
             data.set(r, newRow);
         }
-
+        
         return newHeadersList.toArray(new String[0]);
     }
-
+    
     private boolean matchesStrict(String header, String key, String type)
     {
         String h = header.toUpperCase().trim();
@@ -1012,7 +1148,7 @@ public final class dataTopComponent extends TopComponent
         }
 
         // NO debe ser energía ni otras unidades acumuladas
-        if (h.contains("ENERGY") || h.contains("WH") || h.contains("VARH") || h.contains("AH"))
+        if (h.contains("ENERGY") || h.contains("WH") || h.contains("VARH") || h.contains("AH") || h.contains("CALC"))
         {
             return false;
         }
@@ -1023,7 +1159,7 @@ public final class dataTopComponent extends TopComponent
         {
             boolean startOk = (idx == 0) || !Character.isLetter(h.charAt(idx - 1));
             boolean endOk = (idx + k.length() == h.length()) || !Character.isLetter(h.charAt(idx + k.length()));
-
+            
             if (startOk && endOk)
             {
                 // Verificar prefijo 'E' específicamente para QA/QB/QC
@@ -1037,10 +1173,10 @@ public final class dataTopComponent extends TopComponent
             }
             idx = h.indexOf(k, idx + 1);
         }
-
+        
         return false;
     }
-
+    
     private double calculateQValue(String[] row, int idxS, int idxP, int idxQ)
     {
         if (idxS < 0 || idxP < 0 || idxQ < 0 || idxS >= row.length || idxP >= row.length || idxQ >= row.length)
@@ -1077,17 +1213,17 @@ public final class dataTopComponent extends TopComponent
     {
         updateActionState();
     }
-
+    
     @Override
     public void componentClosed()
     {
     }
-
+    
     void writeProperties(java.util.Properties p)
     {
         p.setProperty("version", "1.0");
     }
-
+    
     void readProperties(java.util.Properties p)
     {
         String version = p.getProperty("version");
@@ -1101,42 +1237,42 @@ public final class dataTopComponent extends TopComponent
     {
         
     }
-
+    
     private static class DataTableModel extends AbstractTableModel
     {
-
+        
         private String[] columnNames = new String[0];
         private List<String[]> data = new ArrayList<>();
-
+        
         public void setColumns(String[] columns)
         {
             this.columnNames = columns != null ? columns : new String[0];
             fireTableStructureChanged();
         }
-
+        
         public void setData(List<String[]> data)
         {
             this.data = data != null ? data : new ArrayList<>();
             fireTableDataChanged();
         }
-
+        
         public String[] getColumnNames()
         {
             return columnNames;
         }
-
+        
         public List<String[]> getDataList()
         {
             return data;
         }
-
+        
         public void removeRows(int[] modelIndices)
         {
             if (modelIndices.length == 0)
             {
                 return;
             }
-
+            
             List<String[]> newData = new ArrayList<>(data.size() - modelIndices.length);
             int indexPtr = 0;
             for (int i = 0; i < data.size(); i++)
@@ -1152,7 +1288,7 @@ public final class dataTopComponent extends TopComponent
             this.data = newData;
             fireTableDataChanged();
         }
-
+        
         public void clearZeroRows()
         {
             List<String[]> newData = new ArrayList<>(data.size());
@@ -1170,7 +1306,7 @@ public final class dataTopComponent extends TopComponent
                     {
                         continue;
                     }
-
+                    
                     String val = row[i].trim();
                     // Verificar si es un valor numérico que representa cero
                     try
@@ -1199,25 +1335,25 @@ public final class dataTopComponent extends TopComponent
             this.data = newData;
             fireTableDataChanged();
         }
-
+        
         @Override
         public int getRowCount()
         {
             return data.size();
         }
-
+        
         @Override
         public int getColumnCount()
         {
             return columnNames.length;
         }
-
+        
         @Override
         public String getColumnName(int column)
         {
             return columnNames[column];
         }
-
+        
         @Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {

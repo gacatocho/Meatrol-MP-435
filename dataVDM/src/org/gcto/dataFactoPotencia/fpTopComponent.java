@@ -26,7 +26,8 @@ import org.openide.windows.WindowManager;
 
 /**
  * Top component que visualiza el análisis de Factor de Potencia. Incluye FPA,
- * FPB, FPC y el FP Promedio calculado (Psum/Ssum).
+ * FPB, FPC y el PF Average calculado (Psum/Ssum). Refinado para visualización
+ * técnica IND/CAP basada en el signo de Q.
  */
 @ConvertAsProperties(
         dtd = "-//org.gcto.dataFactoPotencia//fp//EN",
@@ -60,6 +61,9 @@ public final class fpTopComponent extends baseTopComponent
         setName(Bundle.CTL_fpTopComponent());
         setToolTipText(Bundle.HINT_fpTopComponent());
 
+        // Activar modo técnico de Factor de Potencia (Eje partido IND/CAP)
+        chartPanel.setPowerFactorMode(true);
+
         // Ocultar columnas de Promedio sobre % (7), % de Nivel (8) y Ver promedio sobre % (9)
         hideStatsColumns(7, 8, 9);
     }
@@ -72,34 +76,59 @@ public final class fpTopComponent extends baseTopComponent
         statsModel.setRowCount(0);
 
         List<Integer> chartIndices = new ArrayList<>();
+        List<Integer> signIndices = new ArrayList<>();
         List<String> chartNames = new ArrayList<>();
         List<Color> chartColors = new ArrayList<>();
 
+        // 1. Localizar columnas de Reactiva (Q) para el signo
+        int idxQA = -1, idxQB = -1, idxQC = -1, idxQSum = -1;
         for (int i = 0; i < masterHeaders.length; i++)
         {
             String h = masterHeaders[i].toUpperCase();
+            if (isStrict(h, "QA", "REACTIVE"))
+            {
+                idxQA = i;
+            } else if (isStrict(h, "QB", "REACTIVE"))
+            {
+                idxQB = i;
+            } else if (isStrict(h, "QC", "REACTIVE"))
+            {
+                idxQC = i;
+            } else if (h.contains("REACTIVE") && (h.contains("QSUM") || h.contains("Q SUM")))
+            {
+                idxQSum = i;
+            }
+        }
 
+        // 2. Mapear Factores de Potencia
+        for (int i = 0; i < masterHeaders.length; i++)
+        {
+            String h = masterHeaders[i].toUpperCase();
             Color c = null;
+            int signIdx = -1;
 
-            // Factores de Potencia por Fase (Mapeo Flexible)
             if (isStrictFP(h, "PFA"))
             {
                 c = glb.colorA;
+                signIdx = idxQA;
             } else if (isStrictFP(h, "PFB"))
             {
                 c = glb.colorB;
+                signIdx = idxQB;
             } else if (isStrictFP(h, "PFC"))
             {
                 c = glb.colorC;
-            } // Factor de Potencia Promedio (Calculado en dataTopComponent)
-            else if (isStrictFP(h,"AVERAGE"))
+                signIdx = idxQC;
+            } else if (isStrictFP(h, "AVERAGE") || h.contains("PF AVERAGE"))
             {
                 c = Color.WHITE;
+                signIdx = -1; // PF Average ya viene signado desde dataTopComponent
             }
 
             if (c != null)
             {
                 final int colIdx = i;
+                final int finalSignIdx = signIdx;
                 final Color phaseColor = c;
                 final String colName = masterHeaders[i];
 
@@ -125,16 +154,30 @@ public final class fpTopComponent extends baseTopComponent
                 });
 
                 chartIndices.add(colIdx);
+                signIndices.add(finalSignIdx);
                 chartNames.add(colName);
                 chartColors.add(phaseColor);
             }
         }
 
-        chartPanel.setSeries(chartIndices, chartNames, chartColors);
+        chartPanel.setSeriesWithSign(chartIndices, signIndices, chartNames, chartColors);
         updateStatsTableRows();
 
         pnlPhaseSelection.revalidate();
         pnlPhaseSelection.repaint();
+    }
+
+    private boolean isStrict(String h, String key, String type)
+    {
+        if (!h.contains(type))
+        {
+            return false;
+        }
+        if (h.contains("ENERGY") || h.contains("VARH"))
+        {
+            return false;
+        }
+        return h.contains(" " + key) || h.contains(": " + key) || h.endsWith(" " + key) || h.endsWith(":" + key);
     }
 
     private boolean isStrictFP(String h, String key)
@@ -144,22 +187,21 @@ public final class fpTopComponent extends baseTopComponent
             return false;
         }
         String k = key.toUpperCase();
-        // Mapeo flexible para FPA, FPB, FPC
         if (k.equals("PFA"))
         {
-            return h.contains("PFA");
+            return h.contains("PFA")  || h.contains(" L1") ;
         }
         if (k.equals("PFB"))
         {
-            return h.contains("PFB");
+            return h.contains("PFB") || h.contains(" L2") ;
         }
         if (k.equals("PFC"))
         {
-            return h.contains("PFC");
+            return h.contains("PFC")  || h.contains(" L3") ;
         }
-        if(k.equals("AVERAGE"))
+        if (k.equals("AVERAGE"))
         {
-            return h.contains("AVERAGE");
+            return h.contains("AVERAGE") || h.contains("PROMEDIO") || h.contains("PF AVERAGE");
         }
         return h.contains(" " + key) || h.contains(": " + key) || h.endsWith(" " + key) || h.endsWith(":" + key);
     }
@@ -256,10 +298,10 @@ public final class fpTopComponent extends baseTopComponent
 
             double avgArit = count > 0 ? sum / count : 0;
 
-            statsModel.setValueAt(String.format("%.3f", min), rowInModel, 1);
+            statsModel.setValueAt(String.format("%.3f", Math.abs(min)), rowInModel, 1);
             statsModel.setValueAt(dateMin, rowInModel, 2);
-            statsModel.setValueAt(String.format("%.3f", avgArit), rowInModel, 3);
-            statsModel.setValueAt(String.format("%.3f", max), rowInModel, 5);
+            statsModel.setValueAt(String.format("%.3f", Math.abs(avgArit)), rowInModel, 3);
+            statsModel.setValueAt(String.format("%.3f", Math.abs(max)), rowInModel, 5);
             statsModel.setValueAt(dateMax, rowInModel, 6);
 
             boolean showP = (boolean) statsModel.getValueAt(rowInModel, 4);
