@@ -23,5 +23,8 @@
 - [x] Create `potAparenteTopComponent` for apparent power analysis.
 - [x] Create `potActivaTopComponent` for active power analysis.
 - [x] Create `potReactivaTopComponent` for reactive power analysis with IEEE 1459 quality classification.
-- [x] Implement `fpTopComponent` for Power Factor analysis including calculated FP Average.
-- [ ] Create additional analysis forms (Harmonics) using `baseTopComponent`.
+- [x] Implement `fpTopComponent` for Power Factor analysis including calculated PF Average.
+- [x] Implement `frecuenciaTopComponent` with manual Y-axis range controls.
+- [x] Implement Precise Time Adjustment dialog with 1-minute minimum separation and project range enforcement.
+- [x] Create `armonicosTopComponent` for THD analysis with manual Y-axis range controls.
+- [ ] Implement Harmonics individual analysis (H3, H5, H7, etc.).

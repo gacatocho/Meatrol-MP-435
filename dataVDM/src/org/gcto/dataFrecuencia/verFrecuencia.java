@@ -4,8 +4,7 @@
  */
 package org.gcto.dataFrecuencia;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import org.gcto.dataVDM.dataTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -13,6 +12,8 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.CallableSystemAction;
+import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 @ActionID(
         category = "View",
@@ -30,11 +31,28 @@ import org.openide.util.actions.CallableSystemAction;
 @Messages("CTL_verFrecuencia=ver frecuencias")
 public final class verFrecuencia extends CallableSystemAction
 {
+    public verFrecuencia()
+    {
+        setEnabled(false);
+    }
 
     @Override
     public void performAction()
     {
-
+        TopComponent dataTC = WindowManager.getDefault().findTopComponent("dataTopComponent");
+        if (dataTC instanceof dataTopComponent) {
+            dataTopComponent dtc = (dataTopComponent) dataTC;
+            String[] headers = dtc.getHeaders();
+            java.util.List<String[]> data = dtc.getDataList();
+            
+            TopComponent fzTC = WindowManager.getDefault().findTopComponent("frecuenciaTopComponent");
+            if (fzTC instanceof frecuenciaTopComponent) {
+                frecuenciaTopComponent ftc = (frecuenciaTopComponent) fzTC;
+                ftc.setData(headers, data);
+                ftc.open();
+                ftc.requestActive();
+            }
+        }
     }
 
     @Override

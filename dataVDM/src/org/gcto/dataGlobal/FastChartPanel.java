@@ -45,6 +45,10 @@ public class FastChartPanel extends JPanel {
     private boolean powerFactorMode = false;
     private boolean showIndCapLabels = false;
     
+    // Rango manual
+    private Double manualMinY = null;
+    private Double manualMaxY = null;
+    
     private final int MARGIN_LEFT = 90; 
     private final int MARGIN_RIGHT = 30;
     private final int MARGIN_TOP = 30;
@@ -137,6 +141,13 @@ public class FastChartPanel extends JPanel {
         this.showIndCapLabels = show;
         repaint();
     }
+    
+    public void setManualYRange(Double min, Double max) {
+        this.manualMinY = min;
+        this.manualMaxY = max;
+        calculateRange();
+        repaint();
+    }
 
     public void setRangeSelectionListener(RangeSelectionListener listener) {
         this.selectionListener = listener;
@@ -192,6 +203,12 @@ public class FastChartPanel extends JPanel {
     }
     
     private void calculateRange() {
+        if (manualMinY != null && manualMaxY != null) {
+            this.currentMinVal = manualMinY;
+            this.currentMaxVal = manualMaxY;
+            return;
+        }
+        
         if (powerFactorMode) {
             currentMaxVal = 1.1;
             currentMinVal = -1.1;

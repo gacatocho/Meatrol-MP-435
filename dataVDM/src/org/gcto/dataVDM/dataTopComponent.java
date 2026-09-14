@@ -42,6 +42,7 @@ import org.gcto.dataPotAparente.verPotAparente;
 import org.gcto.dataPotActiva.verPotActiva;
 import org.gcto.dataPotReactiva.verPotReactiva;
 import org.gcto.dataFactoPotencia.verFP;
+import org.gcto.dataFrecuencia.verFrecuencia;
 import org.gcto.dataGlobal.ETipoRED;
 import org.gcto.dataGlobal.glb;
 import org.netbeans.api.progress.ProgressHandle;
@@ -730,6 +731,7 @@ public final class dataTopComponent extends TopComponent
             SystemAction.get(verPotActiva.class).setEnabled(dataPresent);
             SystemAction.get(verPotReactiva.class).setEnabled(dataPresent);
             SystemAction.get(verFP.class).setEnabled(dataPresent);
+            SystemAction.get(verFrecuencia.class).setEnabled(dataPresent);
         });
     }
 
