@@ -1,0 +1,225 @@
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-09-15 16:56:54 #1 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir9\opciones.odb' is opened by 16232@camilo_w81
+
+[2026-09-15 16:56:54 #2 store] 
+Configuration path: C:\Users\camilo\Dropbox\VistaDatosME435\objectdb-2.8.9\objectdb.conf
+
+[2026-09-15 16:57:30 #3 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir9\opciones.odb' is closed by 16232@camilo_w81
+
+[2026-09-15 16:57:48 #4 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir9\datosProyecto.odb' is opened by 16232@camilo_w81
+
+[2026-09-15 16:57:48 #5 store] 
+Configuration path: C:\Users\camilo\Dropbox\VistaDatosME435\objectdb-2.8.9\objectdb.conf
+
+[2026-09-15 16:58:08 #6 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir9\datosProyecto.odb' is closed by 16232@camilo_w81
+
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-09-15 17:03:11 #1 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir1\opciones.odb' is opened by 20692@camilo_w81
+
+[2026-09-15 17:03:11 #2 store] 
+Configuration path: C:\Users\camilo\Dropbox\VistaDatosME435\objectdb-2.8.9\objectdb.conf
+
+[2026-09-15 17:03:26 #3 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir1\opciones.odb' is closed by 20692@camilo_w81
+
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-09-15 18:14:00 #1 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir11\opciones.odb' is opened by 17764@camilo_w81
+
+[2026-09-15 18:14:00 #2 store] 
+Configuration path: C:\Users\camilo\Dropbox\VistaDatosME435\objectdb-2.8.9\objectdb.conf
+
+[2026-09-15 18:14:53 #3 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir11\opciones.odb' is closed by 17764@camilo_w81
+
+[2026-09-15 18:15:04 #4 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir11\datosProyecto.odb' is opened by 17764@camilo_w81
+
+[2026-09-15 18:15:04 #5 store] 
+Configuration path: C:\Users\camilo\Dropbox\VistaDatosME435\objectdb-2.8.9\objectdb.conf
+
+[2026-09-15 18:15:20 #6 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir11\datosProyecto.odb' is closed by 17764@camilo_w81
+
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-09-15 19:02:40 #1 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir12\opciones.odb' is opened by 19924@camilo_w81
+
+[2026-09-15 19:02:40 #2 store] 
+Configuration path: C:\Users\camilo\Dropbox\VistaDatosME435\objectdb-2.8.9\objectdb.conf
+
+[2026-09-15 19:03:11 #3 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir12\opciones.odb' is closed by 19924@camilo_w81
+
+[2026-09-15 19:03:23 #4 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir12\opciones.odb' is opened by 19924@camilo_w81
+
+[2026-09-15 19:03:23 #5 store] 
+Configuration path: C:\Users\camilo\Dropbox\VistaDatosME435\objectdb-2.8.9\objectdb.conf
+
+[2026-09-15 19:03:29 #6 store] 
+Database 'C:\Users\camilo\Documents\pruebaDir12\opciones.odb' is closed by 19924@camilo_w81
+
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-09-15 19:08:35 #1 explorer] 
+[ObjectDB 2.8.9] javax.persistence.PersistenceException
+Attempt to open a database file 'C:\Users\camilo\Documents\prueba13\opciones.odb' that is currently in use by another process (error 141)
+	at com.objectdb.Explorer$1.run(Explorer.java:57)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:318)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:771)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:722)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:716)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:86)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:741)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+Caused by: com.objectdb.o.UserException: Attempt to open a database file 'C:\Users\camilo\Documents\prueba13\opciones.odb' that is currently in use by another process
+	at com.objectdb.o.MSG.a(MSG.java:64)
+	at com.objectdb.o.LFL.J(LFL.java:947)
+	at com.objectdb.o.LFL.x(LFL.java:904)
+	at com.objectdb.o.LFL.x(LFL.java:814)
+	at com.objectdb.o.DFL.<init>(DFL.java:241)
+	at com.objectdb.o.DMG.<init>(DMG.java:27)
+	at com.objectdb.o.MST.<init>(MST.java:127)
+	at com.objectdb.o.MST.ap(MST.java:109)
+	at com.objectdb.o.MSF.Y9(MSF.java:190)
+	at com.objectdb.o.OMF.s(OMF.java:805)
+	at com.objectdb.jpa.EMF.s(EMF.java:130)
+	at com.objectdb.o.OMF.x(OMF.java:716)
+	at com.objectdb.jpa.EMF.createEntityManager(EMF.java:149)
+	... 16 more
+
+[2026-09-15 19:08:48 #2 store] 
+Database 'C:\Users\camilo\Documents\prueba13\datosProyecto.odb' is opened by 20368@camilo_w81
+
+[2026-09-15 19:08:48 #3 store] 
+Configuration path: C:\Users\camilo\Dropbox\VistaDatosME435\objectdb-2.8.9\objectdb.conf
+
+[2026-09-15 19:09:36 #4 store] 
+Database 'C:\Users\camilo\Documents\prueba13\datosProyecto.odb' is closed by 20368@camilo_w81
+
+[2026-09-15 19:09:42 #5 explorer] 
+[ObjectDB 2.8.9] javax.persistence.PersistenceException
+Attempt to open a database file 'C:\Users\camilo\Documents\prueba13\opciones.odb' that is currently in use by another process (error 141)
+	at java.desktop/javax.swing.Timer.fireActionPerformed(Timer.java:311)
+	at java.desktop/javax.swing.Timer$DoPostEvent.run(Timer.java:243)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:318)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:771)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:722)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:716)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:86)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:741)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+Caused by: com.objectdb.o.UserException: Attempt to open a database file 'C:\Users\camilo\Documents\prueba13\opciones.odb' that is currently in use by another process
+	at com.objectdb.o.MSG.a(MSG.java:64)
+	at com.objectdb.o.LFL.J(LFL.java:947)
+	at com.objectdb.o.LFL.x(LFL.java:904)
+	at com.objectdb.o.LFL.x(LFL.java:814)
+	at com.objectdb.o.DFL.<init>(DFL.java:241)
+	at com.objectdb.o.DMG.<init>(DMG.java:27)
+	at com.objectdb.o.MST.<init>(MST.java:127)
+	at com.objectdb.o.MST.ap(MST.java:109)
+	at com.objectdb.o.MSF.Y9(MSF.java:190)
+	at com.objectdb.o.OMF.s(OMF.java:805)
+	at com.objectdb.jpa.EMF.s(EMF.java:130)
+	at com.objectdb.o.OMF.x(OMF.java:716)
+	at com.objectdb.jpa.EMF.createEntityManager(EMF.java:149)
+	... 17 more
+
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-09-15 19:12:25 #1 store] 
+Database 'C:\Users\camilo\Documents\prueba13\datosProyecto.odb' is opened by 18284@camilo_w81
+
+[2026-09-15 19:12:25 #2 store] 
+Configuration path: C:\Users\camilo\Dropbox\VistaDatosME435\objectdb-2.8.9\objectdb.conf
+
+[2026-09-15 19:12:38 #3 store] 
+Database 'C:\Users\camilo\Documents\prueba13\datosProyecto.odb' is closed by 18284@camilo_w81
+
+[2026-09-15 19:12:40 #4 explorer] 
+[ObjectDB 2.8.9] javax.persistence.PersistenceException
+Attempt to open a database file 'C:\Users\camilo\Documents\prueba13\opciones.odb' that is currently in use by another process (error 141)
+	at java.desktop/javax.swing.Timer.fireActionPerformed(Timer.java:311)
+	at java.desktop/javax.swing.Timer$DoPostEvent.run(Timer.java:243)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:318)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:771)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:722)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:716)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:399)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:86)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:741)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+Caused by: com.objectdb.o.UserException: Attempt to open a database file 'C:\Users\camilo\Documents\prueba13\opciones.odb' that is currently in use by another process
+	at com.objectdb.o.MSG.a(MSG.java:64)
+	at com.objectdb.o.LFL.J(LFL.java:947)
+	at com.objectdb.o.LFL.x(LFL.java:904)
+	at com.objectdb.o.LFL.x(LFL.java:814)
+	at com.objectdb.o.DFL.<init>(DFL.java:241)
+	at com.objectdb.o.DMG.<init>(DMG.java:27)
+	at com.objectdb.o.MST.<init>(MST.java:127)
+	at com.objectdb.o.MST.ap(MST.java:109)
+	at com.objectdb.o.MSF.Y9(MSF.java:190)
+	at com.objectdb.o.OMF.s(OMF.java:805)
+	at com.objectdb.jpa.EMF.s(EMF.java:130)
+	at com.objectdb.o.OMF.x(OMF.java:716)
+	at com.objectdb.jpa.EMF.createEntityManager(EMF.java:149)
+	... 17 more
+
+[2026-09-15 19:12:50 #5 store] 
+Database 'C:\Users\camilo\Documents\prueba13\opciones.odb' has been recovered (tr. 1-3)
+
+[2026-09-15 19:12:50 #6 store] 
+Database 'C:\Users\camilo\Documents\prueba13\opciones.odb' is opened by 18284@camilo_w81
+
+[2026-09-15 19:12:50 #7 store] 
+Configuration path: C:\Users\camilo\Dropbox\VistaDatosME435\objectdb-2.8.9\objectdb.conf
+
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-09-15 19:25:04 #1 store] 
+Database 'C:\Users\camilo\Documents\prueba15\opciones.odb' is opened by 16368@camilo_w81
+
+[2026-09-15 19:25:04 #2 store] 
+Configuration path: C:\Users\camilo\Dropbox\VistaDatosME435\objectdb-2.8.9\objectdb.conf
+
+[2026-09-15 19:25:21 #3 store] 
+Database 'C:\Users\camilo\Documents\prueba15\opciones.odb' is closed by 16368@camilo_w81
+
+------------------------------------------------------------------------------------------------------------------------
+
+[2026-09-15 22:31:08 #1 store] 
+Database 'C:\Users\camilo\dataApplications\opciones.odb' is opened by 15856@camilo_w81
+
+[2026-09-15 22:31:08 #2 store] 
+Configuration path: C:\Users\camilo\Dropbox\VistaDatosME435\objectdb-2.8.9\objectdb.conf
+
+[2026-09-15 22:31:21 #3 store] 
+Database 'C:\Users\camilo\dataApplications\opciones.odb' is closed by 15856@camilo_w81
+

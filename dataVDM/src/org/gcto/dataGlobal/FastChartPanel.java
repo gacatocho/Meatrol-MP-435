@@ -58,7 +58,12 @@ public class FastChartPanel extends JPanel {
         void onRangeSelected(int startIdx, int endIdx);
     }
     
+    public interface CursorDataListener {
+        void onCursorMoved(int dataIdx, List<ChartSeriesInfo> activeSeries);
+    }
+    
     private RangeSelectionListener selectionListener;
+    private CursorDataListener cursorListener;
 
     public FastChartPanel() {
         setBackground(Color.BLACK);
@@ -68,12 +73,14 @@ public class FastChartPanel extends JPanel {
             @Override
             public void mouseMoved(MouseEvent e) {
                 mousePos = e.getPoint();
+                notifyCursorMoved();
                 repaint();
             }
             
             @Override
             public void mouseDragged(MouseEvent e) {
                 mousePos = e.getPoint();
+                notifyCursorMoved();
                 repaint();
             }
         });
@@ -119,9 +126,37 @@ public class FastChartPanel extends JPanel {
             @Override
             public void mouseExited(MouseEvent e) {
                 mousePos = null;
+                if (cursorListener != null) cursorListener.onCursorMoved(-1, null);
                 repaint();
             }
         });
+    }
+
+    private void notifyCursorMoved() {
+        if (cursorListener == null || mousePos == null || data.isEmpty()) return;
+        
+        int chartW = getWidth() - MARGIN_LEFT - MARGIN_RIGHT;
+        int chartH = getHeight() - MARGIN_TOP - MARGIN_BOTTOM;
+        
+        if (mousePos.x < MARGIN_LEFT || mousePos.x > MARGIN_LEFT + chartW ||
+            mousePos.y < MARGIN_TOP || mousePos.y > MARGIN_TOP + chartH) {
+            cursorListener.onCursorMoved(-1, null);
+            return;
+        }
+        
+        int numPoints = endIndex - startIndex + 1;
+        double step = (double) numPoints / chartW;
+        int dataIdx = startIndex + (int) ((mousePos.x - MARGIN_LEFT) * step);
+        if (dataIdx > endIndex) dataIdx = endIndex;
+        if (dataIdx >= data.size()) dataIdx = data.size() - 1;
+        
+        List<ChartSeriesInfo> active = new ArrayList<>();
+        for (ChartSeries s : series) {
+            if (s.visible) {
+                active.add(new ChartSeriesInfo(s.name, s.colIdx, s.signColIdx, s.color));
+            }
+        }
+        cursorListener.onCursorMoved(dataIdx, active);
     }
 
     public void setSymmetricY(boolean symmetric) {
@@ -151,6 +186,10 @@ public class FastChartPanel extends JPanel {
 
     public void setRangeSelectionListener(RangeSelectionListener listener) {
         this.selectionListener = listener;
+    }
+    
+    public void setCursorDataListener(CursorDataListener listener) {
+        this.cursorListener = listener;
     }
 
     public void setData(List<String[]> data, int start, int end) {
@@ -189,6 +228,17 @@ public class FastChartPanel extends JPanel {
     public void setSeriesVisible(int colIdx, boolean visible) {
         for (ChartSeries s : series) {
             if (s.colIdx == colIdx) {
+                s.visible = visible;
+                break;
+            }
+        }
+        calculateRange();
+        repaint();
+    }
+    
+    public void setSeriesVisibleByName(String name, boolean visible) {
+        for (ChartSeries s : series) {
+            if (s.name.equals(name)) {
                 s.visible = visible;
                 break;
             }
@@ -522,7 +572,8 @@ public class FastChartPanel extends JPanel {
         if (tipX + tipW > getWidth()) tipX = p.x - tipW - 15;
         if (tipY + tipH > getHeight() - 20) tipY = p.y - tipH - 15;
         
-        g2.setColor(new Color(20, 20, 20, 230));
+        //g2.setColor(new Color(20, 20, 20, 230));
+        g2.setColor(new Color(180, 160, 120, 230));//mejora la visual sobre la pantalla
         g2.fillRoundRect(tipX, tipY, tipW, tipH, 8, 8);
         g2.setColor(new Color(100, 100, 100));
         g2.drawRoundRect(tipX, tipY, tipW, tipH, 8, 8);
@@ -565,6 +616,20 @@ public class FastChartPanel extends JPanel {
         ChartSeries(String name, int colIdx, Color color) {
             this.name = name;
             this.colIdx = colIdx;
+            this.color = color;
+        }
+    }
+    
+    public static class ChartSeriesInfo {
+        public final String name;
+        public final int colIdx;
+        public final int signColIdx;
+        public final Color color;
+
+        public ChartSeriesInfo(String name, int colIdx, int signColIdx, Color color) {
+            this.name = name;
+            this.colIdx = colIdx;
+            this.signColIdx = signColIdx;
             this.color = color;
         }
     }

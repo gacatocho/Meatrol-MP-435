@@ -27,4 +27,7 @@
 - [x] Implement `frecuenciaTopComponent` with manual Y-axis range controls.
 - [x] Implement Precise Time Adjustment dialog with 1-minute minimum separation and project range enforcement.
 - [x] Create `armonicosTopComponent` for THD analysis with manual Y-axis range controls.
+- [x] Redesign Analysis UI: Integrated Color/View columns in Statistics Table.
+- [x] Migrate Export/Refresh actions to global File/View menus and toolbars.
+- [x] Implement Live Values panel for real-time cursor data visualization.
 - [ ] Implement Harmonics individual analysis (H3, H5, H7, etc.).

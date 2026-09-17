@@ -4,8 +4,7 @@
  */
 package org.gcto.dataHarmonic;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import org.gcto.dataVDM.dataTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -13,6 +12,8 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.CallableSystemAction;
+import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 @ActionID(
         category = "View",
@@ -20,13 +21,13 @@ import org.openide.util.actions.CallableSystemAction;
 )
 @ActionRegistration(
         displayName = "#CTL_verHarmonicos",
-        lazy=false
+        lazy = false
 )
 @ActionReferences(
-{
-    @ActionReference(path = "Menu/View", position = -950, separatorBefore = -1000),
-    @ActionReference(path = "Toolbars/View", position = -700)
-})
+        {
+            @ActionReference(path = "Menu/View", position = -950, separatorBefore = -1000),
+            @ActionReference(path = "Toolbars/View", position = -700)
+        })
 @Messages("CTL_verHarmonicos=ver Armónicos")
 public final class verHarmonicos extends CallableSystemAction
 {
@@ -35,13 +36,26 @@ public final class verHarmonicos extends CallableSystemAction
     {
         setEnabled(false);
     }
-    
-    
 
     @Override
     public void performAction()
     {
-       
+        TopComponent dataTC = WindowManager.getDefault().findTopComponent("dataTopComponent");
+        if (dataTC instanceof dataTopComponent)
+        {
+            dataTopComponent dtc = (dataTopComponent) dataTC;
+            String[] headers = dtc.getHeaders();
+            java.util.List<String[]> data = dtc.getDataList();
+
+            TopComponent harmTC = WindowManager.getDefault().findTopComponent("armonicosTopComponent");
+            if (harmTC instanceof armonicosTopComponent)
+            {
+                armonicosTopComponent htc = (armonicosTopComponent) harmTC;
+                htc.setData(headers, data);
+                htc.open();
+                htc.requestActive();
+            }
+        }
     }
 
     @Override
@@ -68,9 +82,4 @@ public final class verHarmonicos extends CallableSystemAction
         return "org/gcto/dataHarmonic/TH.png";
     }
 
-    
-    
-    
-
-    
 }

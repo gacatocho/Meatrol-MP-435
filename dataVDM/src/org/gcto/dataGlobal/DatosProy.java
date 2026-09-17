@@ -4,10 +4,13 @@
  */
 package org.gcto.dataGlobal;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.List;
+import java.lang.reflect.Field;
+import org.gcto.interfases.IDatosProy;
 import javax.persistence.Entity;
+import org.openide.util.lookup.ServiceProvider;
 
 /**
  * clase que almacena los datos interesantes del proyecto para su correcta
@@ -16,18 +19,24 @@ import javax.persistence.Entity;
  * @author camilo
  */
 @Entity
-public class DatosProy
+@ServiceProvider(service = IDatosProy.class)
+public class DatosProy implements IDatosProy, PropertyChangeListener
 {
 
-    private String nombreProy = "nombre del proyecto";
+    public DatosProy()
+    {
+    }
 
-    public static final String PROP_NOMBREPROY = "nombreProy";
+    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+    private String nombreProy = "nombre del proyecto";
 
     /**
      * Get the value of nombreProy
      *
      * @return the value of nombreProy
      */
+    @Override
     public String getNombreProy()
     {
         return nombreProy;
@@ -38,6 +47,7 @@ public class DatosProy
      *
      * @param nombreProy new value of nombreProy
      */
+    @Override
     public void setNombreProy(String nombreProy)
     {
         String oldNombreProy = this.nombreProy;
@@ -47,13 +57,12 @@ public class DatosProy
 
     private String ubicacionProy = "ubicación del proyecto";
 
-    public static final String PROP_UBICACIONPROY = "ubicacionProy";
-
     /**
      * Get the value of ubicacionProy
      *
      * @return the value of ubicacionProy
      */
+    @Override
     public String getUbicacionProy()
     {
         return ubicacionProy;
@@ -64,6 +73,7 @@ public class DatosProy
      *
      * @param ubicacionProy new value of ubicacionProy
      */
+    @Override
     public void setUbicacionProy(String ubicacionProy)
     {
         String oldUbicacionProy = this.ubicacionProy;
@@ -73,13 +83,12 @@ public class DatosProy
 
     private String operadorME = "operador  técnico";
 
-    public static final String PROP_OPERADORME = "operadorME";
-
     /**
      * Get the value of operadorME / quien toma la lectura
      *
      * @return the value of operadorME
      */
+    @Override
     public String getOperadorME()
     {
         return operadorME;
@@ -90,6 +99,7 @@ public class DatosProy
      *
      * @param operadorME new value of operadorME
      */
+    @Override
     public void setOperadorME(String operadorME)
     {
         String oldOperadorME = this.operadorME;
@@ -99,13 +109,12 @@ public class DatosProy
 
     private String ciudadProy = "ciudad donde se toma la muestra";
 
-    public static final String PROP_CIUDADPROY = "ciudadProy";
-
     /**
      * Get the value of ciudadProy
      *
      * @return the value of ciudadProy
      */
+    @Override
     public String getCiudadProy()
     {
         return ciudadProy;
@@ -116,6 +125,7 @@ public class DatosProy
      *
      * @param ciudadProy new value of ciudadProy
      */
+    @Override
     public void setCiudadProy(String ciudadProy)
     {
         String oldCiudadProy = this.ciudadProy;
@@ -125,13 +135,12 @@ public class DatosProy
 
     private String tablero = "tablero donde se conecta el equipo";
 
-    public static final String PROP_TABLERO = "tablero";
-
     /**
      * Get the value of tablero
      *
      * @return the value of tablero
      */
+    @Override
     public String getTablero()
     {
         return tablero;
@@ -142,6 +151,7 @@ public class DatosProy
      *
      * @param tablero new value of tablero
      */
+    @Override
     public void setTablero(String tablero)
     {
         String oldTablero = this.tablero;
@@ -151,13 +161,12 @@ public class DatosProy
 
     private int relacionBobina = 100;
 
-    public static final String PROP_RELACIONBOBINA = "relacionBobina";
-
     /**
      * Get the value of relacionBobina
      *
      * @return the value of relacionBobina
      */
+    @Override
     public int getRelacionBobina()
     {
         return relacionBobina;
@@ -168,6 +177,7 @@ public class DatosProy
      *
      * @param relacionBobina new value of relacionBobina
      */
+    @Override
     public void setRelacionBobina(int relacionBobina)
     {
         int oldRelacionBobina = this.relacionBobina;
@@ -177,13 +187,12 @@ public class DatosProy
 
     private int relacionTensionPrim = 1;
 
-    public static final String PROP_RELACIONTENSIONPRIM = "relacionTensionPrim";
-
     /**
      * Get the value of relacionTensionPrim
      *
      * @return the value of relacionTensionPrim
      */
+    @Override
     public int getRelacionTensionPrim()
     {
         return relacionTensionPrim;
@@ -194,6 +203,7 @@ public class DatosProy
      *
      * @param relacionTensionPrim new value of relacionTensionPrim
      */
+    @Override
     public void setRelacionTensionPrim(int relacionTensionPrim)
     {
         int oldRelacionTensionPrim = this.relacionTensionPrim;
@@ -203,13 +213,12 @@ public class DatosProy
 
     private int relacionTensionSec = 1;
 
-    public static final String PROP_RELACIONTENSIONSEC = "relacionTensionSec";
-
     /**
      * Get the value of relacionTensionSec
      *
      * @return the value of relacionTensionSec
      */
+    @Override
     public int getRelacionTensionSec()
     {
         return relacionTensionSec;
@@ -220,6 +229,7 @@ public class DatosProy
      *
      * @param relacionTensionSec new value of relacionTensionSec
      */
+    @Override
     public void setRelacionTensionSec(int relacionTensionSec)
     {
         int oldRelacionTensionSec = this.relacionTensionSec;
@@ -229,13 +239,12 @@ public class DatosProy
 
     private int periodoSD = 1;
 
-    public static final String PROP_PERIODOSD = "periodoSD";
-
     /**
      * Get the value of periodoSD / segundos
      *
      * @return the value of periodoSD
      */
+    @Override
     public int getPeriodoSD()
     {
         return periodoSD;
@@ -246,6 +255,7 @@ public class DatosProy
      *
      * @param periodoSD new value of periodoSD
      */
+    @Override
     public void setPeriodoSD(int periodoSD)
     {
         int oldPeriodoSD = this.periodoSD;
@@ -255,13 +265,12 @@ public class DatosProy
 
     private ETipoRED tipoRed = ETipoRED.tresFases_FFFN;
 
-    public static final String PROP_TIPORED = "tipoRed";
-
     /**
      * Get the value of tipoRed
      *
      * @return the value of tipoRed
      */
+    @Override
     public ETipoRED getTipoRed()
     {
         return tipoRed;
@@ -272,6 +281,7 @@ public class DatosProy
      *
      * @param tipoRed new value of tipoRed
      */
+    @Override
     public void setTipoRed(ETipoRED tipoRed)
     {
         ETipoRED oldTipoRed = this.tipoRed;
@@ -281,13 +291,12 @@ public class DatosProy
 
     private String csvName = "csvName";
 
-    public static final String PROP_CSVNAME = "csvName";
-
     /**
      * Get the value of csvName
      *
      * @return the value of csvName
      */
+    @Override
     public String getCsvName()
     {
         return csvName;
@@ -298,6 +307,7 @@ public class DatosProy
      *
      * @param csvName new value of csvName
      */
+    @Override
     public void setCsvName(String csvName)
     {
         String oldCsvName = this.csvName;
@@ -305,19 +315,17 @@ public class DatosProy
         propertyChangeSupport.firePropertyChange(PROP_CSVNAME, oldCsvName, csvName);
     }
 
-    
     private String[] listaRecientes =
     {
         "", "", "", "", "", "", "", "", "", ""
     };
-
-    public static final String PROP_LISTARECIENTES = "listaRecientes";
 
     /**
      * Get the value of listaRecientes / hasta 10 datos en el arreglo
      *
      * @return the value of listaRecientes
      */
+    @Override
     public String[] getListaRecientes()
     {
         return listaRecientes;
@@ -328,6 +336,7 @@ public class DatosProy
      *
      * @param listaRecientes new value of listaRecientes
      */
+    @Override
     public void setListaRecientes(String[] listaRecientes)
     {
         String[] oldListaRecientes = this.listaRecientes;
@@ -335,26 +344,71 @@ public class DatosProy
         propertyChangeSupport.firePropertyChange(PROP_LISTARECIENTES, oldListaRecientes, listaRecientes);
     }
 
-    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-
-    /**
-     * Add PropertyChangeListener.
-     *
-     * @param listener
-     */
-    public void addPropertyChangeListener(PropertyChangeListener listener)
+    @Override
+    public <T2> void copy(T2 destino)
     {
-        propertyChangeSupport.addPropertyChangeListener(listener);
+        Class<? extends Object> copy1 = this.getClass();
+        Class<? extends Object> copy2 = destino.getClass();
+
+        Field[] fromFields = copy1.getDeclaredFields();
+        //Field[] toFields = copy2.getDeclaredFields();
+
+        Object value = null;
+
+        for (Field field : fromFields)
+        {
+
+            try
+            {
+
+                Field field1 = copy2.getDeclaredField(field.getName());
+
+                System.out.println(field.getName());
+                value = field.get(this);
+                field1.set(destino, value);
+
+            } catch (NoSuchFieldException noSuchFieldException)
+            {
+                System.out.println("////////////////////////////////////////*****************\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+                System.out.println("No such file en copiar  " + noSuchFieldException.getMessage());
+                System.out.println("////////////////////////////////////////*****************\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+            } catch (SecurityException securityException)
+            {
+                System.out.println("////////////////////////////////////////*****************\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+                System.out.println("SecurityException  " + securityException.getMessage());
+                System.out.println("////////////////////////////////////////*****************\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+            } catch (IllegalArgumentException illegalArgumentException)
+            {
+                System.out.println("////////////////////////////////////////*****************\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+                System.out.println("IllegalArgumentException  " + illegalArgumentException.getMessage());
+                System.out.println("////////////////////////////////////////*****************\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+            } catch (IllegalAccessException illegalAccessException)
+            {
+                System.out.println("////////////////////////////////////////*****************\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+                System.out.println("IllegalAccessException  " + illegalAccessException.getMessage());
+                System.out.println("////////////////////////////////////////*****************\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+            }
+        }
     }
 
-    /**
-     * Remove PropertyChangeListener.
-     *
-     * @param listener
-     */
-    public void removePropertyChangeListener(PropertyChangeListener listener)
+    private EEstado estado = EEstado.NUEVO;
+
+    @Override
+    public EEstado getEstado()
     {
-        propertyChangeSupport.removePropertyChangeListener(listener);
+        return this.estado;
+    }
+
+    @Override
+    public void setEstado(EEstado Estado)
+    {
+        this.estado = Estado;
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        setEstado(EEstado.EDITADO);
     }
 
 }

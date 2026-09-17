@@ -12,8 +12,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -44,11 +47,15 @@ import org.gcto.dataPotReactiva.verPotReactiva;
 import org.gcto.dataFactoPotencia.verFP;
 import org.gcto.dataFrecuencia.verFrecuencia;
 import org.gcto.dataGlobal.ETipoRED;
+import org.gcto.dataGlobal.RecuperarClaseGenerica;
+import org.gcto.dataGlobal.SalvarClaseGenerica;
 import org.gcto.dataGlobal.glb;
+import org.gcto.dataHarmonic.verHarmonicos;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
+import org.openide.util.Exceptions;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle;
 import org.openide.util.NbBundle.Messages;
@@ -306,7 +313,7 @@ public final class dataTopComponent extends TopComponent
         }
         if (glb.seletedFileVDM != null)
         {
-            loadBinary(glb.seletedFileVDM);
+
             cargarProyectoVDM();
         }
 
@@ -332,16 +339,51 @@ public final class dataTopComponent extends TopComponent
         }
         
         JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Seleccion de directorio para salvar proyecto");
+        
         fileChooser.setFileFilter(new FileNameExtensionFilter("Sesión VistaDatos (.vdm)", "vdm"));
+        File archivoVDM = null;
+        File dirVDM=null;
         int result = fileChooser.showSaveDialog(this);
         if (result == JFileChooser.APPROVE_OPTION)
         {
             File file = fileChooser.getSelectedFile();
             if (!file.getName().toLowerCase().endsWith(".vdm"))
             {
-                file = new File(file.getAbsolutePath() + ".vdm");
+                //crea el directorio
+                boolean creado = file.mkdirs();
+                
+                if (creado)
+                {
+                    dirVDM = new File(file.getAbsolutePath() );
+                    archivoVDM = new  File(dirVDM,"datos"+ ".vdm");
+                }
+                else
+                {
+                    System.out.println("NO SE PUDO CREAR EL DIRECTORIO");
+                    return;
+                }
+                
+                
             }
-            saveBinary(file);
+           
+            glb.dp.setUbicacionProy(dirVDM.getAbsolutePath());
+            try
+            {
+                SalvarClaseGenerica.salvarObjeto(glb.dp);
+            } catch (IOException ex)
+            {
+                Exceptions.printStackTrace(ex);
+            }
+            try
+            {
+                SalvarClaseGenerica.salvarObjeto(glb.opc);
+            } catch (IOException ex)
+            {
+                Exceptions.printStackTrace(ex);
+            }
+            
+            saveBinary(archivoVDM);
         }
     }//GEN-LAST:event_btnSaveActionPerformed
 
@@ -732,6 +774,7 @@ public final class dataTopComponent extends TopComponent
             SystemAction.get(verPotReactiva.class).setEnabled(dataPresent);
             SystemAction.get(verFP.class).setEnabled(dataPresent);
             SystemAction.get(verFrecuencia.class).setEnabled(dataPresent);
+            SystemAction.get(verHarmonicos.class).setEnabled(dataPresent);
         });
     }
 
@@ -1237,7 +1280,13 @@ public final class dataTopComponent extends TopComponent
      */
     private void cargarProyectoVDM()
     {
-        
+        //carga  las bases de datos
+        String rutaVMD = glb.seletedFileVDM.getParent();
+        //conociendo la ruta cargar el archivo aqui solo
+        //se recupera DatosProy pues Opciones se hace al inicio de la sesion
+        RecuperarClaseGenerica.cargarObjeto("DatosProy",rutaVMD);
+
+         loadBinary(glb.seletedFileVDM);
     }
     
     private static class DataTableModel extends AbstractTableModel

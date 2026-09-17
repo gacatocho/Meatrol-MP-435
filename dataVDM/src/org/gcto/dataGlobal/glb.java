@@ -9,8 +9,8 @@ import java.io.File;
 import java.util.Arrays;
 
 /**
- * Casle que hace diferentes cálculos para completar y complementar la lista que
- * ha leido el equipo
+ * Clase que hace diferentes cálculos y operaciones para completar y
+ * complementar la lista que ha leido el equipo
  *
  * @author camilo
  */
@@ -273,25 +273,33 @@ public class glb
 
     public static java.util.List<String> clasificacion = Arrays.asList(
             "Buena / Excelente", "Aceptable / Moderada", "Deficiente / Mala", "Crítica / Muy Mala");
-    
+
     public static java.util.List<String> tipsClasificacion = Arrays.asList(
             "Sistema muy limpio. Las cargas son predominantemente lineales.",
             "Presencia típica de cargas electrónicas industriales (drivers, VFDs, iluminación LED). Requiere monitoreo.",
             "Alta contaminación armónica. Calentamiento en transformadores, disparo fortuito de protecciones y vibraciones en motores.",
             "Riesgo alto de fallo de equipos, sobrecalentamiento de cables neutros y resonancia destructiva si hay bancos de condensadores.");
-    
+
     /**
      * clase opciones generales del programa
      */
-    public static Opciones opc=new Opciones();
-    
+    public static Opciones opc = new Opciones();
+
     /**
      * clase que maniene los datos generales del proyecto.
      */
     public static DatosProy dp = new DatosProy();
     
+
+    /**
+     * el archivo que contiene un CSV con la información directo del equipo
+     */
     public static File selectedFileCSV;
-    
+
+    /**
+     * el archivo que contiene un VDM que contiene uno ya procesado e incluido
+     * en un proyecto
+     */
     public static File seletedFileVDM;
     
 
