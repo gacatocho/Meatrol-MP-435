@@ -62,6 +62,11 @@ public class glb
      * corriente de Neutro calculada
      */
     public static double IN = 0;
+    
+    /**
+     * el grosor de la linea de promedio
+     */
+    public static float grosLinProm= 1.8f ;
 
     // --- SINCRONIZACIÓN GLOBAL DE RANGO TEMPORAL ---
     /**

@@ -267,7 +267,7 @@ public final class armonicosTopComponent extends baseTopComponent
             statsModel.setValueAt(dateMax, rowInModel, 8);
 
             boolean showP = (boolean) statsModel.getValueAt(rowInModel, 6);
-            if (showP) trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(1.8f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{10, 5}, 0)));
+            if (showP) trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{10, 5}, 0)));
 
             rowInModel++;
         }

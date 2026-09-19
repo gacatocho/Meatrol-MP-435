@@ -5,9 +5,34 @@
         <folder name="View">
             <file name="org-gcto-dataCorrientes-verCorrientes.instance_hidden"/>
         </folder>
-        <folder name="Window"/>
     </folder>
+    
     <folder name="Menu">
-        <folder name="Window"/>
+        <folder name="Edit">
+            <file name="org-openide-actions-RedoAction.shadow_hidden"/>
+            <file name="org-openide-actions-UndoAction.shadow_hidden"/>
+        </folder>
+        <folder name="File">
+            <!-- Ocultar acciones estándar de guardado -->
+            <file name="org-openide-actions-SaveAction.instance_hidden"/>
+            <file name="org-openide-actions-SaveAction.shadow_hidden"/>
+            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
+            <file name="org-openide-actions-SaveAsAction.instance_hidden"/>
+            <file name="org-openide-actions-SaveAllAction.instance_hidden"/>
+            <file name="org-openide-actions-SaveAsAction.shadow_hidden"/>
+        </folder>
+    </folder>
+    
+    <folder name="Toolbars">
+        <folder name="File">
+            <!-- Ocultar botones estándar de la barra de herramientas -->
+            <file name="org-openide-actions-SaveAction.instance_hidden"/>
+            <file name="org-openide-actions-SaveAllAction.instance_hidden"/>
+            <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
+        </folder>
+        <folder name="UndoRedo">
+            <file name="org-openide-actions-RedoAction.shadow_hidden"/>
+            <file name="org-openide-actions-UndoAction.shadow_hidden"/>
+        </folder>
     </folder>
 </filesystem>

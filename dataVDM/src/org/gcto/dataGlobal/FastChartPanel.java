@@ -44,6 +44,7 @@ public class FastChartPanel extends JPanel {
     private boolean symmetricY = false;
     private boolean powerFactorMode = false;
     private boolean showIndCapLabels = false;
+    private boolean areaFillMode = false;
     
     // Rango manual
     private Double manualMinY = null;
@@ -174,6 +175,11 @@ public class FastChartPanel extends JPanel {
     
     public void setShowIndCapLabels(boolean show) {
         this.showIndCapLabels = show;
+        repaint();
+    }
+    
+    public void setAreaFillMode(boolean enabled) {
+        this.areaFillMode = enabled;
         repaint();
     }
     
@@ -354,6 +360,44 @@ public class FastChartPanel extends JPanel {
         for (ChartSeries s : series) {
             if (!s.visible) continue;
             
+            int yZero = valToY(0, chartH);
+            int yFillBase = Math.max(MARGIN_TOP, Math.min(MARGIN_TOP + chartH, yZero));
+
+            // --- PASO A: Dibujar Área (si está habilitado) ---
+            if (areaFillMode) {
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.05f));
+                g2.setColor(s.color);
+                for (int x = 0; x <= chartW; x++) {
+                    int iStart = startIndex + (int) (x * pointsPerPixel);
+                    int iEnd = startIndex + (int) ((x + 1) * pointsPerPixel);
+                    if (iEnd > endIndex) iEnd = endIndex;
+                    if (iStart > endIndex) break;
+
+                    double minBucket = Double.MAX_VALUE;
+                    double maxBucket = -Double.MAX_VALUE;
+
+                    for (int i = iStart; i <= iEnd; i++) {
+                        if (i >= data.size()) break;
+                        double val = glb.parseDoubleSafe(data.get(i)[s.colIdx]);
+                        if (s.signColIdx != -1) {
+                            double q = glb.parseDoubleSafe(data.get(i)[s.signColIdx]);
+                            if (q < 0) val = -val;
+                        }
+                        if (val < minBucket) minBucket = val;
+                        if (val > maxBucket) maxBucket = val;
+                    }
+
+                    int curX = MARGIN_LEFT + x;
+                    int curYMin = valToY(minBucket, chartH);
+                    int curYMax = valToY(maxBucket, chartH);
+                    
+                    g2.drawLine(curX, yFillBase, curX, curYMin);
+                    g2.drawLine(curX, yFillBase, curX, curYMax);
+                }
+                g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+            }
+
+            // --- PASO B: Dibujar Línea ---
             g2.setColor(s.color);
             g2.setStroke(new BasicStroke(1.0f));
             
@@ -395,7 +439,7 @@ public class FastChartPanel extends JPanel {
                     g2.drawLine(curX, curYMin, curX, curYMax);
                     if (prevX != -1) {
                         g2.drawLine(prevX, prevYMax, curX, curYMax);
-                        g2.drawLine(prevX, prevYMin, curX, curYMin);
+                        g2.drawLine(prevX, prevYMin, curX, prevYMin);
                     }
                 }
                 

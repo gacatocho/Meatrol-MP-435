@@ -184,8 +184,8 @@ public final class potActivaTopComponent extends baseTopComponent
             boolean showP = (boolean) statsModel.getValueAt(rowInModel, 6);
             boolean showS = (boolean) statsModel.getValueAt(rowInModel, 11);
             
-            if (showP) trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(1.8f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{10, 5}, 0)));
-            if (showS) trendLines.add(new FastChartPanel.TrendLine(avgAbove, pc.color, new BasicStroke(1.8f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{2, 4}, 0)));
+            if (showP) trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{10, 5}, 0)));
+            if (showS) trendLines.add(new FastChartPanel.TrendLine(avgAbove, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{2, 4}, 0)));
 
             rowInModel++;
         }

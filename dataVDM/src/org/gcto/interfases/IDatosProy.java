@@ -25,6 +25,7 @@ public interface IDatosProy extends IBaseVDM
     String PROP_TABLERO = "tablero";
     String PROP_TIPORED = "tipoRed";
     String PROP_UBICACIONPROY = "ubicacionProy";
+    String PROP_RUTAPROYECTO = "rutaProyecto";
 
     /**
      * Get the value of ciudadProy
@@ -193,5 +194,21 @@ public interface IDatosProy extends IBaseVDM
      * @param ubicacionProy new value of ubicacionProy
      */
     void setUbicacionProy(String ubicacionProy);
+    
+     
+
+    /**
+     * Get the value of rutaProyecto
+     *
+     * @return the value of rutaProyecto
+     */
+    public String getRutaProyecto();
+    
+        /**
+     * Set the value of rutaProyecto
+     *
+     * @param rutaProyecto new value of rutaProyecto
+     */
+    public void setRutaProyecto(String rutaProyecto);
     
 }

@@ -53,7 +53,7 @@ public final class SalvarClaseGenerica
         {
             nomBD = "datosProyecto";
             NOMBRE_CLASE = "DatosProy";
-            rutaBD  = glb.dp.getUbicacionProy();
+            rutaBD  = glb.dp.getRutaProyecto();
 
         }
 

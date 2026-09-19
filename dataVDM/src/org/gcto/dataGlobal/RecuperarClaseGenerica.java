@@ -5,15 +5,12 @@
 package org.gcto.dataGlobal;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import org.gcto.interfases.IBaseVDM;
-import org.gcto.interfases.IDatosProy;
 
 /**
  * recuperqa de la base de datos una clsae generica dada
@@ -29,7 +26,7 @@ public class RecuperarClaseGenerica
      *
      * @param nombreClase - el nombre de la clase a recuperar
      */
-    public static void cargarObjeto(String nombreClase, String RutaBD)
+    public static boolean cargarObjeto(String nombreClase, String RutaBD)
     {
         /**
          * nombre de la sola base de datos
@@ -61,7 +58,8 @@ public class RecuperarClaseGenerica
         } else
         {
             System.out.println("Error en lo snombres de la base de datos");
-            return;
+            
+            return false;
         }
 
         IBaseVDM baseVDM = recuperarElementosDeLaClase(BD, nombreClase);
@@ -83,9 +81,12 @@ public class RecuperarClaseGenerica
             System.out.println("*****************************************************************************************************************************************");
             System.out.println("Ha fallado el cargue de la clase " + nombreClase);
             System.out.println("*****************************************************************************************************************************************");
-
+            
+            return false;
         }
 
+        return true;
+        
     }
 
     /**

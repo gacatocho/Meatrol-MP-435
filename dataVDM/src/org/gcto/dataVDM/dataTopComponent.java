@@ -5,6 +5,7 @@
 package org.gcto.dataVDM;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -12,20 +13,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
-import javax.swing.JFileChooser;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -35,11 +33,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import org.gcto.dataCorrientes.dataCorrientes;
+import org.gcto.dataEnergias.verEnergias;
 import org.gcto.dataTensiones.verTensiones;
 import org.gcto.dataPotAparente.verPotAparente;
 import org.gcto.dataPotActiva.verPotActiva;
@@ -48,14 +46,14 @@ import org.gcto.dataFactoPotencia.verFP;
 import org.gcto.dataFrecuencia.verFrecuencia;
 import org.gcto.dataGlobal.ETipoRED;
 import org.gcto.dataGlobal.RecuperarClaseGenerica;
-import org.gcto.dataGlobal.SalvarClaseGenerica;
+import org.gcto.dataGlobal.SaveProjectAction;
+import org.gcto.dataGlobal.SaveProjectAsAction;
 import org.gcto.dataGlobal.glb;
 import org.gcto.dataHarmonic.verHarmonicos;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
-import org.openide.util.Exceptions;
 import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle;
 import org.openide.util.NbBundle.Messages;
@@ -88,11 +86,26 @@ import org.openide.util.actions.SystemAction;
         })
 public final class dataTopComponent extends TopComponent
 {
-    
+
     private static final Logger LOG = Logger.getLogger(dataTopComponent.class.getName());
     private final DataTableModel tableModel;
     private final DecimalFormat decimalFormat = new DecimalFormat("0.00", DecimalFormatSymbols.getInstance(Locale.US));
-    
+
+    /**
+     * action map para manejar las acciones globales desde este formualrio, hace
+     * que se vean solo cuando el formuaro esta activo, eso indica que las
+     * globales de las barras de herramientas aplican solo a este TOP
+     */
+    private final ActionMap am;
+
+    private AbstractAction eliminarFilasSeleccionadas;
+
+    private AbstractAction eliminarCerosEnFilas;
+
+    private AbstractAction ajustarColumnasBien;
+
+    private AbstractAction cargarCsvVdm;
+
     private final DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer()
     {
         @Override
@@ -117,41 +130,92 @@ public final class dataTopComponent extends TopComponent
             return super.getTableCellRendererComponent(table, displayValue, isSelected, hasFocus, row, column);
         }
     };
-    
+
     private final DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
     private String productSN = "";
-    
+
     public dataTopComponent()
     {
         initComponents();
         setName(Bundle.CTL_dataTopComponent());
         setToolTipText(Bundle.HINT_dataTopComponent());
         putClientProperty(TopComponent.PROP_CLOSING_DISABLED, Boolean.TRUE);
-        
+
         tableModel = new DataTableModel();
         dataTable.setModel(tableModel);
 
         // Deshabilitar ordenamiento de forma absoluta
         dataTable.setAutoCreateRowSorter(false);
         dataTable.setRowSorter(null);
-        
+
         dataTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         // Configuración para scroll horizontal
         dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        
+
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
         // Menú contextual
         JPopupMenu popup = new JPopupMenu();
         JMenuItem deleteItem = new JMenuItem("Eliminar filas seleccionadas");
-        deleteItem.addActionListener(e -> btnDeleteRowActionPerformed(null));
+        deleteItem.addActionListener(e -> eliminarFilasSeleccionadas.actionPerformed(null));
         popup.add(deleteItem);
         dataTable.setComponentPopupMenu(popup);
-        
+
         updateStatus();
+
+        //acciones que se activan con este formualrio
+        //se registra el action map en este TC
+        this.am = this.getActionMap();
+
+        //accion eliminar ceros
+        eliminarCerosEnFilas = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                eliminarCeros();
+            }
+        };
+        am.put(eliminarCeros.ELIMINAR_CEROS, eliminarCerosEnFilas);
+
+        //accion de eliminar filas
+        eliminarFilasSeleccionadas = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                eliminarFilasSeleccionadas();
+            }
+        };
+        am.put(eliminarFilas.ELIMINAR_FILAS_SELECC, eliminarFilasSeleccionadas);
+
+        //accion de ajustar columnas bien
+        ajustarColumnasBien = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                ajustarColumnasPorSize();
+            }
+
+        };
+        am.put(ajustarColumnas.AJUSTAR_COLUMNAS, ajustarColumnasBien);
+
+        //accion de cargar csv o vdm
+        cargarCsvVdm = new AbstractAction()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                cargarAbrirCsvVdm();
+            }
+
+        };
+        am.put(abrirCSV_VDM.ABRIR_CSV_VDM, cargarCsvVdm);
+
     }
 
     /**
@@ -163,12 +227,12 @@ public final class dataTopComponent extends TopComponent
     {
         return tableModel != null && tableModel.getRowCount() > 0;
     }
-    
+
     public String[] getHeaders()
     {
         return tableModel.getColumnNames();
     }
-    
+
     public List<String[]> getDataList()
     {
         return tableModel.getDataList();
@@ -183,96 +247,12 @@ public final class dataTopComponent extends TopComponent
     private void initComponents()
     {
 
-        toolBar = new javax.swing.JToolBar();
-        btnLoad = new javax.swing.JButton();
-        btnSave = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JToolBar.Separator();
-        btnDeleteRow = new javax.swing.JButton();
-        btnClearZeros = new javax.swing.JButton();
-        btnFitColumns = new javax.swing.JButton();
         scrollPane = new javax.swing.JScrollPane();
         dataTable = new javax.swing.JTable();
         statusPanel = new javax.swing.JPanel();
         lblStatus = new javax.swing.JLabel();
 
         setLayout(new java.awt.BorderLayout());
-
-        toolBar.setFloatable(false);
-        toolBar.setRollover(true);
-        toolBar.setPreferredSize(new java.awt.Dimension(100, 34));
-
-        btnLoad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gcto/dataVDM/abirCSV.png"))); // NOI18N
-        btnLoad.setToolTipText(org.openide.util.NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.btnLoad.toolTip")); // NOI18N
-        btnLoad.setFocusable(false);
-        btnLoad.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnLoad.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnLoad.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                btnLoadActionPerformed(evt);
-            }
-        });
-        toolBar.add(btnLoad);
-
-        btnSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gcto/dataVDM/guardar.png"))); // NOI18N
-        btnSave.setToolTipText(org.openide.util.NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.btnSave.toolTip")); // NOI18N
-        btnSave.setFocusable(false);
-        btnSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnSave.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                btnSaveActionPerformed(evt);
-            }
-        });
-        toolBar.add(btnSave);
-        toolBar.add(jSeparator1);
-
-        btnDeleteRow.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gcto/dataVDM/eliminar.png"))); // NOI18N
-        btnDeleteRow.setToolTipText(org.openide.util.NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.btnDeleteRow.toolTip")); // NOI18N
-        btnDeleteRow.setFocusable(false);
-        btnDeleteRow.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnDeleteRow.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnDeleteRow.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                btnDeleteRowActionPerformed(evt);
-            }
-        });
-        toolBar.add(btnDeleteRow);
-
-        btnClearZeros.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gcto/dataVDM/limpiarCeros.png"))); // NOI18N
-        btnClearZeros.setToolTipText(org.openide.util.NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.btnClearZeros.toolTip")); // NOI18N
-        btnClearZeros.setFocusable(false);
-        btnClearZeros.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnClearZeros.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnClearZeros.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                btnClearZerosActionPerformed(evt);
-            }
-        });
-        toolBar.add(btnClearZeros);
-
-        btnFitColumns.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gcto/dataVDM/ajustar.png"))); // NOI18N
-        btnFitColumns.setToolTipText(org.openide.util.NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.btnFitColumns.toolTip")); // NOI18N
-        btnFitColumns.setFocusable(false);
-        btnFitColumns.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        btnFitColumns.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        btnFitColumns.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                btnFitColumnsActionPerformed(evt);
-            }
-        });
-        toolBar.add(btnFitColumns);
-
-        add(toolBar, java.awt.BorderLayout.NORTH);
 
         dataTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][]
@@ -284,157 +264,26 @@ public final class dataTopComponent extends TopComponent
 
             }
         ));
+        dataTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         scrollPane.setViewportView(dataTable);
 
         add(scrollPane, java.awt.BorderLayout.CENTER);
 
-        statusPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         statusPanel.setPreferredSize(new java.awt.Dimension(100, 25));
         statusPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 2));
 
-        org.openide.util.NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.lblStatus.text"); // NOI18N
         lblStatus.setText(org.openide.util.NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.lblStatus.text")); // NOI18N
         statusPanel.add(lblStatus);
 
         add(statusPanel, java.awt.BorderLayout.SOUTH);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnLoadActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnLoadActionPerformed
-    {
-        
-        AbrirProyectoNuevo apn = new AbrirProyectoNuevo(null, true);
-        apn.setLocationRelativeTo(null);
-        apn.setVisible(true);
-        
-        if (glb.selectedFileCSV != null)
-        {
-            loadCsv(glb.selectedFileCSV);
-            return;
-        }
-        if (glb.seletedFileVDM != null)
-        {
-
-            cargarProyectoVDM();
-        }
-
-//        JFileChooser fileChooser = new JFileChooser();
-//        fileChooser.setFileFilter(new FileNameExtensionFilter("Datos (CSV, VDM)", "csv", "vdm"));
-//        int result = fileChooser.showOpenDialog(this);
-//        if (result == JFileChooser.APPROVE_OPTION)
-//        {
-//            File selectedFile = fileChooser.getSelectedFile();
-//            if (selectedFile.getName().toLowerCase().endsWith(".vdm")) {
-//                loadBinary(selectedFile);
-//            } else {
-//                loadCsv(selectedFile);
-//            }
-//        }
-    }//GEN-LAST:event_btnLoadActionPerformed
-
-    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnSaveActionPerformed
-    {
-        if (tableModel.getRowCount() == 0)
-        {
-            return;
-        }
-        
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Seleccion de directorio para salvar proyecto");
-        
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Sesión VistaDatos (.vdm)", "vdm"));
-        File archivoVDM = null;
-        File dirVDM=null;
-        int result = fileChooser.showSaveDialog(this);
-        if (result == JFileChooser.APPROVE_OPTION)
-        {
-            File file = fileChooser.getSelectedFile();
-            if (!file.getName().toLowerCase().endsWith(".vdm"))
-            {
-                //crea el directorio
-                boolean creado = file.mkdirs();
-                
-                if (creado)
-                {
-                    dirVDM = new File(file.getAbsolutePath() );
-                    archivoVDM = new  File(dirVDM,"datos"+ ".vdm");
-                }
-                else
-                {
-                    System.out.println("NO SE PUDO CREAR EL DIRECTORIO");
-                    return;
-                }
-                
-                
-            }
-           
-            glb.dp.setUbicacionProy(dirVDM.getAbsolutePath());
-            try
-            {
-                SalvarClaseGenerica.salvarObjeto(glb.dp);
-            } catch (IOException ex)
-            {
-                Exceptions.printStackTrace(ex);
-            }
-            try
-            {
-                SalvarClaseGenerica.salvarObjeto(glb.opc);
-            } catch (IOException ex)
-            {
-                Exceptions.printStackTrace(ex);
-            }
-            
-            saveBinary(archivoVDM);
-        }
-    }//GEN-LAST:event_btnSaveActionPerformed
-
-    private void btnDeleteRowActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnDeleteRowActionPerformed
-    {
-        int[] selectedRows = dataTable.getSelectedRows();
-        if (selectedRows.length > 0)
-        {
-            int[] modelRows = new int[selectedRows.length];
-            for (int i = 0; i < selectedRows.length; i++)
-            {
-                modelRows[i] = dataTable.convertRowIndexToModel(selectedRows[i]);
-            }
-            Arrays.sort(modelRows);
-            tableModel.removeRows(modelRows);
-            updateStatus();
-        } else
-        {
-            JOptionPane.showMessageDialog(this, "Por favor, seleccione una o más filas para eliminar.", "Información", JOptionPane.INFORMATION_MESSAGE);
-        }
-    }//GEN-LAST:event_btnDeleteRowActionPerformed
-
-    private void btnClearZerosActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnClearZerosActionPerformed
-    {
-        if (tableModel.getRowCount() == 0)
-        {
-            return;
-        }
-        
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "¿Desea eliminar automáticamente todas las filas que contienen solo ceros?",
-                "Limpiar Datos", JOptionPane.YES_NO_OPTION);
-        
-        if (confirm == JOptionPane.YES_OPTION)
-        {
-            tableModel.clearZeroRows();
-            updateStatus();
-        }
-    }//GEN-LAST:event_btnClearZerosActionPerformed
-    
-    private void btnFitColumnsActionPerformed(java.awt.event.ActionEvent evt)
-    {
-        applyRenderers();
-    }
-    
     private void loadCsv(File file)
     {
         setUIEnabled(false);
         String msg = NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.loading");
         lblStatus.setText(msg);
-        
+
         final ProgressHandle ph = ProgressHandle.createHandle(msg);
         ph.start(100); // 100 unidades de trabajo (porcentaje)
 
@@ -443,13 +292,13 @@ public final class dataTopComponent extends TopComponent
             private String[] combinedColumns;
             private String sn = "";
             private final List<String[]> data = new ArrayList<>(1000000);
-            
+
             @Override
             protected Void doInBackground() throws Exception
             {
                 long totalBytes = file.length();
                 long readBytes = 0;
-                
+
                 try (BufferedReader br = new BufferedReader(new FileReader(file)))
                 {
                     String lineSN = br.readLine();
@@ -458,7 +307,7 @@ public final class dataTopComponent extends TopComponent
                         sn = lineSN.trim();
                         readBytes += lineSN.length() + 1;
                     }
-                    
+
                     String lineMain = br.readLine();
                     if (lineMain != null)
                     {
@@ -469,13 +318,13 @@ public final class dataTopComponent extends TopComponent
                     {
                         readBytes += lineSub.length() + 1;
                     }
-                    
+
                     if (lineMain != null && lineSub != null)
                     {
                         String[] mainHeaders = lineMain.split(",", -1);
                         String[] subHeaders = lineSub.split(",", -1);
                         combinedColumns = new String[subHeaders.length];
-                        
+
                         String currentMain = "";
                         for (int i = 0; i < subHeaders.length; i++)
                         {
@@ -487,14 +336,14 @@ public final class dataTopComponent extends TopComponent
                             combinedColumns[i] = currentMain.isEmpty() ? sub : currentMain + ": " + sub;
                         }
                     }
-                    
+
                     String line;
                     int lastProgress = 0;
                     while ((line = br.readLine()) != null)
                     {
                         data.add(line.split(",", -1));
                         readBytes += line.length() + 1;
-                        
+
                         int progress = (int) ((readBytes * 100) / totalBytes);
                         if (progress > lastProgress)
                         {
@@ -508,7 +357,7 @@ public final class dataTopComponent extends TopComponent
                 }
                 return null;
             }
-            
+
             @Override
             protected void process(List<Integer> chunks)
             {
@@ -517,7 +366,7 @@ public final class dataTopComponent extends TopComponent
                     ph.progress(progress);
                 }
             }
-            
+
             @Override
             protected void done()
             {
@@ -540,17 +389,17 @@ public final class dataTopComponent extends TopComponent
             }
         }.execute();
     }
-    
-    private void saveBinary(File file)
+
+    public void saveBinary(File file)
     {
         setUIEnabled(false);
         String msg = NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.saving");
         lblStatus.setText(msg);
-        
+
         final ProgressHandle ph = ProgressHandle.createHandle(msg);
         final List<String[]> dataList = tableModel.getDataList();
         ph.start(100);
-        
+
         new SwingWorker<Void, Integer>()
         {
             @Override
@@ -563,12 +412,12 @@ public final class dataTopComponent extends TopComponent
 
                     // Escribimos el tamaño de la lista
                     oos.writeInt(dataList.size());
-                    
+
                     int lastProgress = 0;
                     for (int i = 0; i < dataList.size(); i++)
                     {
                         oos.writeObject(dataList.get(i));
-                        
+
                         int progress = (int) ((i * 100.0) / dataList.size());
                         if (progress > lastProgress)
                         {
@@ -579,7 +428,7 @@ public final class dataTopComponent extends TopComponent
                 }
                 return null;
             }
-            
+
             @Override
             protected void process(List<Integer> chunks)
             {
@@ -588,7 +437,7 @@ public final class dataTopComponent extends TopComponent
                     ph.progress(progress);
                 }
             }
-            
+
             @Override
             protected void done()
             {
@@ -607,22 +456,22 @@ public final class dataTopComponent extends TopComponent
             }
         }.execute();
     }
-    
+
     private void loadBinary(File file)
     {
         setUIEnabled(false);
         String msg = NbBundle.getMessage(dataTopComponent.class, "dataTopComponent.loading");
         lblStatus.setText(msg);
-        
+
         final ProgressHandle ph = ProgressHandle.createHandle(msg);
         ph.start(100);
-        
+
         new SwingWorker<Void, Integer>()
         {
             private String sn;
             private String[] cols;
             private List<String[]> data;
-            
+
             @Override
             protected Void doInBackground() throws Exception
             {
@@ -630,15 +479,15 @@ public final class dataTopComponent extends TopComponent
                 {
                     sn = ois.readUTF();
                     cols = (String[]) ois.readObject();
-                    
+
                     int size = ois.readInt();
                     data = new ArrayList<>(size);
-                    
+
                     int lastProgress = 0;
                     for (int i = 0; i < size; i++)
                     {
                         data.add((String[]) ois.readObject());
-                        
+
                         int progress = (int) ((i * 100.0) / size);
                         if (progress > lastProgress)
                         {
@@ -652,7 +501,7 @@ public final class dataTopComponent extends TopComponent
                 }
                 return null;
             }
-            
+
             @Override
             protected void process(List<Integer> chunks)
             {
@@ -661,7 +510,7 @@ public final class dataTopComponent extends TopComponent
                     ph.progress(progress);
                 }
             }
-            
+
             @Override
             protected void done()
             {
@@ -684,34 +533,33 @@ public final class dataTopComponent extends TopComponent
             }
         }.execute();
     }
-    
+
     private void setUIEnabled(boolean enabled)
     {
-        btnLoad.setEnabled(enabled);
-        btnSave.setEnabled(enabled);
-        btnDeleteRow.setEnabled(enabled);
-        btnClearZeros.setEnabled(enabled);
-        btnFitColumns.setEnabled(enabled);
+        cargarCsvVdm.setEnabled(enabled);
+        eliminarFilasSeleccionadas.setEnabled(enabled);
+        eliminarCerosEnFilas.setEnabled(enabled);
+        ajustarColumnasBien.setEnabled(enabled);
     }
-    
+
     private void showError(String msg, Exception e)
     {
         JOptionPane.showMessageDialog(this, msg + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         lblStatus.setText("Error.");
     }
-    
+
     private void applyRenderers()
     {
         if (tableModel.getColumnCount() == 0)
         {
             return;
         }
-        
+
         dataTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         TableColumnModel columnModel = dataTable.getColumnModel();
         java.awt.FontMetrics fm = dataTable.getFontMetrics(dataTable.getFont());
         java.awt.FontMetrics headerFm = dataTable.getTableHeader().getFontMetrics(dataTable.getTableHeader().getFont());
-        
+
         for (int i = 0; i < columnModel.getColumnCount(); i++)
         {
             String colName = tableModel.getColumnName(i);
@@ -734,13 +582,13 @@ public final class dataTopComponent extends TopComponent
                     }
                 }
             }
-            
+
             width = Math.max(width, maxContentWidth);
             // Asegurar un ancho mínimo razonable
             width = Math.max(width, 100);
-            
+
             columnModel.getColumn(i).setPreferredWidth(width);
-            
+
             String colNameLower = colName.toLowerCase();
             if (colNameLower.contains("date") || colNameLower.contains("time") || colNameLower.contains("tiempo") || colNameLower.contains("fecha"))
             {
@@ -751,7 +599,7 @@ public final class dataTopComponent extends TopComponent
             }
         }
     }
-    
+
     private void updateStatus()
     {
         int rows = tableModel.getRowCount();
@@ -760,7 +608,7 @@ public final class dataTopComponent extends TopComponent
         lblStatus.setText(status);
         updateActionState();
     }
-    
+
     private void updateActionState()
     {
         boolean dataPresent = hasData();
@@ -775,6 +623,11 @@ public final class dataTopComponent extends TopComponent
             SystemAction.get(verFP.class).setEnabled(dataPresent);
             SystemAction.get(verFrecuencia.class).setEnabled(dataPresent);
             SystemAction.get(verHarmonicos.class).setEnabled(dataPresent);
+            SystemAction.get(verEnergias.class).setEnabled(dataPresent);
+
+            // Habilitar acciones globales de guardado
+            SystemAction.get(SaveProjectAction.class).setEnabled(dataPresent);
+            SystemAction.get(SaveProjectAsAction.class).setEnabled(dataPresent);
         });
     }
 
@@ -797,7 +650,7 @@ public final class dataTopComponent extends TopComponent
         }
         return false;
     }
-    
+
     private String[] augmentData(String[] headers, List<String[]> data)
     {
         // Verificar si ya está aumentado (buscamos específicamente la última añadida: PF Average)
@@ -823,7 +676,7 @@ public final class dataTopComponent extends TopComponent
 
         // --- DETECCIÓN DE COLUMNAS DE FACTOR DE POTENCIA ---
         int idxFPA = -1, idxFPB = -1, idxFPC = -1;
-        
+
         for (int i = 0; i < headers.length; i++)
         {
             String h = headers[i].toUpperCase();
@@ -914,7 +767,7 @@ public final class dataTopComponent extends TopComponent
                 idxFPC = i;
             }
         }
-        
+
         LOG.info(String.format("AugmentData: S(%d,%d,%d,%d) P(%d,%d,%d,%d) Q(%d,%d,%d) U(%d,%d,%d) I(%d,%d,%d) FP(%d,%d,%d)",
                 idxSA, idxSB, idxSC, idxSSum, idxPA, idxPB, idxPC, idxPSum, idxQA, idxQB, idxQC, idxUA, idxUB, idxUC, idxIA, idxIB, idxIC, idxFPA, idxFPB, idxFPC));
 
@@ -936,7 +789,7 @@ public final class dataTopComponent extends TopComponent
         {
             glb.numFases = detectedFases;
         }
-        
+
         int numFases = glb.numFases;
 
         // --- CONSTRUCCIÓN DE NUEVOS ENCABEZADOS ---
@@ -969,7 +822,7 @@ public final class dataTopComponent extends TopComponent
         boolean INExist = columnaEXiste(headers, "Current(A): In");
         //averigua si el power factor existe en promedio
         boolean PFAvrgExist = columnaEXiste(headers, "Power Factor: PF Average");
-        
+
         for (int i = 0; i < headers.length; i++)
         {
             newHeadersList.add(headers[i]);
@@ -984,19 +837,19 @@ public final class dataTopComponent extends TopComponent
                     qCalcPositions.add(newHeadersList.size());
                     newHeadersList.add("ReactivePowerCalc(Var) QA");
                 }
-                
+
                 if (i == idxQB && numFases >= 2)
                 {
                     qCalcPositions.add(newHeadersList.size());
                     newHeadersList.add("ReactivePowerCalc(Var) QB");
                 }
-                
+
                 if (i == idxQC && numFases >= 3)
                 {
                     qCalcPositions.add(newHeadersList.size());
                     newHeadersList.add("ReactivePowerCalc(Var) QC");
                 }
-                
+
                 if (i == idxQSumOrig)
                 {
                     qSumPos = newHeadersList.size();
@@ -1025,7 +878,7 @@ public final class dataTopComponent extends TopComponent
                     }
                 }
             }
-            
+
             if (!INExist)
             {
                 // Inserción de Neutro (después del grupo IA, IB, IC)
@@ -1039,7 +892,7 @@ public final class dataTopComponent extends TopComponent
                     }
                 }
             }
-            
+
             if (!PFAvrgExist)
             {
                 // Inserción de PF Average (después del grupo FPA, FPB, FPC)
@@ -1053,7 +906,7 @@ public final class dataTopComponent extends TopComponent
                     }
                 }
             }
-            
+
         }
 
 //        // Fallback QSum
@@ -1095,10 +948,10 @@ public final class dataTopComponent extends TopComponent
                 double qa = (idxQA >= 0 && idxQA < oldRow.length) ? glb.parseDoubleSafe(oldRow[idxQA]) : 0;
                 double qb = (idxQB >= 0 && idxQB < oldRow.length) ? glb.parseDoubleSafe(oldRow[idxQB]) : 0;
                 double qc = (idxQC >= 0 && idxQC < oldRow.length) ? glb.parseDoubleSafe(oldRow[idxQC]) : 0;
-                
+
                 glb.calculoNeutro(ia, ib, ic, fpa, fpb, fpc, qa, qb, qc);
             }
-            
+
             for (int c = 0; c < newRow.length; c++)
             {
                 // ¿Es una columna de Reactiva Calculada?
@@ -1177,10 +1030,10 @@ public final class dataTopComponent extends TopComponent
             }
             data.set(r, newRow);
         }
-        
+
         return newHeadersList.toArray(new String[0]);
     }
-    
+
     private boolean matchesStrict(String header, String key, String type)
     {
         String h = header.toUpperCase().trim();
@@ -1204,7 +1057,7 @@ public final class dataTopComponent extends TopComponent
         {
             boolean startOk = (idx == 0) || !Character.isLetter(h.charAt(idx - 1));
             boolean endOk = (idx + k.length() == h.length()) || !Character.isLetter(h.charAt(idx + k.length()));
-            
+
             if (startOk && endOk)
             {
                 // Verificar prefijo 'E' específicamente para QA/QB/QC
@@ -1218,10 +1071,10 @@ public final class dataTopComponent extends TopComponent
             }
             idx = h.indexOf(k, idx + 1);
         }
-        
+
         return false;
     }
-    
+
     private double calculateQValue(String[] row, int idxS, int idxP, int idxQ)
     {
         if (idxS < 0 || idxP < 0 || idxQ < 0 || idxS >= row.length || idxP >= row.length || idxQ >= row.length)
@@ -1241,34 +1094,27 @@ public final class dataTopComponent extends TopComponent
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnClearZeros;
-    private javax.swing.JButton btnDeleteRow;
-    private javax.swing.JButton btnFitColumns;
-    private javax.swing.JButton btnLoad;
-    private javax.swing.JButton btnSave;
     private javax.swing.JTable dataTable;
-    private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JLabel lblStatus;
     private javax.swing.JScrollPane scrollPane;
     private javax.swing.JPanel statusPanel;
-    private javax.swing.JToolBar toolBar;
     // End of variables declaration//GEN-END:variables
     @Override
     public void componentOpened()
     {
         updateActionState();
     }
-    
+
     @Override
     public void componentClosed()
     {
     }
-    
+
     void writeProperties(java.util.Properties p)
     {
         p.setProperty("version", "1.0");
     }
-    
+
     void readProperties(java.util.Properties p)
     {
         String version = p.getProperty("version");
@@ -1284,46 +1130,46 @@ public final class dataTopComponent extends TopComponent
         String rutaVMD = glb.seletedFileVDM.getParent();
         //conociendo la ruta cargar el archivo aqui solo
         //se recupera DatosProy pues Opciones se hace al inicio de la sesion
-        RecuperarClaseGenerica.cargarObjeto("DatosProy",rutaVMD);
+        RecuperarClaseGenerica.cargarObjeto("DatosProy", rutaVMD);
 
-         loadBinary(glb.seletedFileVDM);
+        loadBinary(glb.seletedFileVDM);
     }
-    
+
     private static class DataTableModel extends AbstractTableModel
     {
-        
+
         private String[] columnNames = new String[0];
         private List<String[]> data = new ArrayList<>();
-        
+
         public void setColumns(String[] columns)
         {
             this.columnNames = columns != null ? columns : new String[0];
             fireTableStructureChanged();
         }
-        
+
         public void setData(List<String[]> data)
         {
             this.data = data != null ? data : new ArrayList<>();
             fireTableDataChanged();
         }
-        
+
         public String[] getColumnNames()
         {
             return columnNames;
         }
-        
+
         public List<String[]> getDataList()
         {
             return data;
         }
-        
+
         public void removeRows(int[] modelIndices)
         {
             if (modelIndices.length == 0)
             {
                 return;
             }
-            
+
             List<String[]> newData = new ArrayList<>(data.size() - modelIndices.length);
             int indexPtr = 0;
             for (int i = 0; i < data.size(); i++)
@@ -1339,7 +1185,7 @@ public final class dataTopComponent extends TopComponent
             this.data = newData;
             fireTableDataChanged();
         }
-        
+
         public void clearZeroRows()
         {
             List<String[]> newData = new ArrayList<>(data.size());
@@ -1357,7 +1203,7 @@ public final class dataTopComponent extends TopComponent
                     {
                         continue;
                     }
-                    
+
                     String val = row[i].trim();
                     // Verificar si es un valor numérico que representa cero
                     try
@@ -1386,25 +1232,25 @@ public final class dataTopComponent extends TopComponent
             this.data = newData;
             fireTableDataChanged();
         }
-        
+
         @Override
         public int getRowCount()
         {
             return data.size();
         }
-        
+
         @Override
         public int getColumnCount()
         {
             return columnNames.length;
         }
-        
+
         @Override
         public String getColumnName(int column)
         {
             return columnNames[column];
         }
-        
+
         @Override
         public Object getValueAt(int rowIndex, int columnIndex)
         {
@@ -1414,6 +1260,66 @@ public final class dataTopComponent extends TopComponent
                 return row[columnIndex];
             }
             return "";
+        }
+    }
+
+    private void eliminarCeros()
+    {
+        if (tableModel.getRowCount() == 0)
+        {
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "¿Desea eliminar automáticamente todas las filas que contienen solo ceros?",
+                "Limpiar Datos", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION)
+        {
+            tableModel.clearZeroRows();
+            updateStatus();
+        }
+    }
+
+    private void eliminarFilasSeleccionadas()
+    {
+        int[] selectedRows = dataTable.getSelectedRows();
+        if (selectedRows.length > 0)
+        {
+            int[] modelRows = new int[selectedRows.length];
+            for (int i = 0; i < selectedRows.length; i++)
+            {
+                modelRows[i] = dataTable.convertRowIndexToModel(selectedRows[i]);
+            }
+            Arrays.sort(modelRows);
+            tableModel.removeRows(modelRows);
+            updateStatus();
+        } else
+        {
+            JOptionPane.showMessageDialog(this, "Por favor, seleccione una o más filas para eliminar.", "Información", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void ajustarColumnasPorSize()
+    {
+        applyRenderers();
+    }
+
+    private void cargarAbrirCsvVdm()
+    {
+        AbrirProyectoNuevo apn = new AbrirProyectoNuevo(null, true);
+        apn.setLocationRelativeTo(null);
+        apn.setVisible(true);
+
+        if (glb.selectedFileCSV != null)
+        {
+            loadCsv(glb.selectedFileCSV);
+            return;
+        }
+        if (glb.seletedFileVDM != null)
+        {
+
+            cargarProyectoVDM();
         }
     }
 }

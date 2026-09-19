@@ -315,6 +315,25 @@ public class DatosProy implements IDatosProy, PropertyChangeListener
         propertyChangeSupport.firePropertyChange(PROP_CSVNAME, oldCsvName, csvName);
     }
 
+    /**
+     * la ruta en disco del proyecto
+     */
+    private String rutaProyecto = "";
+
+    @Override
+    public String getRutaProyecto()
+    {
+        return rutaProyecto;
+    }
+
+    @Override
+    public void setRutaProyecto(String rutaProyecto)
+    {
+        String oldRutaProyecto = this.rutaProyecto;
+        this.rutaProyecto = rutaProyecto;
+        propertyChangeSupport.firePropertyChange(PROP_RUTAPROYECTO, oldRutaProyecto, rutaProyecto);
+    }
+
     private String[] listaRecientes =
     {
         "", "", "", "", "", "", "", "", "", ""
