@@ -19,6 +19,7 @@ import org.openide.windows.WindowManager;
         id = "org.gcto.dataGlobal.ExportAction"
 )
 @ActionRegistration(
+        iconBase = "org/gcto/dataGlobal/export.png",
         displayName = "#CTL_ExportAction",
         lazy = false
 )
@@ -27,11 +28,12 @@ import org.openide.windows.WindowManager;
             @ActionReference(path = "Menu/File", position = 1100),
             @ActionReference(path = "Toolbars/File", position = 1100)
         })
-@Messages("CTL_ExportAction=Exportar Análisis")
+@Messages("CTL_ExportAction=Exportar Gráfico para Informe")
 public final class ExportAction extends CallableSystemAction
 {
     public ExportAction() {
         setEnabled(false);
+        // Escuchar cambios en el TopComponent activado para habilitar/deshabilitar la acción
         WindowManager.getDefault().getRegistry().addPropertyChangeListener(evt -> {
             if (TopComponent.Registry.PROP_ACTIVATED.equals(evt.getPropertyName())) {
                 updateEnabled();
@@ -42,6 +44,7 @@ public final class ExportAction extends CallableSystemAction
 
     private void updateEnabled() {
         TopComponent active = WindowManager.getDefault().getRegistry().getActivated();
+        // Solo se habilita si el componente activo es un formulario de análisis (baseTopComponent)
         setEnabled(active instanceof baseTopComponent);
     }
 
@@ -51,6 +54,7 @@ public final class ExportAction extends CallableSystemAction
         TopComponent active = WindowManager.getDefault().getRegistry().getActivated();
         if (active instanceof baseTopComponent)
         {
+            // Ejecuta la exportación directa (forzando fondo blanco internamente)
             ((baseTopComponent) active).onExport();
         }
     }
@@ -69,6 +73,4 @@ public final class ExportAction extends CallableSystemAction
     {
         return "org/gcto/dataGlobal/export.png";
     }
-    
-   
 }

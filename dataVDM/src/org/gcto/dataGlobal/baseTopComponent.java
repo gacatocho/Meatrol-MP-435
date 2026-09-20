@@ -272,7 +272,9 @@ public abstract class baseTopComponent extends TopComponent
             @Override public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 if (value instanceof Color) {
-                    c.setBackground((Color) value);
+                    Color color = (Color) value;
+                    // Usar la misma lógica de contraste que el gráfico
+                    c.setBackground(chartPanel.getDisplayColor(color));
                     setText("");
                     setBorder(BorderFactory.createLineBorder(table.getBackground(), 5));
                 }
@@ -299,6 +301,26 @@ public abstract class baseTopComponent extends TopComponent
             tblStats.getColumnModel().getColumn(6).setPreferredWidth(100); // Ver Promedio
             tblStats.getColumnModel().getColumn(11).setPreferredWidth(160); // Ver promedio sobre %
         }
+    }
+
+    /**
+     * Actualiza el tema visual de todo el componente (gráfico y tabla).
+     */
+    public void updateTheme() {
+        // 1. Actualizar el gráfico
+        chartPanel.updateTheme();
+        
+        // 2. Actualizar la tabla de estadísticas
+        // Si hay una fila de Neutro, actualizar su color al valor global actual
+        for (int i = 0; i < statsModel.getRowCount(); i++) {
+            String name = (String) statsModel.getValueAt(i, 1);
+            if (name.equalsIgnoreCase("Neutro") || name.equalsIgnoreCase("In")) {
+                statsModel.setValueAt(glb.colorN, i, 0);
+            }
+        }
+        
+        // Forzar repintado de la tabla para que el renderizador de color actúe
+        tblStats.repaint();
     }
 
     protected boolean isColumnEditable(int column) { 
@@ -396,25 +418,28 @@ public abstract class baseTopComponent extends TopComponent
         }
     }
 
+    /**
+     * Ejecuta la exportación del análisis.
+     * Siguiendo las instrucciones, ahora salta directamente a la exportación de imagen
+     * para agilizar la generación de informes.
+     */
     public void onExport()
     {
-        Object[] options = { "Imagen (PNG)", "Datos (CSV - Rango Seleccionado)" };
-        int choice = JOptionPane.showOptionDialog(this, "Seleccione el formato de exportación:", "Exportar Análisis",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-        if (choice == 0) exportImage();
-        else if (choice == 1) exportCSV();
+        exportImage();
     }
 
     private void exportImage()
     {
         JFileChooser fc = new JFileChooser();
+        fc.setDialogTitle("Exportar Gráfico para Informe (Fondo Blanco)");
         fc.setFileFilter(new FileNameExtensionFilter("Imagen PNG (*.png)", "png"));
         if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             if (!file.getName().toLowerCase().endsWith(".png")) file = new File(file.getAbsolutePath() + ".png");
             try {
+                // El motor de gráficos ya se encarga de forzar el fondo blanco internamente
                 chartPanel.saveAsImage(file);
-                JOptionPane.showMessageDialog(this, "Imagen guardada correctamente.");
+                JOptionPane.showMessageDialog(this, "Imagen exportada correctamente para el informe.");
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Error al guardar imagen: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }

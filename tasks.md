@@ -30,4 +30,4 @@
 - [x] Redesign Analysis UI: Integrated Color/View columns in Statistics Table.
 - [x] Migrate Export/Refresh actions to global File/View menus and toolbars.
 - [x] Implement Live Values panel for real-time cursor data visualization.
-- [ ] Implement Harmonics individual analysis (H3, H5, H7, etc.).
+- [x] Implement Harmonics individual analysis (H3, H5, H7, etc.) and Spectrum View.

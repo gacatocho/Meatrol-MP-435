@@ -27,6 +27,11 @@ public class glb
     public static ETipoRED tipoRed = ETipoRED.tresFases_FFN; //por defecto para ejemplo
 
     /**
+     * Indica si el sistema está en modo oscuro (true) o claro (false).
+     */
+    public static boolean darkMode = true;
+
+    /**
      * color de fase A
      */
     public static Color colorA = Color.YELLOW;
@@ -39,7 +44,7 @@ public class glb
      */
     public static Color colorC = Color.RED;
     /**
-     * color del neutro
+     * color del neutro. Se ajusta dinámicamente según el tema.
      */
     public static Color colorN = Color.WHITE;
 

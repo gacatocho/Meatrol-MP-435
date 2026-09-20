@@ -67,7 +67,7 @@ public class FastChartPanel extends JPanel {
     private CursorDataListener cursorListener;
 
     public FastChartPanel() {
-        setBackground(Color.BLACK);
+        updateTheme();
         setOpaque(true);
         
         addMouseMotionListener(new MouseMotionAdapter() {
@@ -131,6 +131,47 @@ public class FastChartPanel extends JPanel {
                 repaint();
             }
         });
+    }
+
+    /**
+     * Actualiza los colores base del panel según el tema global.
+     */
+    public void updateTheme() {
+        if (glb.darkMode) {
+            setBackground(Color.BLACK);
+        } else {
+            setBackground(Color.WHITE);
+        }
+        repaint();
+    }
+
+    /**
+     * Ajusta un color para que sea visible según el tema actual.
+     * Si estamos en modo claro, oscurece los colores muy brillantes (como el amarillo).
+     */
+    public Color getDisplayColor(Color c) {
+        if (glb.darkMode) {
+            // En modo oscuro, si el color es negro puro, lo pasamos a blanco para que sea visible
+            if (c.equals(Color.BLACK)) return Color.WHITE;
+            return c;
+        }
+        
+        // En modo claro, si el color es blanco puro, lo pasamos a negro
+        if (c.equals(Color.WHITE)) return Color.BLACK;
+        
+        // Analizar brillo para oscurecer colores claros sobre fondo blanco
+        float[] hsb = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);
+        
+        // Caso especial: Amarillo y colores muy claros
+        if (hsb[0] > 0.12f && hsb[0] < 0.20f && hsb[2] > 0.8f) { // Rango del amarillo
+            return Color.getHSBColor(hsb[0], hsb[1], 0.65f); // Oscurecer más el amarillo
+        }
+        
+        if (hsb[2] > 0.85f) { // Si el brillo es muy alto en general
+            return Color.getHSBColor(hsb[0], hsb[1], 0.75f); // Bajamos el brillo al 75%
+        }
+        
+        return c;
     }
 
     private void notifyCursorMoved() {
@@ -362,11 +403,12 @@ public class FastChartPanel extends JPanel {
             
             int yZero = valToY(0, chartH);
             int yFillBase = Math.max(MARGIN_TOP, Math.min(MARGIN_TOP + chartH, yZero));
+            Color drawColor = getDisplayColor(s.color);
 
             // --- PASO A: Dibujar Área (si está habilitado) ---
             if (areaFillMode) {
                 g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.05f));
-                g2.setColor(s.color);
+                g2.setColor(drawColor);
                 for (int x = 0; x <= chartW; x++) {
                     int iStart = startIndex + (int) (x * pointsPerPixel);
                     int iEnd = startIndex + (int) ((x + 1) * pointsPerPixel);
@@ -398,7 +440,7 @@ public class FastChartPanel extends JPanel {
             }
 
             // --- PASO B: Dibujar Línea ---
-            g2.setColor(s.color);
+            g2.setColor(drawColor);
             g2.setStroke(new BasicStroke(1.0f));
             
             int prevX = -1;
@@ -467,7 +509,7 @@ public class FastChartPanel extends JPanel {
             int y = valToY(line.value, chartH);
             if (y < MARGIN_TOP || y > MARGIN_TOP + chartH) continue;
             
-            g2.setColor(line.color);
+            g2.setColor(getDisplayColor(line.color));
             g2.setStroke(line.stroke);
             g2.drawLine(MARGIN_LEFT, y, MARGIN_LEFT + chartW, y);
         }
@@ -497,30 +539,35 @@ public class FastChartPanel extends JPanel {
     }
 
     private void drawAxes(Graphics2D g2, int chartW, int chartH) {
-        g2.setColor(new Color(80, 80, 80));
+        Color axisColor = glb.darkMode ? new Color(80, 80, 80) : new Color(180, 180, 180);
+        Color gridColor = glb.darkMode ? new Color(50, 50, 50) : new Color(220, 220, 220);
+        Color textColor = glb.darkMode ? Color.WHITE : Color.BLACK;
+        Color zeroLineColor = glb.darkMode ? Color.WHITE : Color.DARK_GRAY;
+
+        g2.setColor(axisColor);
         g2.drawRect(MARGIN_LEFT, MARGIN_TOP, chartW, chartH);
         
         // Línea de Cero (Referencia Crítica - Más Visible)
         if (currentMinVal <= 0 && currentMaxVal >= 0) {
             int yZero = valToY(0, chartH);
-            g2.setColor(Color.WHITE); // Blanco puro para máxima visibilidad
-            g2.setStroke(new BasicStroke(2.5f)); // Un poco más gruesa
+            g2.setColor(zeroLineColor); 
+            g2.setStroke(new BasicStroke(2.5f)); 
             g2.drawLine(MARGIN_LEFT, yZero, MARGIN_LEFT + chartW, yZero);
         }
 
         g2.setFont(new Font("Dialog", Font.BOLD, 12));
         double range = currentMaxVal - currentMinVal;
         
-        int numTicks = powerFactorMode ? 22 : 10; // Más ticks para FP (0.1 en 0.1)
+        int numTicks = powerFactorMode ? 22 : 10; 
         
         for (int i = 0; i <= numTicks; i++) {
             double val = currentMinVal + (range * i / (double)numTicks);
             int y = valToY(val, chartH);
             
-            g2.setColor(new Color(50, 50, 50)); 
+            g2.setColor(gridColor); 
             g2.drawLine(MARGIN_LEFT, y, MARGIN_LEFT + chartW, y);
             
-            g2.setColor(Color.WHITE);
+            g2.setColor(textColor);
             g2.drawLine(MARGIN_LEFT - 5, y, MARGIN_LEFT, y);
             
             // En modo FP, mostramos valor absoluto
@@ -532,7 +579,7 @@ public class FastChartPanel extends JPanel {
         // Rótulos IND / CAP
         if (showIndCapLabels) {
             g2.setFont(new Font("Dialog", Font.BOLD, 14));
-            g2.setColor(Color.LIGHT_GRAY);
+            g2.setColor(glb.darkMode ? Color.LIGHT_GRAY : Color.GRAY);
             g2.drawString("IND", MARGIN_LEFT + 5, MARGIN_TOP + 20);
             g2.drawString("CAP", MARGIN_LEFT + 5, MARGIN_TOP + chartH - 10);
         }
@@ -542,7 +589,7 @@ public class FastChartPanel extends JPanel {
         for (int i = 0; i < numTimeLabels; i++) {
             int xOffset = i * chartW / (numTimeLabels - 1);
             int x = MARGIN_LEFT + xOffset;
-            g2.setColor(new Color(50, 50, 50));
+            g2.setColor(gridColor);
             g2.drawLine(x, MARGIN_TOP, x, MARGIN_TOP + chartH);
             
             int dataIdx = startIndex + (int) ((double) i / (numTimeLabels - 1) * (numPoints - 1));
@@ -550,7 +597,7 @@ public class FastChartPanel extends JPanel {
             if (dataIdx >= data.size()) dataIdx = data.size() - 1;
             
             String[] row = data.get(dataIdx);
-            g2.setColor(Color.WHITE);
+            g2.setColor(textColor);
             g2.drawLine(x, MARGIN_TOP + chartH, x, MARGIN_TOP + chartH + 5);
             
             g2.setFont(new Font("Dialog", Font.BOLD, 13));
@@ -566,18 +613,22 @@ public class FastChartPanel extends JPanel {
     private void drawLegend(Graphics2D g2) {
         int legendX = MARGIN_LEFT;
         g2.setFont(new Font("Dialog", Font.BOLD, 13));
+        Color textColor = glb.darkMode ? Color.WHITE : Color.BLACK;
+        
         for (ChartSeries s : series) {
             if (!s.visible) continue;
-            g2.setColor(s.color);
+            
+            g2.setColor(getDisplayColor(s.color));
             g2.fillRect(legendX, 8, 10, 10);
-            g2.setColor(Color.WHITE);
+            g2.setColor(textColor);
             g2.drawString(s.name, legendX + 15, 18);
             legendX += g2.getFontMetrics().stringWidth(s.name) + 35;
         }
     }
     
     private void drawCrosshair(Graphics2D g2, Point p, int chartW, int chartH) {
-        g2.setColor(new Color(200, 200, 200, 150));
+        Color crossColor = glb.darkMode ? new Color(200, 200, 200, 150) : new Color(50, 50, 50, 150);
+        g2.setColor(crossColor);
         g2.setStroke(new BasicStroke(1.0f));
         g2.drawLine(p.x, MARGIN_TOP, p.x, MARGIN_TOP + chartH);
         g2.drawLine(MARGIN_LEFT, p.y, MARGIN_LEFT + chartW, p.y);
@@ -616,38 +667,79 @@ public class FastChartPanel extends JPanel {
         if (tipX + tipW > getWidth()) tipX = p.x - tipW - 15;
         if (tipY + tipH > getHeight() - 20) tipY = p.y - tipH - 15;
         
-        //g2.setColor(new Color(20, 20, 20, 230));
-        g2.setColor(new Color(180, 160, 120, 230));//mejora la visual sobre la pantalla
+        // --- MEJORA DE CONTRASTE: Fondo Carbon HUD ---
+        Color tipBg = new Color(33, 33, 33, 230); 
+        Color tipBorder = new Color(80, 80, 80);
+        Color tipTitleColor = Color.WHITE;
+        
+        g2.setColor(tipBg);
         g2.fillRoundRect(tipX, tipY, tipW, tipH, 8, 8);
-        g2.setColor(new Color(100, 100, 100));
+        g2.setColor(tipBorder);
         g2.drawRoundRect(tipX, tipY, tipW, tipH, 8, 8);
         
         int textY = tipY + 20;
         for (int i = 0; i < lines.size(); i++) {
             if (i == 0) {
                 g2.setFont(new Font("Dialog", Font.BOLD, 12));
-                g2.setColor(Color.WHITE);
+                g2.setColor(tipTitleColor);
             } else {
                 g2.setFont(new Font("Dialog", Font.PLAIN, 12));
                 String line = lines.get(i);
-                g2.setColor(Color.LIGHT_GRAY);
+                
+                // Buscar el color original de la serie para máximo contraste sobre fondo oscuro
+                Color textColor = Color.LIGHT_GRAY;
                 for (ChartSeries s : series) {
-                    if (line.startsWith(s.name)) { g2.setColor(s.color); break; }
+                    if (line.startsWith(s.name)) { 
+                        textColor = s.color;
+                        // Si el color es negro (como UTHB en modo claro), lo pasamos a blanco para el tooltip oscuro
+                        if (textColor.equals(Color.BLACK)) textColor = Color.WHITE;
+                        break; 
+                    }
                 }
+                g2.setColor(textColor);
             }
             g2.drawString(lines.get(i), tipX + 10, textY);
             textY += 18;
         }
     }
     
+    /**
+     * Exporta el gráfico actual como imagen, forzando siempre el fondo blanco
+     * para garantizar la legibilidad en informes e impresiones.
+     */
     public void saveAsImage(File file) throws Exception {
-        BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2 = img.createGraphics();
-        this.paint(g2);
-        g2.dispose();
-        String name = file.getName().toLowerCase();
-        String format = name.endsWith(".png") ? "png" : "jpg";
-        ImageIO.write(img, format, file);
+        // 1. Guardar estado visual actual
+        boolean wasDarkMode = glb.darkMode;
+        Color oldColorN = glb.colorN;
+        Color oldBg = getBackground();
+
+        // 2. Forzar modo claro para impresión/informe
+        glb.darkMode = false;
+        glb.colorN = Color.BLACK;
+        setBackground(Color.WHITE);
+
+        try {
+            BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics2D g2 = img.createGraphics();
+            
+            // Pintar fondo blanco explícitamente en el buffer
+            g2.setColor(Color.WHITE);
+            g2.fillRect(0, 0, img.getWidth(), img.getHeight());
+            
+            // Renderizar el componente con el tema claro forzado
+            this.paint(g2);
+            g2.dispose();
+            
+            String name = file.getName().toLowerCase();
+            String format = name.endsWith(".png") ? "png" : "jpg";
+            ImageIO.write(img, format, file);
+        } finally {
+            // 3. Restaurar todo al estado anterior del usuario
+            glb.darkMode = wasDarkMode;
+            glb.colorN = oldColorN;
+            setBackground(oldBg);
+            repaint(); 
+        }
     }
 
     private static class ChartSeries {
