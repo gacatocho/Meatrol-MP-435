@@ -132,6 +132,22 @@ public class Opciones implements IOpciones, PropertyChangeListener
         propertyChangeSupport.firePropertyChange(PROP_COLORNEUTRO, oldColorNeutro, colorNeutro);
     }
 
+    private String logoPath = "";
+
+    @Override
+    public String getLogoPath()
+    {
+        return logoPath;
+    }
+
+    @Override
+    public void setLogoPath(String logoPath)
+    {
+        String oldLogoPath = this.logoPath;
+        this.logoPath = logoPath;
+        propertyChangeSupport.firePropertyChange(PROP_LOGOPATH, oldLogoPath, logoPath);
+    }
+
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     /**

@@ -708,31 +708,52 @@ public class FastChartPanel extends JPanel {
      * para garantizar la legibilidad en informes e impresiones.
      */
     public void saveAsImage(File file) throws Exception {
+        BufferedImage img = getSnapshotImage(getWidth(), getHeight());
+        String name = file.getName().toLowerCase();
+        String format = name.endsWith(".png") ? "png" : "jpg";
+        ImageIO.write(img, format, file);
+    }
+
+    /**
+     * Genera una captura del gráfico en alta resolución con fondo blanco.
+     * @param width Ancho deseado
+     * @param height Alto deseado
+     * @return BufferedImage con el gráfico renderizado
+     */
+    public BufferedImage getSnapshotImage(int width, int height) {
         // 1. Guardar estado visual actual
         boolean wasDarkMode = glb.darkMode;
         Color oldColorN = glb.colorN;
         Color oldBg = getBackground();
 
-        // 2. Forzar modo claro para impresión/informe
+        // 2. Forzar modo claro para el snapshot
         glb.darkMode = false;
         glb.colorN = Color.BLACK;
         setBackground(Color.WHITE);
 
         try {
-            BufferedImage img = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_RGB);
+            BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             Graphics2D g2 = img.createGraphics();
             
-            // Pintar fondo blanco explícitamente en el buffer
+            // Pintar fondo blanco explícitamente
             g2.setColor(Color.WHITE);
-            g2.fillRect(0, 0, img.getWidth(), img.getHeight());
+            g2.fillRect(0, 0, width, height);
             
-            // Renderizar el componente con el tema claro forzado
+            // Ajustar tamaño temporalmente para el renderizado
+            int oldW = getWidth();
+            int oldH = getHeight();
+            setSize(width, height);
+            doLayout();
+            
+            // Renderizar el componente
             this.paint(g2);
             g2.dispose();
             
-            String name = file.getName().toLowerCase();
-            String format = name.endsWith(".png") ? "png" : "jpg";
-            ImageIO.write(img, format, file);
+            // Restaurar tamaño original
+            setSize(oldW, oldH);
+            doLayout();
+            
+            return img;
         } finally {
             // 3. Restaurar todo al estado anterior del usuario
             glb.darkMode = wasDarkMode;

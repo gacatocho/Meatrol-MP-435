@@ -18,6 +18,7 @@ public interface IOpciones extends IBaseVDM
     String PROP_COLORFASEB = "colorFaseB";
     String PROP_COLORFASEC = "colorFaseC";
     String PROP_COLORNEUTRO = "colorNeutro";
+    String PROP_LOGOPATH = "logoPath";
 
     /**
      * Get the value of colorFaseA
@@ -74,5 +75,9 @@ public interface IOpciones extends IBaseVDM
      * @param colorNeutro new value of colorNeutro
      */
     void setColorNeutro(String colorNeutro);
+    
+    String getLogoPath();
+    
+    void setLogoPath(String logoPath);
     
 }

@@ -37,6 +37,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import org.gcto.dataCorrientes.dataCorrientes;
+import org.gcto.dataDemandaCorriente.verDemandaCorrientes;
+import org.gcto.dataDemandaPotencias.verDemandaPotencias;
 import org.gcto.dataEnergias.verEnergias;
 import org.gcto.dataTensiones.verTensiones;
 import org.gcto.dataPotAparente.verPotAparente;
@@ -624,6 +626,8 @@ public final class dataTopComponent extends TopComponent
             SystemAction.get(verFrecuencia.class).setEnabled(dataPresent);
             SystemAction.get(verHarmonicos.class).setEnabled(dataPresent);
             SystemAction.get(verEnergias.class).setEnabled(dataPresent);
+            SystemAction.get(verDemandaCorrientes.class).setEnabled(dataPresent);
+            SystemAction.get(verDemandaPotencias.class).setEnabled(dataPresent);
 
             // Habilitar acciones globales de guardado
             SystemAction.get(SaveProjectAction.class).setEnabled(dataPresent);

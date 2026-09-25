@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.PrintWriter;
 import java.text.ParseException;
@@ -322,6 +323,66 @@ public abstract class baseTopComponent extends TopComponent
         // Forzar repintado de la tabla para que el renderizador de color actúe
         tblStats.repaint();
     }
+
+//    /**
+//     * Configura la visibilidad de las series y refresca el componente para una captura de informe.
+//     * @param keywords Palabras clave para filtrar (ej: "A", "B", "C" o "SUM")
+//     */
+//    public void prepareForSnapshot(String... keywords) {
+//        for (int i = 0; i < statsModel.getRowCount(); i++) {
+//            String name = (String) statsModel.getValueAt(i, 1);
+//            boolean visible = false;
+//            for (String key : keywords) {
+//                if (name.toUpperCase().contains(key.toUpperCase())) {
+//                    visible = true;
+//                    break;
+//                }
+//            }
+//            statsModel.setValueAt(visible, i, 2);
+//            chartPanel.setSeriesVisibleByName(name, visible);
+//        }
+//        onTimeRangeUpdated(); // Refresca estadísticas y gráfico
+//    }
+
+//    /**
+//     * Captura una instantánea del componente para el informe PDF.
+//     * @return ReportSnapshot con título, imagen y datos de tabla.
+//     */
+//    public ReportSnapshot getSnapshot() {
+//        ReportSnapshot snapshot = new ReportSnapshot();
+//        snapshot.title = getName();
+//        snapshot.chartImage = chartPanel.getSnapshotImage(1000, 500);
+//        
+//        int colCount = tblStats.getColumnCount();
+//        snapshot.tableHeaders = new String[colCount];
+//        for (int i = 0; i < colCount; i++) {
+//            snapshot.tableHeaders[i] = tblStats.getColumnName(i);
+//        }
+//        
+//        snapshot.tableData = new ArrayList<>();
+//        for (int i = 0; i < statsModel.getRowCount(); i++) {
+//            // Solo incluir filas que están marcadas como visibles
+//            if (!(boolean) statsModel.getValueAt(i, 2)) continue;
+//            
+//            String[] row = new String[colCount];
+//            for (int j = 0; j < colCount; j++) {
+//                Object val = statsModel.getValueAt(i, j);
+//                row[j] = (val != null) ? val.toString() : "";
+//            }
+//            snapshot.tableData.add(row);
+//        }
+//        return snapshot;
+//    }
+
+//    /**
+//     * DTO para almacenar la evidencia de un análisis para el informe.
+//     */
+//    public static class ReportSnapshot {
+//        public String title;
+//        public BufferedImage chartImage;
+//        public String[] tableHeaders;
+//        public List<String[]> tableData;
+//    }
 
     protected boolean isColumnEditable(int column) { 
         return column == 2 || column == 6 || column == 10 || column == 11; 

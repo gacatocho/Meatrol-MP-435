@@ -33,5 +33,8 @@ public final class genInforme implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         // TODO implement action body
+        GenerarInforme genInfo = new GenerarInforme(null, true);
+        genInfo.setVisible(true);
+        
     }
 }

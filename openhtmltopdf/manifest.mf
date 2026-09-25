@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+AutoUpdate-Show-In-Client: true
+OpenIDE-Module: org.gcto.openhtmltopdf
+OpenIDE-Module-Localizing-Bundle: org/gcto/openhtmltopdf/Bundle.properties
+OpenIDE-Module-Specification-Version: 1.0
+

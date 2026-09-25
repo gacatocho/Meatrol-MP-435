@@ -43,6 +43,20 @@ public class glb
      * color Fase C
      */
     public static Color colorC = Color.RED;
+
+    /**
+     * color alterno fase A
+     */
+    public static Color colorAA = Color.ORANGE;
+    /**
+     * color alterno fase B
+     */
+    public static Color colorBB = Color.CYAN;
+    /**
+     * color alterno fase C
+     */
+    public static Color colorCC = Color.PINK;
+
     /**
      * color del neutro. Se ajusta dinámicamente según el tema.
      */
@@ -67,11 +81,11 @@ public class glb
      * corriente de Neutro calculada
      */
     public static double IN = 0;
-    
+
     /**
      * el grosor de la linea de promedio
      */
-    public static float grosLinProm= 1.8f ;
+    public static float grosLinProm = 1.8f;
 
     // --- SINCRONIZACIÓN GLOBAL DE RANGO TEMPORAL ---
     /**
@@ -299,7 +313,6 @@ public class glb
      * clase que maniene los datos generales del proyecto.
      */
     public static DatosProy dp = new DatosProy();
-    
 
     /**
      * el archivo que contiene un CSV con la información directo del equipo
@@ -311,6 +324,157 @@ public class glb
      * en un proyecto
      */
     public static File seletedFileVDM;
-    
 
+    //<editor-fold defaultstate="collapsed" desc="DEFINICION DE TEXTOS PARA MAPEO DE COLUMNAS EXACTO">
+//defincion para mapeo de columnas
+    //fecha y hora
+    public static String FECHA_MED = "Date&Time : Date";
+    public static String HORA_MED = "Date&Time : Time";
+
+    //tensiones
+    //termino general apra fultrar por columnas de tensión
+    public static String TENSION = "VOLTAJE(V)";
+    //terminos para ubicar las de fase y las de linea
+    public static String TENSION_FASE_A = "UA";
+    public static String TENSION_FASE_B = "UB";
+    public static String TENSION_FASE_C = "UC";
+    public static String TENSION_LINEA_AB = "UAB";
+    public static String TENSION_LINEA_BC = "UBC";
+    public static String TENSION_LINEA_AC = "UAC";
+
+    //armonicos de tension
+    //termino generico para ubicar columna de armonicos de tension
+    public static String HARM_V = "UTHD(%)";
+    //termino para refinar por fase
+    public static String HARM_VOLT_FASE_A = "UTHA";
+    public static String HARM_VOLT_FASE_B = "UTHB";
+    public static String HARM_VOLT_FASE_C = " UTHC";
+
+    //corrientes
+    //termino general para ubicar columnas de corriente
+    public static String CORRIENTE = "CURRENT(A)";
+    //termino para refinar por las fases
+    public static String CORRIENTE_FASE_A = "IA";
+    public static String CORRIENTE_FASE_B = "IB";
+    public static String CORRIENTE_FASE_C = "IC";
+
+    //armonicos de corriente
+    //termino generico para ubicar columna de armonicos de corriente - CUALQUIer numero o columnas
+    public static String HARM_I = "ITHD";
+    //termino generico para refinar y ubicar fases
+    public static String HARM_I_FASE_A = "A";
+    public static String HARM_I_FASE_B = "B";
+    public static String HARM_I_FASE_C = "C";
+
+    //frecuencias
+    //termino generico para ubicar columnas de frecuencias
+    public static String FREQ = "FREQUENCY";
+    //termino para refinar por fase (buscado el gneral se filtra por este para las fases)
+    public static String FREQ_FASE_A = "FA";
+    public static String FREQ_FASE_B = "FB";
+    public static String FREQ_FASE_C = "FC";
+
+    //factor de potencia (Power Factor)
+    //termino generico para ubicar columnas de power factor
+    public static String POWER_FACTOR = "POWER FACTOR";
+    //termino para refinar por fases y promedio
+    public static String POWER_FACTOR_FASE_A = "PFA";
+    public static String POWER_FACTOR_FASE_B = "PFB";
+    public static String POWER_FACTOR_FASE_C = "PFC";
+    public static String POWER_FACTOR_AVERAG = "PF AVERAGE";
+
+    //potencia activa
+    //termino generico para ubicar columnas de potencia activa
+    public static String ACTIVE_POWER = "ACTIVE POWER(W)";
+    //terminmo para refinar por fases
+    public static String ACTIVE_POWER_FASE_A = "PA";
+    public static String ACTIVE_POWER_FASE_B = "PB";
+    public static String ACTIVE_POWER_FASE_C = "PC";
+    public static String ACTIVE_POWER_SUM = "PSUM";
+
+    //potencia REactiva
+    //termino generico para ubicar columnas de potencia REactiva MEDIDA
+    public static String REACTIVE_POWER = "REACTIVE POWER(VAR)";
+    //termino generico para ubicar columnas de potencia REactiva CALCULADA
+    public static String REACTIVE_POWER_CALC = "REACTIVEPOWERCALC";
+    //para las fases y suma en cualquiera de los dos casos medida o calculada
+    public static String REACTIVE_POWER_FASE_A = "QA";
+    public static String REACTIVE_POWER_FASE_B = "QB";
+    public static String REACTIVE_POWER_FASE_C = "QC";
+    public static String REACTIVE_POWER_SUM = "QSUM";
+
+    //potencia aparente
+    //termino generico para ubicar columnas de potencia aparente
+    public static String APPARENT_POWER = "APPARENT POWER(VA)";
+//para REFINAR la seleccion de las fases y suma
+    public static String APPARENT_POWER_FASE_A = "SA";
+    public static String APPARENT_POWER_FASE_B = "SB";
+    public static String APPARENT_POWER_FASE_C = "SC";
+    public static String APPARENT_POWER_SUM = "SSUM";
+
+    //ENERGIA activa
+    //termino generico para ubicar columnas de energía activa
+    public static String ACTIVE_ENERGY = "ACTIVE ENERGY";
+    //terminmo para refinar por fases
+    public static String ACTIVE_ENERGY_FASE_A = "EPA";
+    public static String ACTIVE_ENERGY_FASE_B = "EPB";
+    public static String ACTIVE_ENERGY_FASE_C = "EPC";
+    public static String ACTIVE_ENERGY_SUM = "EPSUM";
+
+    //ENERGIA REactiva
+    //termino generico para ubicar columnas de energía REactiva
+    public static String REACTIVE_ENERGY = "REACTIVE ENERGY";
+    //terminmo para refinar por fases
+    public static String REACTIVE_ENERGY_FASE_A = "EQA";
+    public static String REACTIVE_ENERGY_FASE_B = "EQB";
+    public static String REACTIVE_ENERGY_FASE_C = "EQC";
+    public static String REACTIVE_ENERGY_SUM = "EQSUM";
+
+    //ENERGIA APARENTE
+    //termino generico para ubicar columnas de energía APARENTE
+    public static String APPARENT_ENERGY = "APPARENT ENERGY";
+    //terminmo para refinar por fases
+    public static String APPARENT_ENERGY_FASE_A = "ESA";
+    public static String APPARENT_ENERGY_FASE_B = "ESB";
+    public static String APPARENT_ENERGY_FASE_C = "ESC";
+    public static String APPARENT_ENERGY_SUM = "ESSUM";
+
+    //DEMANDA DE CORRIENTE
+    //termino generico para todas las columnas de demanda
+    public static String DEMAND = "DEMAND";
+
+    //termino para refinar por demanda de corriente especificamente PARA CADA FASE
+    public static String CURRENT_DEMAND_FASE_A = "DMIA";
+    public static String CURRENT_DEMAND_FASE_B = "DMIB";
+    public static String CURRENT_DEMAND_FASE_C = "DMIC";
+    //termino para refinar por PICO DE demanda de corriente especificamente PARA CADA FASE
+    public static String CURRENT_PEAK_DEMAND_FASE_A = "PDMIA";
+    public static String CURRENT_PEAK_DEMAND_FASE_B = "PDMIB";
+    public static String CURRENT_PEAK_DEMAND_FASE_C = "PDMIC";
+    //COLUMNAS QUE REPRESENTANA LAS FECHAS POR FASE DEL PICO DE DEMANDA
+    public static String CURRENT_DATE_PEAK_DEMAND_FASE_A = "PDMIA_D/T";
+    public static String CURRENT_DATE_PEAK_DEMAND_FASE_B = "PDMIB_D/T";
+    public static String CURRENT_DATE_PEAK_DEMAND_FASE_C = "PDMIC_D/T";
+
+    //termino para refinar por demanda de POTENCIA ACTIVA TOTAL
+    public static String TOTAL_ACTIVE_POWER_DEMAND = "DMP";
+    //termino para refinar por PICO DE  demanda de POTENCIA ACTIVA TOTAL
+    public static String TOTAL_PEAK_ACTIVE_POWER_DEMAND = "PDMP";
+    //COLUMNA QUE REPRESENTANA LAS FECHAS POR FASE DEL PICO DE DEMANDA  DE POTENCIA ACTIVA TOTAL
+    public static String TOTAL_ACTIVE_POWER_DATE_PEAK_DEMAND = "PDMP_D/T";
+
+    //termino para refinar por demanda de POTENCIA REACTIVA TOTAL
+    public static String TOTAL_REACTIVE_POWER_DEMAND = "DMQ";
+    //termino para refinar por PICO DE  demanda de POTENCIA REACTIVA TOTAL
+    public static String TOTAL_PEAK_REACTIVE_POWER_DEMAND = "PDMQ";
+    //COLUMNA QUE REPRESENTANA LAS FECHAS POR FASE DEL PICO DE DEMANDA  DE POTENCIA REACTIVA TOTAL
+    public static String TOTAL_REACTIVE_POWER_DATE_PEAK_DEMAND = "PDMQ_D/T";
+
+    //termino para refinar por demanda de POTENCIA APARENTE TOTAL
+    public static String TOTAL_APPARENT_POWER_DEMAND = "DMS";
+    //termino para refinar por PICO DE  demanda de POTENCIA APARENTE TOTAL
+    public static String TOTAL_PEAK_APPARENT_POWER_DEMAND = "PDMS";
+    //COLUMNA QUE REPRESENTANA LAS FECHAS POR FASE DEL PICO DE DEMANDA  DE POTENCIA APARENTE TOTAL
+    public static String TOTAL_APPARENT_POWER_DATE_PEAK_DEMAND = "PDMS_D/T";
+//</editor-fold>
 }

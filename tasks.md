@@ -31,3 +31,6 @@
 - [x] Migrate Export/Refresh actions to global File/View menus and toolbars.
 - [x] Implement Live Values panel for real-time cursor data visualization.
 - [x] Implement Harmonics individual analysis (H3, H5, H7, etc.) and Spectrum View.
+- [x] Implement Advanced Phasor Diagram in Current Analysis with IND/CAP detection.
+- [x] Create `demandaCorrientesTopComponent` with selective year 2000 filtering.
+- [x] Create `demandaPotenciasTopComponent` with dynamic P/Q/S category filtering.
