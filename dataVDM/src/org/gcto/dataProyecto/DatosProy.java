@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package org.gcto.dataGlobal;
+package org.gcto.dataProyecto;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -10,6 +10,8 @@ import java.beans.PropertyChangeSupport;
 import java.lang.reflect.Field;
 import org.gcto.interfases.IDatosProy;
 import javax.persistence.Entity;
+import org.gcto.dataEnum.EEstado;
+import org.gcto.dataEnum.ETipoRED;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -334,33 +336,26 @@ public class DatosProy implements IDatosProy, PropertyChangeListener
         propertyChangeSupport.firePropertyChange(PROP_RUTAPROYECTO, oldRutaProyecto, rutaProyecto);
     }
 
-    private String[] listaRecientes =
-    {
-        "", "", "", "", "", "", "", "", "", ""
-    };
+
+
 
     /**
-     * Get the value of listaRecientes / hasta 10 datos en el arreglo
-     *
-     * @return the value of listaRecientes
+     * comentario para aclarar algo de la medida
      */
+    private String comentario = "comentario";
+
     @Override
-    public String[] getListaRecientes()
+    public String getComentario()
     {
-        return listaRecientes;
+        return comentario;
     }
 
-    /**
-     * Set the value of listaRecientes
-     *
-     * @param listaRecientes new value of listaRecientes
-     */
     @Override
-    public void setListaRecientes(String[] listaRecientes)
+    public void setComentario(String comentario)
     {
-        String[] oldListaRecientes = this.listaRecientes;
-        this.listaRecientes = listaRecientes;
-        propertyChangeSupport.firePropertyChange(PROP_LISTARECIENTES, oldListaRecientes, listaRecientes);
+        String oldComentario = this.comentario;
+        this.comentario = comentario;
+        propertyChangeSupport.firePropertyChange(PROP_COMENTARIO, oldComentario, comentario);
     }
 
     @Override

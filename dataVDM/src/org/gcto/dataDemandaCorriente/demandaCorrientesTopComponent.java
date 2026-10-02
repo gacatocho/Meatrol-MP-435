@@ -4,6 +4,7 @@
  */
 package org.gcto.dataDemandaCorriente;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import org.gcto.dataGlobal.FastChartPanel;
 import org.gcto.dataGlobal.baseTopComponent;
 import org.gcto.dataGlobal.glb;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -22,11 +24,10 @@ import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 
 /**
- * Top component que visualiza el análisis de Demanda de Corrientes.
- * Especializado en: 
- * - Demanda por intervalo (DmI) 
- * - Picos de demanda (PDmI) 
- * - Validación de fechas de pico (ignora año 2000 de forma selectiva por fase)
+ * Top component que visualiza el análisis de Demanda de Corrientes. Reformado
+ * para mostrar solo DMIA, DMIB y DMIC filtrados por DEMAND. Estructura alineada
+ * con frecuenciaTopComponent. Filtra datos del año 2000 por ser irrelevantes.
+ * Ajusta dinámicamente el eje Y según el máximo de la selección actual.
  */
 @ConvertAsProperties(
         dtd = "-//org.gcto.dataDemandaCorriente//demandaCorriente//EN",
@@ -48,12 +49,12 @@ import org.openide.util.NbBundle.Messages;
         {
             "CTL_demandaCorrienteAction=demanda de corrientes",
             "CTL_demandaCorrientesTopComponent=Análisis de Demanda de Corrientes",
-            "HINT_demandaCorrientesTopComponent=Visualización de demanda promedio y picos de corriente"
+            "HINT_demandaCorrientesTopComponent=Visualización de demanda de corriente por fase (DMIA, DMIB, DMIC)"
         })
 public final class demandaCorrientesTopComponent extends baseTopComponent
 {
 
-    private final List<SeriesControl> seriesControls = new ArrayList<>();
+    private final List<PhaseControl> phaseControls = new ArrayList<>();
     private JSpinner spnMinY;
     private JSpinner spnMaxY;
 
@@ -63,32 +64,38 @@ public final class demandaCorrientesTopComponent extends baseTopComponent
         setToolTipText(Bundle.HINT_demandaCorrientesTopComponent());
 
         setupYRangeControls();
-        // Configurar tabla de estadísticas para demanda: Ocultar Min, F.Min, PromA, VerProm, F.Max (8), y extras
-        hideStatsColumns(3, 4, 5, 6, 8, 9, 10, 11);
+        hideStatsColumns(9, 10, 11);
     }
 
     private void setupYRangeControls()
     {
-        spnMinY = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 5000.0, 0.5));
-        spnMaxY = new JSpinner(new SpinnerNumberModel(100.0, 0.0, 5000.0, 1.0));
+        spnMinY = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 10000.0, 0.1));
+        spnMaxY = new JSpinner(new SpinnerNumberModel(10.0, 0.0, 10000.0, 0.5));
+
         spnMinY.setEditor(new JSpinner.NumberEditor(spnMinY, "0.0"));
         spnMaxY.setEditor(new JSpinner.NumberEditor(spnMaxY, "0.0"));
+
         spnMinY.addChangeListener(e -> updateManualRange());
         spnMaxY.addChangeListener(e -> updateManualRange());
 
         JPanel pnlY = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        pnlY.add(new JLabel("Escala Y (A):")); pnlY.add(spnMinY);
-        pnlY.add(new JLabel("Max:")); pnlY.add(spnMaxY);
+        pnlY.add(new JLabel("Min Y (A):"));
+        pnlY.add(spnMinY);
+        pnlY.add(new JLabel("Max Y (A):"));
+        pnlY.add(spnMaxY);
 
-        pnlSouth.add(new JSeparator(JSeparator.VERTICAL), 0);
-        pnlSouth.add(pnlY, 0);
+        pnlSouth.add(new JSeparator(JSeparator.VERTICAL));
+        pnlSouth.add(pnlY);
+
+        updateManualRange();
     }
 
     private void updateManualRange()
     {
         double min = (Double) spnMinY.getValue();
         double max = (Double) spnMaxY.getValue();
-        if (min < max) {
+        if (min < max)
+        {
             chartPanel.setManualYRange(min, max);
         }
     }
@@ -96,9 +103,7 @@ public final class demandaCorrientesTopComponent extends baseTopComponent
     @Override
     protected void mapColumns()
     {
-        if (masterHeaders == null || masterHeaders.length == 0) return;
-
-        seriesControls.clear();
+        phaseControls.clear();
         statsModel.setRowCount(0);
 
         List<Integer> chartIndices = new ArrayList<>();
@@ -108,161 +113,196 @@ public final class demandaCorrientesTopComponent extends baseTopComponent
         for (int i = 0; i < masterHeaders.length; i++)
         {
             String h = masterHeaders[i].toUpperCase();
+            Color c = null;
 
-            // 1. Detectar Demanda Base (DmIA, DmIB, DmIC)
-            if ((h.contains("DMIA") || h.contains("DMIB") || h.contains("DMIC")) && !h.contains("PDM") && !h.contains("_D/T"))
+            if ((glb.isStrict(h, glb.CURRENT_DEMAND_FASE_A, glb.DEMAND_I)) && !h.contains("P"))
             {
-                String phase = h.contains("DMIA") ? "A" : (h.contains("DMIB") ? "B" : "C");
-                Color color = getPhaseColor(h);
-                int idxDate = findColumn("PDMI" + phase + "_D/T");
-                
-                seriesControls.add(new SeriesControl(i, idxDate, masterHeaders[i], color));
+                c = glb.colorA;
+            } else if ((glb.isStrict(h, glb.CURRENT_DEMAND_FASE_B, glb.DEMAND_I)) && !h.contains("P"))
+            {
+                c = glb.colorB;
+            } else if ((glb.isStrict(h, glb.CURRENT_DEMAND_FASE_C, glb.DEMAND_I)) && !h.contains("P"))
+            {
+                c = glb.colorC;
+            }
+
+            if (c != null)
+            {
+                phaseControls.add(new PhaseControl(i, masterHeaders[i], c));
                 chartIndices.add(i);
                 chartNames.add(masterHeaders[i]);
-                chartColors.add(color);
-            }
-            
-            // 2. Detectar Picos de Demanda (PDMIA, PDMIB, PDMIC)
-            if ((h.contains("PDMIA") || h.contains("PDMIB") || h.contains("PDMIC")) && !h.contains("_D/T"))
-            {
-                String phase = h.contains("PDMIA") ? "A" : (h.contains("PDMIB") ? "B" : "C");
-                Color color = getPhaseColor(h);
-                int idxDate = findColumn("PDMI" + phase + "_D/T");
-                
-                seriesControls.add(new SeriesControl(i, idxDate, "Pico " + phase, color));
-                chartIndices.add(i);
-                chartNames.add("Pico " + phase);
-                chartColors.add(color);
+                chartColors.add(c);
             }
         }
 
         chartPanel.setSeries(chartIndices, chartNames, chartColors);
         updateStatsTableRows();
-        
-        // Auto-escala inicial
-        if (!masterData.isEmpty() && !chartIndices.isEmpty()) {
-            double maxVal = 0;
-            int step = Math.max(1, masterData.size() / 500);
-            for (int i = 0; i < masterData.size(); i += step) {
-                String[] row = masterData.get(i);
-                for (int idx : chartIndices) maxVal = Math.max(maxVal, glb.parseDoubleSafe(row[idx]));
-            }
-            if (maxVal > 0) {
-                spnMaxY.setValue(Math.ceil(maxVal * 1.2));
-                updateManualRange();
-            }
-        }
-    }
-
-    private int findColumn(String key)
-    {
-        for (int i = 0; i < masterHeaders.length; i++)
-        {
-            String h = masterHeaders[i].toUpperCase().replace(" ", "").replace(":", "");
-            if (h.contains(key)) return i;
-        }
-        return -1;
-    }
-
-    private Color getPhaseColor(String h)
-    {
-        String hu = h.toUpperCase();
-        if (hu.contains("DMIA")) return hu.contains("P") ? glb.colorAA : glb.colorA;
-        if (hu.contains("DMIB")) return hu.contains("P") ? glb.colorBB : glb.colorB;
-        if (hu.contains("DMIC")) return hu.contains("P") ? glb.colorCC : glb.colorC;
-        return Color.GRAY;
     }
 
     private void updateStatsTableRows()
     {
         statsModel.setRowCount(0);
-        for (SeriesControl sc : seriesControls)
+        for (PhaseControl pc : phaseControls)
         {
+            // Columnas: Color(0), Nombre(1), Ver(2), Min(3), F.Min(4), PromA(5), VerProm(6), Max(7), F.Max(8), PromS(9), %Nivel(10), VerS(11)
             statsModel.addRow(new Object[]
             {
-                sc.color, sc.name, true, "-", "-", "-", false, "0.0", "-", "0.0", 0, false
+                pc.color, pc.name, true, "0.0", "-", "0.0", false, "0.0", "-", "0.0", 0, false
             });
         }
-
-        tblStats.getColumnModel().getColumn(7).setHeaderValue("Valor Máximo (A)");
-        tblStats.getTableHeader().repaint();
-
         updateStatistics();
         adjustStatsTableHeight();
     }
 
-    @Override protected void onDataLoaded() { updateChartData(); updateStatistics(); }
-    @Override protected void onTimeRangeUpdated() { updateChartData(); updateStatistics(); }
+    @Override
+    protected void onDataLoaded()
+    {
+        updateChartData();
+        updateStatistics();
+    }
+
+    @Override
+    protected void onTimeRangeUpdated()
+    {
+        updateChartData();
+        updateStatistics();
+    }
 
     private void updateChartData()
     {
-        if (masterData.isEmpty()) return;
+        if (masterData.isEmpty())
+        {
+            return;
+        }
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
-
-        List<String[]> filteredData = new ArrayList<>(eIdx - sIdx + 1);
-        for (int i = sIdx; i <= eIdx; i++)
-        {
-            String[] originalRow = masterData.get(i);
-            String[] filteredRow = originalRow.clone();
-
-            for (SeriesControl sc : seriesControls)
-            {
-                if (sc.idxDate != -1 && originalRow[sc.idxDate].startsWith("2000"))
-                {
-                    filteredRow[sc.colIdx] = "0.0";
-                }
-            }
-            filteredData.add(filteredRow);
-        }
-
-        chartPanel.setData(filteredData, 0, filteredData.size() - 1);
+        chartPanel.setData(masterData, sIdx, eIdx);
     }
 
     private void updateStatistics()
     {
-        if (masterData.isEmpty() || seriesControls.isEmpty()) return;
+        if (masterData.isEmpty() || phaseControls.isEmpty())
+        {
+            return;
+        }
 
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
 
-        int rowInModel = 0;
-        for (SeriesControl sc : seriesControls)
-        {
-            boolean isVisible = (boolean) statsModel.getValueAt(rowInModel, 2);
-            if (!isVisible) { rowInModel++; continue; }
+        List<FastChartPanel.TrendLine> trendLines = new ArrayList<>();
 
-            double maxVal = -1.0;
+        double globalMaxInSelection = 0; // Para el auto-ajuste dinámico del eje Y
+
+        int rowInModel = 0;
+        for (int i = 0; i < phaseControls.size(); i++)
+        {
+            PhaseControl pc = phaseControls.get(i);
+            boolean isVisible = (boolean) statsModel.getValueAt(rowInModel, 2);
+            if (!isVisible)
+            {
+                rowInModel++;
+                continue;
+            }
+
+            int colIdx = pc.colIdx;
+            double min = Double.MAX_VALUE, max = -Double.MAX_VALUE, sum = 0;
+            String dateMin = "-", dateMax = "-";
+            int count = 0;
 
             for (int r = sIdx; r <= eIdx; r++)
             {
                 String[] row = masterData.get(r);
-                if (sc.idxDate != -1 && row[sc.idxDate].startsWith("2000")) continue;
 
-                double val = glb.parseDoubleSafe(row[sc.colIdx]);
-                if (val > maxVal) maxVal = val;
+                // Filtro año 2000: si la fecha empieza por 2000, ignoramos el dato para estadísticas
+                if (row[0].startsWith("2000"))
+                {
+                    continue;
+                }
+
+                double val = glb.parseDoubleSafe(row[colIdx]);
+                if (val < min)
+                {
+                    min = val;
+                    dateMin = row[0] + " " + row[1];
+                }
+                if (val > max)
+                {
+                    max = val;
+                    dateMax = row[0] + " " + row[1];
+                }
+                sum += val;
+                count++;
             }
 
-            statsModel.setValueAt(String.format("%.2f", Math.max(0, maxVal)), rowInModel, 7);
+            if (count > 0)
+            {
+                if (max > globalMaxInSelection)
+                {
+                    globalMaxInSelection = max;
+                }
+            } else
+            {
+                min = 0;
+                max = 0;
+                dateMin = "-";
+                dateMax = "-";
+            }
+
+            double avgArit = count > 0 ? sum / count : 0;
+
+            statsModel.setValueAt(String.format("%.2f", min), rowInModel, 3);
+            statsModel.setValueAt(dateMin, rowInModel, 4);
+            statsModel.setValueAt(String.format("%.2f", avgArit), rowInModel, 5);
+            statsModel.setValueAt(String.format("%.2f", max), rowInModel, 7);
+            statsModel.setValueAt(dateMax, rowInModel, 8);
+
+            boolean showP = (boolean) statsModel.getValueAt(rowInModel, 6);
+            if (showP)
+            {
+                trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
+                {
+                    10, 5
+                }, 0)));
+            }
+
             rowInModel++;
         }
+
+        // Auto-ajuste dinámico del eje Y basado en la selección actual (Máximo + 10%)
+        if (globalMaxInSelection > 0)
+        {
+            double newMaxY = globalMaxInSelection * 1.1;
+            // Solo actualizamos si hay un cambio significativo para evitar parpadeos
+            if (Math.abs((Double) spnMaxY.getValue() - newMaxY) > 0.01)
+            {
+                spnMaxY.setValue(newMaxY);
+            }
+        }
+
+        chartPanel.setTrendLines(trendLines);
     }
 
-    private static class SeriesControl
+    private static class PhaseControl
     {
-        int colIdx, idxDate;
+
+        int colIdx;
         String name;
         Color color;
 
-        SeriesControl(int ci, int idt, String n, Color c)
+        PhaseControl(int colIdx, String name, Color color)
         {
-            this.colIdx = ci;
-            this.idxDate = idt;
-            this.name = n;
-            this.color = c;
+            this.colIdx = colIdx;
+            this.name = name;
+            this.color = color;
         }
     }
 
-    void writeProperties(java.util.Properties p) { p.setProperty("version", "1.0"); }
-    void readProperties(java.util.Properties p) {}
+    void writeProperties(java.util.Properties p)
+    {
+        p.setProperty("version", "1.0");
+    }
+
+    void readProperties(java.util.Properties p)
+    {
+    }
 }

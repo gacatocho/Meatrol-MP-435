@@ -2,14 +2,17 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package org.gcto.dataGlobal;
+package org.gcto.dataBD;
 
+import org.gcto.dataProyecto.DatosProy;
 import java.io.File;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+import org.gcto.dataOpciones.Opciones;
+import org.gcto.dataGlobal.glb;
 import org.gcto.interfases.IBaseVDM;
 
 /**

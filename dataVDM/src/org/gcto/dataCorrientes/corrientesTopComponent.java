@@ -5,9 +5,7 @@
 package org.gcto.dataCorrientes;
 
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -18,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import org.gcto.dataGlobal.FastChartPanel;
@@ -31,8 +28,8 @@ import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 
 /**
- * Top component que visualiza el análisis de corrientes.
- * Incluye Diagrama Fasorial interactivo sincronizado con el cursor.
+ * Top component que visualiza el análisis de corrientes. Incluye Diagrama
+ * Fasorial interactivo sincronizado con el cursor.
  */
 @ConvertAsProperties(
         dtd = "-//org.gcto.dataCorrientes//corrientes//EN",
@@ -62,7 +59,7 @@ public final class corrientesTopComponent extends baseTopComponent
     private final List<PhaseControl> phaseControls = new ArrayList<>();
     private JCheckBox chkPhasor;
     private PhasorFrame phasorFrame;
-    
+
     // Índices para cálculo fasorial
     private int idxUA = -1, idxUB = -1, idxUC = -1;
     private int idxIA = -1, idxIB = -1, idxIC = -1;
@@ -73,36 +70,46 @@ public final class corrientesTopComponent extends baseTopComponent
     {
         setName(Bundle.CTL_corrientesTopComponent());
         setToolTipText(Bundle.HINT_corrientesTopComponent());
-        
+
         setupPhasorControl();
-        
+
         // Sincronizar diagrama fasorial con el cursor
-        chartPanel.setCursorDataListener((dataIdx, activeSeries) -> {
-            if (phasorFrame != null && phasorFrame.isVisible()) {
-                if (dataIdx >= 0 && dataIdx < masterData.size()) {
+        chartPanel.setCursorDataListener((dataIdx, activeSeries) ->
+        {
+            if (phasorFrame != null && phasorFrame.isVisible())
+            {
+                if (dataIdx >= 0 && dataIdx < masterData.size())
+                {
                     phasorFrame.updateData(masterData.get(dataIdx));
-                } else {
+                } else
+                {
                     phasorFrame.updateData(null);
                 }
             }
         });
     }
 
-    private void setupPhasorControl() {
+    private void setupPhasorControl()
+    {
         chkPhasor = new JCheckBox("Ver Diagrama Fasorial");
         chkPhasor.addActionListener(e -> togglePhasorFrame());
-        
+
         pnlSouth.add(new JSeparator(JSeparator.VERTICAL), 0);
         pnlSouth.add(chkPhasor, 0);
     }
 
-    private void togglePhasorFrame() {
-        if (chkPhasor.isSelected()) {
-            if (phasorFrame == null) {
+    private void togglePhasorFrame()
+    {
+        if (chkPhasor.isSelected())
+        {
+            if (phasorFrame == null)
+            {
                 phasorFrame = new PhasorFrame();
-                phasorFrame.addWindowListener(new WindowAdapter() {
+                phasorFrame.addWindowListener(new WindowAdapter()
+                {
                     @Override
-                    public void windowClosing(WindowEvent e) {
+                    public void windowClosing(WindowEvent e)
+                    {
                         chkPhasor.setSelected(false);
                         phasorFrame = null;
                     }
@@ -110,8 +117,10 @@ public final class corrientesTopComponent extends baseTopComponent
             }
             phasorFrame.updateTheme();
             phasorFrame.setVisible(true);
-        } else {
-            if (phasorFrame != null) {
+        } else
+        {
+            if (phasorFrame != null)
+            {
                 phasorFrame.dispose();
                 phasorFrame = null;
             }
@@ -119,9 +128,11 @@ public final class corrientesTopComponent extends baseTopComponent
     }
 
     @Override
-    public void updateTheme() {
+    public void updateTheme()
+    {
         super.updateTheme();
-        if (phasorFrame != null) {
+        if (phasorFrame != null)
+        {
             phasorFrame.updateTheme();
         }
     }
@@ -131,12 +142,20 @@ public final class corrientesTopComponent extends baseTopComponent
     {
         phaseControls.clear();
         statsModel.setRowCount(0);
-        
+
         // Reset de índices de cálculo
-        idxUA = -1; idxUB = -1; idxUC = -1;
-        idxIA = -1; idxIB = -1; idxIC = -1;
-        idxFPA = -1; idxFPB = -1; idxFPC = -1;
-        idxQA = -1; idxQB = -1; idxQC = -1;
+        idxUA = -1;
+        idxUB = -1;
+        idxUC = -1;
+        idxIA = -1;
+        idxIB = -1;
+        idxIC = -1;
+        idxFPA = -1;
+        idxFPB = -1;
+        idxFPC = -1;
+        idxQA = -1;
+        idxQB = -1;
+        idxQC = -1;
 
         List<Integer> chartIndices = new ArrayList<>();
         List<String> chartNames = new ArrayList<>();
@@ -145,13 +164,25 @@ public final class corrientesTopComponent extends baseTopComponent
         for (int i = 0; i < masterHeaders.length; i++)
         {
             String h = masterHeaders[i].toUpperCase();
-            
+
             // Mapeo para Tendencia
             Color c = null;
-            if (isStrictCurrent(h, "IA")) { c = glb.colorA; idxIA = i; }
-            else if (isStrictCurrent(h, "IB")) { c = glb.colorB; idxIB = i; }
-            else if (isStrictCurrent(h, "IC")) { c = glb.colorC; idxIC = i; }
-            else if (isStrictCurrent(h, "IN")) { c = glb.colorN; }
+            if (glb.isStrict(h, glb.CORRIENTE_FASE_A, glb.CORRIENTE))
+            {
+                c = glb.colorA;
+                idxIA = i;
+            } else if (glb.isStrict(h, glb.CORRIENTE_FASE_B, glb.CORRIENTE))
+            {
+                c = glb.colorB;
+                idxIB = i;
+            } else if (glb.isStrict(h, glb.CORRIENTE_FASE_C, glb.CORRIENTE))
+            {
+                c = glb.colorC;
+                idxIC = i;
+            } else if (glb.isStrict(h, glb.CORRIENTE_NEUTRO, glb.CORRIENTE))
+            {
+                c = glb.colorN;
+            }
 
             if (c != null)
             {
@@ -160,46 +191,46 @@ public final class corrientesTopComponent extends baseTopComponent
                 chartNames.add(masterHeaders[i]);
                 chartColors.add(c);
             }
-            
+
             // Mapeo para Fasores (Tensiones, FP y Reactiva)
-            if (isStrictVoltage(h, "UA")) idxUA = i;
-            else if (isStrictVoltage(h, "UB")) idxUB = i;
-            else if (isStrictVoltage(h, "UC")) idxUC = i;
-            
-            if (isStrictPF(h, "PFA")) idxFPA = i;
-            else if (isStrictPF(h, "PFB")) idxFPB = i;
-            else if (isStrictPF(h, "PFC")) idxFPC = i;
-            
-            if (isStrictReactive(h, "QA")) idxQA = i;
-            else if (isStrictReactive(h, "QB")) idxQB = i;
-            else if (isStrictReactive(h, "QC")) idxQC = i;
+            if (glb.isStrict(h, glb.TENSION_FASE_A, glb.TENSION))
+            {
+                idxUA = i;
+            } else if (glb.isStrict(h, glb.TENSION_FASE_B, glb.TENSION))
+            {
+                idxUB = i;
+            } else if (glb.isStrict(h, glb.TENSION_FASE_C, glb.TENSION))
+            {
+                idxUC = i;
+            }
+
+            if (glb.isStrict(h, glb.POWER_FACTOR_FASE_A, glb.POWER_FACTOR))
+            {
+                idxFPA = i;
+            } else if (glb.isStrict(h, glb.POWER_FACTOR_FASE_B, glb.POWER_FACTOR))
+            {
+                idxFPB = i;
+            } else if (glb.isStrict(h, glb.POWER_FACTOR_FASE_C, glb.POWER_FACTOR))
+            {
+                idxFPC = i;
+            }
+
+            if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_A, glb.REACTIVE_POWER))
+            {
+                idxQA = i;
+            } else if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_B, glb.REACTIVE_POWER))
+            {
+                idxQB = i;
+            } else if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_C, glb.REACTIVE_POWER))
+            {
+                idxQC = i;
+            }
         }
 
         chartPanel.setSeries(chartIndices, chartNames, chartColors);
         updateStatsTableRows();
     }
-    
-    private boolean isStrictCurrent(String h, String phase) {
-        if (!h.contains("CURRENT")) return false;
-        if (h.contains("ENERGY") || h.contains("AH")) return false;
-        return h.contains(" " + phase) || h.contains(": " + phase) || h.endsWith(" " + phase) || h.endsWith(":" + phase);
-    }
-    
-    private boolean isStrictVoltage(String h, String phase) {
-        if (!h.contains("VOLTAGE")) return false;
-        return h.contains(" " + phase) || h.contains(": " + phase) || h.endsWith(" " + phase) || h.endsWith(":" + phase);
-    }
-    
-    private boolean isStrictPF(String h, String phase) {
-        if (!h.contains("POWER FACTOR")) return false;
-        return h.contains(" " + phase) || h.contains(": " + phase) || h.endsWith(" " + phase) || h.endsWith(":" + phase);
-    }
-    
-    private boolean isStrictReactive(String h, String phase) {
-        if (!h.contains("REACTIVE")) return false;
-        if (h.contains("ENERGY") || h.contains("VARH")) return false;
-        return h.contains(" " + phase) || h.contains(": " + phase) || h.endsWith(" " + phase) || h.endsWith(":" + phase);
-    }
+
 
     private void updateStatsTableRows()
     {
@@ -215,11 +246,26 @@ public final class corrientesTopComponent extends baseTopComponent
         adjustStatsTableHeight();
     }
 
-    @Override protected void onDataLoaded() { updateChartData(); updateStatistics(); }
-    @Override protected void onTimeRangeUpdated() { updateChartData(); updateStatistics(); }
-    
-    private void updateChartData() {
-        if (masterData.isEmpty()) return;
+    @Override
+    protected void onDataLoaded()
+    {
+        updateChartData();
+        updateStatistics();
+    }
+
+    @Override
+    protected void onTimeRangeUpdated()
+    {
+        updateChartData();
+        updateStatistics();
+    }
+
+    private void updateChartData()
+    {
+        if (masterData.isEmpty())
+        {
+            return;
+        }
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
         chartPanel.setData(masterData, sIdx, eIdx);
@@ -227,19 +273,26 @@ public final class corrientesTopComponent extends baseTopComponent
 
     private void updateStatistics()
     {
-        if (masterData.isEmpty() || phaseControls.isEmpty()) return;
+        if (masterData.isEmpty() || phaseControls.isEmpty())
+        {
+            return;
+        }
 
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
 
         List<FastChartPanel.TrendLine> trendLines = new ArrayList<>();
-        
+
         int rowInModel = 0;
         for (int i = 0; i < phaseControls.size(); i++)
         {
             PhaseControl pc = phaseControls.get(i);
             boolean isVisible = (boolean) statsModel.getValueAt(rowInModel, 2);
-            if (!isVisible) { rowInModel++; continue; }
+            if (!isVisible)
+            {
+                rowInModel++;
+                continue;
+            }
 
             int colIdx = pc.colIdx;
             double min = Double.MAX_VALUE, max = -Double.MAX_VALUE, sum = 0;
@@ -250,19 +303,34 @@ public final class corrientesTopComponent extends baseTopComponent
             {
                 String[] row = masterData.get(r);
                 double val = glb.parseDoubleSafe(row[colIdx]);
-                if (val < min) { min = val; dateMin = row[0] + " " + row[1]; }
-                if (val > max) { max = val; dateMax = row[0] + " " + row[1]; }
-                sum += val; count++;
+                if (val < min)
+                {
+                    min = val;
+                    dateMin = row[0] + " " + row[1];
+                }
+                if (val > max)
+                {
+                    max = val;
+                    dateMax = row[0] + " " + row[1];
+                }
+                sum += val;
+                count++;
             }
 
             double avgArit = count > 0 ? sum / count : 0;
             int levelPercent = (int) statsModel.getValueAt(rowInModel, 10);
             double threshold = max * (levelPercent / 100.0);
-            double sumAbove = 0; int countAbove = 0;
+            double sumAbove = 0;
+            int countAbove = 0;
 
-            for (int r = sIdx; r <= eIdx; r++) {
+            for (int r = sIdx; r <= eIdx; r++)
+            {
                 double val = glb.parseDoubleSafe(masterData.get(r)[colIdx]);
-                if (val >= threshold) { sumAbove += val; countAbove++; }
+                if (val >= threshold)
+                {
+                    sumAbove += val;
+                    countAbove++;
+                }
             }
             double avgAbove = countAbove > 0 ? sumAbove / countAbove : 0;
 
@@ -275,9 +343,21 @@ public final class corrientesTopComponent extends baseTopComponent
 
             boolean showP = (boolean) statsModel.getValueAt(rowInModel, 6);
             boolean showS = (boolean) statsModel.getValueAt(rowInModel, 11);
-            
-            if (showP) trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{10, 5}, 0)));
-            if (showS) trendLines.add(new FastChartPanel.TrendLine(avgAbove, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{2, 4}, 0)));
+
+            if (showP)
+            {
+                trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
+                {
+                    10, 5
+                }, 0)));
+            }
+            if (showS)
+            {
+                trendLines.add(new FastChartPanel.TrendLine(avgAbove, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
+                {
+                    2, 4
+                }, 0)));
+            }
 
             rowInModel++;
         }
@@ -285,9 +365,11 @@ public final class corrientesTopComponent extends baseTopComponent
     }
 
     @Override
-    public void componentClosed() {
+    public void componentClosed()
+    {
         super.componentClosed();
-        if (phasorFrame != null) {
+        if (phasorFrame != null)
+        {
             phasorFrame.dispose();
             phasorFrame = null;
         }
@@ -296,10 +378,13 @@ public final class corrientesTopComponent extends baseTopComponent
     /**
      * Ventana flotante no modal para el Diagrama Fasorial.
      */
-    private class PhasorFrame extends JFrame {
+    private class PhasorFrame extends JFrame
+    {
+
         private final PhasorPanel panel;
 
-        public PhasorFrame() {
+        public PhasorFrame()
+        {
             setTitle("Diagrama Fasorial - Tiempo Real");
             setSize(600, 650);
             setAlwaysOnTop(true);
@@ -309,11 +394,13 @@ public final class corrientesTopComponent extends baseTopComponent
             setLocationRelativeTo(corrientesTopComponent.this);
         }
 
-        public void updateData(String[] row) {
+        public void updateData(String[] row)
+        {
             panel.setData(row);
         }
 
-        public void updateTheme() {
+        public void updateTheme()
+        {
             panel.setBackground(glb.darkMode ? new Color(33, 33, 33) : Color.WHITE);
             panel.repaint();
         }
@@ -322,24 +409,29 @@ public final class corrientesTopComponent extends baseTopComponent
     /**
      * Panel de dibujo para los fasores.
      */
-    private class PhasorPanel extends JPanel {
+    private class PhasorPanel extends JPanel
+    {
+
         private String[] rowData = null;
 
-        public PhasorPanel() {
+        public PhasorPanel()
+        {
             setBackground(new Color(33, 33, 33));
         }
 
-        public void setData(String[] row) {
+        public void setData(String[] row)
+        {
             this.rowData = row;
             repaint();
         }
 
         @Override
-        protected void paintComponent(Graphics g) {
+        protected void paintComponent(Graphics g)
+        {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g;
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            
+
             int w = getWidth(), h = getHeight();
             int cx = w / 2, cy = h / 2 - 20;
             int radius = 200;
@@ -350,12 +442,16 @@ public final class corrientesTopComponent extends baseTopComponent
             // Dibujar Círculo de Referencia y Ejes
             g2.setColor(gridColor);
             g2.drawOval(cx - radius, cy - radius, radius * 2, radius * 2);
-            g2.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{5}, 0));
+            g2.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
+            {
+                5
+            }, 0));
             g2.drawLine(cx - radius - 10, cy, cx + radius + 10, cy);
             g2.drawLine(cx, cy - radius - 10, cx, cy + radius + 10);
             g2.setStroke(new BasicStroke(1.0f));
 
-            if (rowData == null) {
+            if (rowData == null)
+            {
                 g2.setColor(textColor);
                 g2.setFont(new Font("Dialog", Font.BOLD, 14));
                 g2.drawString("Mueva el cursor sobre la tendencia", cx - 110, cy);
@@ -375,47 +471,53 @@ public final class corrientesTopComponent extends baseTopComponent
 
             // 2. Corrientes y Acumulación para Neutro
             double inX = 0, inY = 0;
-            
+
             // Fase A
             double angleA = calculateCurrentAngle(0, idxFPA, idxQA);
             double magA = (idxIA != -1) ? glb.parseDoubleSafe(rowData[idxIA]) : 0;
-            drawPhasor(g2, cx, cy, (int)(radius * 0.85), angleA, "IA", glb.colorA, false, magA);
+            drawPhasor(g2, cx, cy, (int) (radius * 0.85), angleA, "IA", glb.colorA, false, magA);
             inX += magA * Math.cos(Math.toRadians(angleA));
             inY += magA * Math.sin(Math.toRadians(angleA));
 
             // Fase B
             double angleB = calculateCurrentAngle(-120, idxFPB, idxQB);
             double magB = (idxIB != -1) ? glb.parseDoubleSafe(rowData[idxIB]) : 0;
-            drawPhasor(g2, cx, cy, (int)(radius * 0.85), angleB, "IB", glb.colorB, false, magB);
+            drawPhasor(g2, cx, cy, (int) (radius * 0.85), angleB, "IB", glb.colorB, false, magB);
             inX += magB * Math.cos(Math.toRadians(angleB));
             inY += magB * Math.sin(Math.toRadians(angleB));
 
             // Fase C
             double angleC = calculateCurrentAngle(120, idxFPC, idxQC);
             double magC = (idxIC != -1) ? glb.parseDoubleSafe(rowData[idxIC]) : 0;
-            drawPhasor(g2, cx, cy, (int)(radius * 0.85), angleC, "IC", glb.colorC, false, magC);
+            drawPhasor(g2, cx, cy, (int) (radius * 0.85), angleC, "IC", glb.colorC, false, magC);
             inX += magC * Math.cos(Math.toRadians(angleC));
             inY += magC * Math.sin(Math.toRadians(angleC));
 
             // 3. Neutro Resultante (Suma Vectorial)
             double magN = Math.sqrt(inX * inX + inY * inY);
             double angleN = Math.toDegrees(Math.atan2(inY, inX));
-            if (magN > 0.1) {
-                drawPhasor(g2, cx, cy, (int)(radius * 0.7), angleN, "In (Calc)", glb.colorN, false, magN);
+            if (magN > 0.1)
+            {
+                drawPhasor(g2, cx, cy, (int) (radius * 0.7), angleN, "In (Calc)", glb.colorN, false, magN);
             }
-            
+
             drawPFTable(g2);
         }
 
-        private double calculateCurrentAngle(double vAngle, int idxFP, int idxQ) {
-            if (idxFP == -1) return vAngle;
+        private double calculateCurrentAngle(double vAngle, int idxFP, int idxQ)
+        {
+            if (idxFP == -1)
+            {
+                return vAngle;
+            }
             double fp = glb.parseDoubleSafe(rowData[idxFP]);
             double q = (idxQ != -1) ? glb.parseDoubleSafe(rowData[idxQ]) : 0;
             double phi = Math.toDegrees(Math.acos(Math.min(1.0, Math.abs(fp))));
             return (q >= 0) ? vAngle - phi : vAngle + phi; // +Q = Inductivo (atrasa), -Q = Capacitivo (adelanta)
         }
 
-        private void drawPhasor(Graphics2D g2, int cx, int cy, int radius, double angleDeg, String label, Color color, boolean isVoltage, double magnitude) {
+        private void drawPhasor(Graphics2D g2, int cx, int cy, int radius, double angleDeg, String label, Color color, boolean isVoltage, double magnitude)
+        {
             double rad = Math.toRadians(angleDeg);
             int x = cx + (int) (radius * Math.cos(rad));
             int y = cy - (int) (radius * Math.sin(rad)); // Y invertida en Swing
@@ -431,27 +533,31 @@ public final class corrientesTopComponent extends baseTopComponent
             // Etiqueta en la punta con fondo HUD para legibilidad
             g2.setFont(new Font("Dialog", Font.BOLD, 12));
             String info = label;
-            if (!isVoltage) info += String.format(": %.2fA (%.1f°)", magnitude, angleDeg);
-            else {
-                double vVal = (label.equals("UA") && idxUA != -1) ? glb.parseDoubleSafe(rowData[idxUA]) :
-                             (label.equals("UB") && idxUB != -1) ? glb.parseDoubleSafe(rowData[idxUB]) :
-                             (label.equals("UC") && idxUC != -1) ? glb.parseDoubleSafe(rowData[idxUC]) : 0;
+            if (!isVoltage)
+            {
+                info += String.format(": %.2fA (%.1f°)", magnitude, angleDeg);
+            } else
+            {
+                double vVal = (label.equals("UA") && idxUA != -1) ? glb.parseDoubleSafe(rowData[idxUA])
+                        : (label.equals("UB") && idxUB != -1) ? glb.parseDoubleSafe(rowData[idxUB])
+                        : (label.equals("UC") && idxUC != -1) ? glb.parseDoubleSafe(rowData[idxUC]) : 0;
                 info += String.format(": %.1fV", vVal);
             }
-            
-            int offX = (int)(15 * Math.cos(rad));
-            int offY = -(int)(15 * Math.sin(rad));
-            
+
+            int offX = (int) (15 * Math.cos(rad));
+            int offY = -(int) (15 * Math.sin(rad));
+
             // Dibujar pequeño fondo para el texto si es necesario
             int strW = g2.getFontMetrics().stringWidth(info);
             g2.setColor(new Color(33, 33, 33, 180));
             g2.fillRect(x + offX - 2, y + offY - 12, strW + 4, 15);
-            
+
             g2.setColor(drawColor);
             g2.drawString(info, x + offX, y + offY);
         }
 
-        private void drawArrowHead(Graphics2D g2, int x, int y, double angle, Color color) {
+        private void drawArrowHead(Graphics2D g2, int x, int y, double angle, Color color)
+        {
             int size = 12;
             double angle1 = angle + Math.toRadians(155);
             double angle2 = angle - Math.toRadians(155);
@@ -463,11 +569,12 @@ public final class corrientesTopComponent extends baseTopComponent
             g2.drawLine(x, y, x2, y2);
         }
 
-        private void drawPFTable(Graphics2D g2) {
+        private void drawPFTable(Graphics2D g2)
+        {
             int tx = 20, ty = getHeight() - 120;
             Color bg = glb.darkMode ? new Color(45, 45, 45, 220) : new Color(240, 240, 240, 220);
             Color border = glb.darkMode ? Color.GRAY : Color.LIGHT_GRAY;
-            
+
             g2.setColor(bg);
             g2.fillRoundRect(tx, ty, 260, 100, 10, 10);
             g2.setColor(border);
@@ -483,12 +590,16 @@ public final class corrientesTopComponent extends baseTopComponent
             drawPFLine(g2, tx + 15, ty + 85, "Fase C", idxFPC, idxQC, glb.colorC);
         }
 
-        private void drawPFLine(Graphics2D g2, int x, int y, String label, int idxFP, int idxQ, Color color) {
-            if (idxFP == -1) return;
+        private void drawPFLine(Graphics2D g2, int x, int y, String label, int idxFP, int idxQ, Color color)
+        {
+            if (idxFP == -1)
+            {
+                return;
+            }
             double fp = glb.parseDoubleSafe(rowData[idxFP]);
             double q = (idxQ != -1) ? glb.parseDoubleSafe(rowData[idxQ]) : 0;
             String type = (q >= 0) ? "IND (+Q)" : "CAP (-Q)";
-            
+
             g2.setColor(chartPanel.getDisplayColor(color));
             g2.drawString(String.format("%s: %.3f (%s)", label, Math.abs(fp), type), x, y);
         }
@@ -496,6 +607,7 @@ public final class corrientesTopComponent extends baseTopComponent
 
     private static class PhaseControl
     {
+
         int colIdx;
         String name;
         Color color;
@@ -508,6 +620,12 @@ public final class corrientesTopComponent extends baseTopComponent
         }
     }
 
-    void writeProperties(java.util.Properties p) { p.setProperty("version", "1.0"); }
-    void readProperties(java.util.Properties p) {}
+    void writeProperties(java.util.Properties p)
+    {
+        p.setProperty("version", "1.0");
+    }
+
+    void readProperties(java.util.Properties p)
+    {
+    }
 }

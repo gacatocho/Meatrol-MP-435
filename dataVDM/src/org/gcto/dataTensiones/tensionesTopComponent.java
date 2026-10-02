@@ -72,12 +72,12 @@ public final class tensionesTopComponent extends baseTopComponent
             String h = masterHeaders[i].toUpperCase();
             Color c = null;
             
-            if (isStrictVoltage(h, "UA")) c = glb.colorA;
-            else if (isStrictVoltage(h, "UB")) c = glb.colorB;
-            else if (isStrictVoltage(h, "UC")) c = glb.colorC;
-            else if (isStrictVoltage(h, "UAB")) c = glb.colorA.darker();
-            else if (isStrictVoltage(h, "UBC")) c = glb.colorB.darker();
-            else if (isStrictVoltage(h, "UAC")) c = glb.colorC.darker();
+            if (glb.isStrict(h, glb.TENSION_FASE_A, glb.TENSION)) c = glb.colorA;
+            else if (glb.isStrict(h, glb.TENSION_FASE_B, glb.TENSION)) c = glb.colorB;
+            else if (glb.isStrict(h, glb.TENSION_FASE_C, glb.TENSION)) c = glb.colorC;
+            else if (glb.isStrict(h, glb.TENSION_LINEA_AB, glb.TENSION)) c = glb.colorA.darker();
+            else if (glb.isStrict(h, glb.TENSION_LINEA_BC, glb.TENSION)) c = glb.colorB.darker();
+            else if (glb.isStrict(h, glb.TENSION_LINEA_AC, glb.TENSION)) c = glb.colorC.darker();
 
             if (c != null)
             {
@@ -90,11 +90,6 @@ public final class tensionesTopComponent extends baseTopComponent
 
         chartPanel.setSeries(chartIndices, chartNames, chartColors);
         updateStatsTableRows();
-    }
-    
-    private boolean isStrictVoltage(String h, String key) {
-        if (!h.contains("VOLTAGE") && !h.contains("TENSIÓN")) return false;
-        return h.contains(" " + key) || h.contains(": " + key) || h.endsWith(" " + key) || h.endsWith(":" + key);
     }
 
     private void updateStatsTableRows()

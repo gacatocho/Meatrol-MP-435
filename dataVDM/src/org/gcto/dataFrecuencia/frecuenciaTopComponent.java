@@ -105,9 +105,9 @@ public final class frecuenciaTopComponent extends baseTopComponent
         {
             String h = masterHeaders[i].toUpperCase();
             Color c = null;
-            if (isFrequency(h, "FA")) c = glb.colorA;
-            else if (isFrequency(h, "FB")) c = glb.colorB;
-            else if (isFrequency(h, "FC")) c = glb.colorC;
+            if (glb.isStrict(h, glb.FREQ_FASE_A, glb.FREQ)) c = glb.colorA;
+            else if (glb.isStrict(h, glb.FREQ_FASE_B, glb.FREQ)) c = glb.colorB;
+            else if (glb.isStrict(h, glb.FREQ_FASE_C, glb.FREQ)) c = glb.colorC;
 
             if (c != null)
             {
@@ -120,11 +120,6 @@ public final class frecuenciaTopComponent extends baseTopComponent
 
         chartPanel.setSeries(chartIndices, chartNames, chartColors);
         updateStatsTableRows();
-    }
-    
-    private boolean isFrequency(String h, String phase) {
-        if (!h.contains("FREQUENCY")) return false;
-        return h.contains(phase) || h.contains(" " + phase) || h.endsWith(phase);
     }
 
     private void updateStatsTableRows()

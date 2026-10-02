@@ -32,9 +32,12 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="1" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="1" attributes="0">
-                  <Component id="tabbPnl" max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="lblTit" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <Component id="tabbPnl" min="-2" pref="763" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
               </Group>
           </Group>
       </Group>
@@ -113,7 +116,7 @@
                               <Component id="lblTitCSV" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                           </Group>
-                          <Component id="fCCSV" pref="0" max="32767" attributes="0"/>
+                          <Component id="fCCSV" pref="749" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -179,12 +182,14 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="pnlDatos" max="32767" attributes="0"/>
                               <Component id="pnlDatosProy" max="32767" attributes="0"/>
-                              <Component id="pnlDatoME435" alignment="0" max="32767" attributes="0"/>
+                              <Component id="pnlDatoME435" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
+                          <Component id="jPanel1" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -192,11 +197,16 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="pnlDatos" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="pnlDatosProy" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="pnlDatoME435" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                              <Group type="102" attributes="0">
+                                  <Component id="pnlDatos" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="pnlDatosProy" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="pnlDatoME435" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                              <Component id="jPanel1" max="32767" attributes="0"/>
+                          </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -260,21 +270,24 @@
                               </Group>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
+                                  <Component id="lbl1ph2wll" alignment="0" min="-2" max="-2" attributes="0"/>
+                                  <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
                                       <Component id="rb1ph3wLLN" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="lbl1ph2wll" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="lbl1ph3wlln" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" attributes="0">
                                       <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
                                       <Component id="rb1ph2wLL" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" attributes="0">
+                                      <Component id="lbl1ph3wlln" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="0" pref="28" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace min="-2" pref="102" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -423,9 +436,6 @@
                           <ResourceString bundle="org/gcto/dataVDM/Bundle.properties" key="AbrirProyectoNuevo.rb1ph2wLL.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
                         </Property>
                       </Properties>
-                      <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rb1ph2wLLActionPerformed"/>
-                      </Events>
                     </Component>
                     <Component class="javax.swing.JLabel" name="lbl1ph3wlln">
                       <Properties>
@@ -536,28 +546,28 @@
                           <Group type="102" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="lblName" min="-2" pref="59" max="-2" attributes="0"/>
                                           <Component id="lblUbica" min="-2" max="-2" attributes="0"/>
                                           <Component id="lblTec" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                           <Group type="102" attributes="0">
-                                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                                                  <Component id="txtUbica" alignment="0" pref="198" max="32767" attributes="0"/>
-                                                  <Component id="txtTec" alignment="0" max="32767" attributes="0"/>
+                                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                                  <Component id="txtUbica" pref="186" max="32767" attributes="0"/>
+                                                  <Component id="txtTec" max="32767" attributes="0"/>
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="lblCity" alignment="0" min="-2" max="-2" attributes="0"/>
-                                                  <Component id="lblTab" alignment="0" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="lblCity" min="-2" max="-2" attributes="0"/>
+                                                  <Component id="lblTab" min="-2" max="-2" attributes="0"/>
                                               </Group>
                                               <EmptySpace max="-2" attributes="0"/>
-                                              <Group type="103" groupAlignment="0" attributes="0">
+                                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                                  <Component id="txtCity" pref="161" max="32767" attributes="0"/>
                                                   <Component id="txtTab" max="32767" attributes="0"/>
-                                                  <Component id="txtCity" max="32767" attributes="0"/>
                                               </Group>
                                           </Group>
                                           <Component id="txtName" max="32767" attributes="0"/>
@@ -569,13 +579,13 @@
                                       <Component id="txtRutaCSV" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
                     <DimensionLayout dim="1">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" attributes="0">
                               <EmptySpace max="32767" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="lblName" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -749,9 +759,9 @@
                                       <Component id="spnPeriod" min="-2" pref="83" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
-                              <EmptySpace min="-2" pref="79" max="-2" attributes="0"/>
+                              <EmptySpace pref="67" max="32767" attributes="0"/>
                               <Component id="jLabel1" min="-2" pref="106" max="-2" attributes="0"/>
-                              <EmptySpace max="32767" attributes="0"/>
+                              <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
                               <Component id="btnCrear" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -902,6 +912,52 @@
                     </Component>
                   </SubComponents>
                 </Container>
+                <Container class="javax.swing.JPanel" name="jPanel1">
+                  <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                        <TitledBorder justification="2" title="COMENTARIOS">
+                          <ResourceString PropertyName="titleX" bundle="org/gcto/dataVDM/Bundle.properties" key="AbrirProyectoNuevo.jPanel1.border.title" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+                        </TitledBorder>
+                      </Border>
+                    </Property>
+                  </Properties>
+
+                  <Layout>
+                    <DimensionLayout dim="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="0" attributes="0">
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jScrollPane1" pref="0" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                    </DimensionLayout>
+                    <DimensionLayout dim="1">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="jScrollPane1" alignment="0" max="32767" attributes="0"/>
+                      </Group>
+                    </DimensionLayout>
+                  </Layout>
+                  <SubComponents>
+                    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+                      <AuxValues>
+                        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+                      </AuxValues>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+                      <SubComponents>
+                        <Component class="javax.swing.JTextArea" name="txtComent">
+                          <Properties>
+                            <Property name="columns" type="int" value="20"/>
+                            <Property name="rows" type="int" value="5"/>
+                            <Property name="wrapStyleWord" type="boolean" value="true"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
               </SubComponents>
             </Container>
           </SubComponents>
@@ -924,7 +980,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="fCVMD" pref="0" max="32767" attributes="0"/>
-                          <Component id="lblTitVMD" pref="585" max="32767" attributes="0"/>
+                          <Component id="lblTitVMD" pref="749" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>

@@ -1,13 +1,11 @@
 package org.gcto.dataEnergias;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
-import org.gcto.dataGlobal.FastChartPanel;
 import org.gcto.dataGlobal.baseTopComponent;
 import org.gcto.dataGlobal.glb;
 import org.netbeans.api.settings.ConvertAsProperties;
@@ -17,11 +15,10 @@ import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 
 /**
- * Top component que visualiza el análisis de Energías.
- * Optimizado para valores acumulados:
- * - Visualización con relleno de área (Area Fill).
- * - Estadísticas de Promedio Aritmético (restaurado por preferencia del usuario).
- * - Detección de Totales del sistema.
+ * Top component que visualiza el análisis de Energías. Optimizado para valores
+ * acumulados: - Visualización con relleno de área (Area Fill). - Estadísticas
+ * de Promedio Aritmético (restaurado por preferencia del usuario). - Detección
+ * de Totales del sistema.
  */
 @ConvertAsProperties(
         dtd = "-//org.gcto.dataEnergias//energias//EN",
@@ -78,8 +75,11 @@ public final class energiasTopComponent extends baseTopComponent
     @Override
     protected void mapColumns()
     {
-        if (masterHeaders == null || masterHeaders.length == 0) return;
-        
+        if (masterHeaders == null || masterHeaders.length == 0)
+        {
+            return;
+        }
+
         phaseControls.clear();
         statsModel.setRowCount(0);
 
@@ -93,32 +93,64 @@ public final class energiasTopComponent extends baseTopComponent
         for (int i = 0; i < masterHeaders.length; i++)
         {
             String h = masterHeaders[i].toUpperCase();
-            
+
             // Filtrar solo columnas de energía (evitar potencias instantáneas)
-            if (h.contains("ENERGY") || h.contains("WH") || h.contains("VARH") || h.contains("VAH"))
+            if (h.contains(glb.ENERGY))
             {
                 if (!filterUpper.equals("TODOS"))
                 {
                     boolean match = false;
-                    if (filterUpper.contains("ACTIVE")) match = (h.contains("ACTIVE") || h.contains("ACTIVA") || h.contains(" EP")) && !h.contains("REACTIVE");
-                    else if (filterUpper.contains("REACTIVE")) match = h.contains("REACTIVE") || h.contains("REACTIVA") || h.contains(" EQ");
-                    else if (filterUpper.contains("APPARENT")) match = h.contains("APPARENT") || h.contains("APARENTE") || h.contains(" ES");
-                    
-                    if (!match) continue;
+                    if (filterUpper.contains("(P)"))
+                    {
+                        match = (h.contains(glb.ACTIVE_ENERGY)) && !h.contains(glb.REACTIVE_ENERGY);
+                    } else if (filterUpper.contains("(Q)"))
+                    {
+                        match = h.contains(glb.REACTIVE_ENERGY);
+                    } else if (filterUpper.contains("(S)"))
+                    {
+                        match = h.contains(glb.APPARENT_ENERGY);
+                    }
+
+                    if (!match)
+                    {
+                        continue;
+                    }
                 }
 
                 Color c = Color.GRAY;
 
                 // Detección de Totales (Prioridad visual)
-                if (h.contains("SUM") || h.contains("TOTAL") || h.matches(".*EP$") || h.matches(".*EQ$") || h.matches(".*ES$")) {
-                    if (h.contains("ACTIVE") || h.contains(" EP")) c = Color.MAGENTA;
-                    else if (h.contains("REACTIVE") || h.contains(" EQ")) c = Color.CYAN;
-                    else c = Color.ORANGE;
+                if (h.contains(glb.ACTIVE_ENERGY_SUM)
+                        || h.contains(glb.REACTIVE_ENERGY_SUM)
+                        || h.matches(glb.APPARENT_POWER_SUM))
+                {
+                    if (h.contains("(P)") || h.contains(" EP"))
+                    {
+                        c = Color.MAGENTA;
+                    } else if (h.contains("(Q") || h.contains(" EQ"))
+                    {
+                        c = Color.CYAN;
+                    } else
+                    {
+                        c = Color.ORANGE;
+                    }
+                } // Detección de Fases
+                else if (h.contains(glb.ACTIVE_ENERGY_FASE_A)
+                        || h.contains(glb.REACTIVE_ENERGY_FASE_A)
+                        || h.contains(glb.APPARENT_ENERGY_FASE_A))
+                {
+                    c = glb.colorA;
+                } else if (h.contains(glb.ACTIVE_ENERGY_FASE_B)
+                        || h.contains(glb.REACTIVE_ENERGY_FASE_B)
+                        || h.contains(glb.APPARENT_ENERGY_FASE_B))
+                {
+                    c = glb.colorB;
+                } else if (h.contains(glb.ACTIVE_ENERGY_FASE_C)
+                        || h.contains(glb.REACTIVE_ENERGY_FASE_C)
+                        || h.contains(glb.APPARENT_ENERGY_FASE_C))
+                {
+                    c = glb.colorC;
                 }
-                // Detección de Fases
-                else if (h.contains("A") || h.contains("L1")) c = glb.colorA;
-                else if (h.contains("B") || h.contains("L2")) c = glb.colorB;
-                else if (h.contains("C") || h.contains("L3")) c = glb.colorC;
 
                 phaseControls.add(new PhaseControl(i, masterHeaders[i], c));
                 chartIndices.add(i);
@@ -144,17 +176,31 @@ public final class energiasTopComponent extends baseTopComponent
         // Restaurar cabecera original de promedio
         tblStats.getColumnModel().getColumn(5).setHeaderValue("Promedio Arit.");
         tblStats.getTableHeader().repaint();
-        
+
         updateStatistics();
         adjustStatsTableHeight();
     }
 
-    @Override protected void onDataLoaded() { updateChartData(); updateStatistics(); }
-    @Override protected void onTimeRangeUpdated() { updateChartData(); updateStatistics(); }
+    @Override
+    protected void onDataLoaded()
+    {
+        updateChartData();
+        updateStatistics();
+    }
+
+    @Override
+    protected void onTimeRangeUpdated()
+    {
+        updateChartData();
+        updateStatistics();
+    }
 
     private void updateChartData()
     {
-        if (masterData.isEmpty()) return;
+        if (masterData.isEmpty())
+        {
+            return;
+        }
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
         chartPanel.setData(masterData, sIdx, eIdx);
@@ -162,7 +208,10 @@ public final class energiasTopComponent extends baseTopComponent
 
     private void updateStatistics()
     {
-        if (masterData.isEmpty() || phaseControls.isEmpty()) return;
+        if (masterData.isEmpty() || phaseControls.isEmpty())
+        {
+            return;
+        }
 
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
@@ -172,7 +221,11 @@ public final class energiasTopComponent extends baseTopComponent
         {
             PhaseControl pc = phaseControls.get(i);
             boolean isVisible = (boolean) statsModel.getValueAt(rowInModel, 2);
-            if (!isVisible) { rowInModel++; continue; }
+            if (!isVisible)
+            {
+                rowInModel++;
+                continue;
+            }
 
             int colIdx = pc.colIdx;
             double min = Double.MAX_VALUE, max = -Double.MAX_VALUE, sum = 0;
@@ -183,9 +236,18 @@ public final class energiasTopComponent extends baseTopComponent
             {
                 String[] row = masterData.get(r);
                 double val = glb.parseDoubleSafe(row[colIdx]);
-                if (val < min) { min = val; dateMin = row[0] + " " + row[1]; }
-                if (val > max) { max = val; dateMax = row[0] + " " + row[1]; }
-                sum += val; count++;
+                if (val < min)
+                {
+                    min = val;
+                    dateMin = row[0] + " " + row[1];
+                }
+                if (val > max)
+                {
+                    max = val;
+                    dateMax = row[0] + " " + row[1];
+                }
+                sum += val;
+                count++;
             }
 
             double avgArit = count > 0 ? sum / count : 0;
@@ -202,6 +264,7 @@ public final class energiasTopComponent extends baseTopComponent
 
     private static class PhaseControl
     {
+
         int colIdx;
         String name;
         Color color;
@@ -214,6 +277,12 @@ public final class energiasTopComponent extends baseTopComponent
         }
     }
 
-    void writeProperties(java.util.Properties p) { p.setProperty("version", "1.0"); }
-    void readProperties(java.util.Properties p) {}
+    void writeProperties(java.util.Properties p)
+    {
+        p.setProperty("version", "1.0");
+    }
+
+    void readProperties(java.util.Properties p)
+    {
+    }
 }

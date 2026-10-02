@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/NetBeansModuleDevelopment-files/actionListener.java to edit this template
  */
-package org.gcto.dataGlobal;
+package org.gcto.dataInformes;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,7 +17,7 @@ import org.openide.util.NbBundle.Messages;
         id = "org.gcto.dataGlobal.genInforme"
 )
 @ActionRegistration(
-        iconBase = "org/gcto/dataGlobal/informe.png",
+        iconBase = "org/gcto/dataInformes/informe.png",
         displayName = "#CTL_genInforme"
 )
 @ActionReferences(

@@ -1,5 +1,6 @@
 package org.gcto.dataGlobal;
 
+import org.gcto.dataBD.SalvarClaseGenerica;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JOptionPane;

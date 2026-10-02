@@ -46,8 +46,9 @@ import org.gcto.dataPotActiva.verPotActiva;
 import org.gcto.dataPotReactiva.verPotReactiva;
 import org.gcto.dataFactoPotencia.verFP;
 import org.gcto.dataFrecuencia.verFrecuencia;
-import org.gcto.dataGlobal.ETipoRED;
-import org.gcto.dataGlobal.RecuperarClaseGenerica;
+import org.gcto.dataEnum.ETipoRED;
+import org.gcto.dataBD.RecuperarClaseGenerica;
+import org.gcto.dataBD.SalvarClaseGenerica;
 import org.gcto.dataGlobal.SaveProjectAction;
 import org.gcto.dataGlobal.SaveProjectAsAction;
 import org.gcto.dataGlobal.glb;
@@ -1128,7 +1129,7 @@ public final class dataTopComponent extends TopComponent
      * carga el proyecto y los datos a datos del proyecto para ver en el informe
      * estos datos
      */
-    private void cargarProyectoVDM()
+    public void cargarProyectoVDM()
     {
         //carga  las bases de datos
         String rutaVMD = glb.seletedFileVDM.getParent();
@@ -1322,8 +1323,13 @@ public final class dataTopComponent extends TopComponent
         }
         if (glb.seletedFileVDM != null)
         {
-
             cargarProyectoVDM();
+            
+            
+            
         }
     }
+    
+    
+    
 }

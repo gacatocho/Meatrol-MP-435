@@ -5,10 +5,12 @@
 package org.gcto.dataVDM;
 
 import java.awt.Color;
+import java.io.IOException;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.gcto.dataGlobal.ETipoRED;
+import org.gcto.dataEnum.ETipoRED;
 import org.gcto.dataGlobal.glb;
+import org.openide.util.Exceptions;
 
 /**
  *
@@ -35,13 +37,13 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
         FileNameExtensionFilter filterVDM = new FileNameExtensionFilter("Archivos VMD", "vdm");
         fCVMD.setFileFilter(filterVDM);
         //datos iniciales para no dejar en blanco las cosas
-       txtName.setText("Entre nombre del proyecto");
-       txtCity.setText("Ciudad");
-       txtTec.setText("Operador técnico");
-       txtUbica.setText("Ubicación");
-       txtTab.setText("Tablero TGA");
-       spnPeriod.setValue(1);
-       cmbRelBob.setSelectedIndex(0);
+        txtName.setText("Entre nombre del proyecto");
+        txtCity.setText("Ciudad");
+        txtTec.setText("Operador técnico");
+        txtUbica.setText("Ubicación");
+        txtTab.setText("Tablero TGA");
+        spnPeriod.setValue(1);
+        cmbRelBob.setSelectedIndex(0);
 
     }
 
@@ -101,6 +103,9 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
         spnPeriod = new javax.swing.JSpinner();
         jLabel1 = new javax.swing.JLabel();
         btnCrear = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        txtComent = new javax.swing.JTextArea();
         pnlAbrirProy = new javax.swing.JPanel();
         lblTitVMD = new javax.swing.JLabel();
         fCVMD = new javax.swing.JFileChooser();
@@ -194,13 +199,6 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
 
         btnGrp.add(rb1ph2wLL);
         org.openide.awt.Mnemonics.setLocalizedText(rb1ph2wLL, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.rb1ph2wLL.text")); // NOI18N
-        rb1ph2wLL.addActionListener(new java.awt.event.ActionListener()
-        {
-            public void actionPerformed(java.awt.event.ActionEvent evt)
-            {
-                rb1ph2wLLActionPerformed(evt);
-            }
-        });
 
         lbl1ph3wlln.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
         lbl1ph3wlln.setIcon(new javax.swing.ImageIcon(getClass().getResource("/org/gcto/dataVDM/1PH2W-LL.png"))); // NOI18N
@@ -289,17 +287,19 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
                         .addComponent(rb1ph2wLN)))
                 .addGap(18, 18, 18)
                 .addGroup(pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lbl1ph2wll)
                     .addGroup(pnlDatosLayout.createSequentialGroup()
                         .addGap(6, 6, 6)
-                        .addComponent(rb1ph3wLLN))
-                    .addComponent(lbl1ph2wll))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(rb1ph3wLLN)))
+                .addGap(18, 18, 18)
                 .addGroup(pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lbl1ph3wlln)
                     .addGroup(pnlDatosLayout.createSequentialGroup()
                         .addGap(6, 6, 6)
-                        .addComponent(rb1ph2wLL)))
-                .addGap(102, 102, 102))
+                        .addComponent(rb1ph2wLL)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(pnlDatosLayout.createSequentialGroup()
+                        .addComponent(lbl1ph3wlln)
+                        .addGap(0, 28, Short.MAX_VALUE))))
         );
         pnlDatosLayout.setVerticalGroup(
             pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -371,25 +371,25 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
                             .addComponent(lblUbica)
                             .addComponent(lblTec))
                         .addGap(18, 18, 18)
-                        .addGroup(pnlDatosProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(pnlDatosProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(pnlDatosProyLayout.createSequentialGroup()
-                                .addGroup(pnlDatosProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(txtUbica, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
-                                    .addComponent(txtTec, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addGroup(pnlDatosProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtUbica, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+                                    .addComponent(txtTec))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(pnlDatosProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(lblCity)
                                     .addComponent(lblTab))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(pnlDatosProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtTab)
-                                    .addComponent(txtCity)))
+                                .addGroup(pnlDatosProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtCity, javax.swing.GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)
+                                    .addComponent(txtTab)))
                             .addComponent(txtName)))
                     .addGroup(pnlDatosProyLayout.createSequentialGroup()
                         .addComponent(lblTitRuta)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(txtRutaCSV)))
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlDatosProyLayout.setVerticalGroup(
             pnlDatosProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -477,9 +477,9 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
                         .addComponent(lblPeriod)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(spnPeriod, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(79, 79, 79)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(33, 33, 33)
                 .addComponent(btnCrear)
                 .addContainerGap())
         );
@@ -509,27 +509,54 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.jPanel1.border.title"), javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION)); // NOI18N
+
+        txtComent.setColumns(20);
+        txtComent.setRows(5);
+        txtComent.setWrapStyleWord(true);
+        jScrollPane1.setViewportView(txtComent);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1)
+        );
+
         javax.swing.GroupLayout pnlProyLayout = new javax.swing.GroupLayout(pnlProy);
         pnlProy.setLayout(pnlProyLayout);
         pnlProyLayout.setHorizontalGroup(
             pnlProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlProyLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(pnlProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(pnlProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(pnlDatos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pnlDatosProy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pnlDatoME435, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addGroup(pnlProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(pnlDatosProy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(pnlDatoME435, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(13, 13, 13))
         );
         pnlProyLayout.setVerticalGroup(
             pnlProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlProyLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(pnlDatos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pnlDatosProy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(pnlDatoME435, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(pnlProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(pnlProyLayout.createSequentialGroup()
+                        .addComponent(pnlDatos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pnlDatosProy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pnlDatoME435, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -544,7 +571,7 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
                     .addGroup(pnlCrearProyLayout.createSequentialGroup()
                         .addComponent(lblTitCSV)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(fCCSV, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                    .addComponent(fCCSV, javax.swing.GroupLayout.DEFAULT_SIZE, 749, Short.MAX_VALUE))
                 .addContainerGap())
         );
         pnlCrearProyLayout.setVerticalGroup(
@@ -582,7 +609,7 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
                 .addContainerGap()
                 .addGroup(pnlAbrirProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(fCVMD, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(lblTitVMD, javax.swing.GroupLayout.DEFAULT_SIZE, 585, Short.MAX_VALUE))
+                    .addComponent(lblTitVMD, javax.swing.GroupLayout.DEFAULT_SIZE, 749, Short.MAX_VALUE))
                 .addContainerGap())
         );
         pnlAbrirProyLayout.setVerticalGroup(
@@ -602,9 +629,11 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(tabbPnl)
-                    .addComponent(lblTit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblTit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(tabbPnl, javax.swing.GroupLayout.PREFERRED_SIZE, 763, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -642,11 +671,6 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
         glb.dp.setTipoRed(ETipoRED.tresFases_FN);
     }//GEN-LAST:event_rb3ph2wLNActionPerformed
 
-    private void rb1ph2wLLActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_rb1ph2wLLActionPerformed
-    {//GEN-HEADEREND:event_rb1ph2wLLActionPerformed
-        glb.dp.setTipoRed(ETipoRED.monoFase_FF);
-    }//GEN-LAST:event_rb1ph2wLLActionPerformed
-
     private void fCCSVActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_fCCSVActionPerformed
     {//GEN-HEADEREND:event_fCCSVActionPerformed
 
@@ -662,7 +686,8 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
                 //podemos dar el crear al proyecto.
                 btnCrear.setEnabled(true);
                 //carga el file de csv
-                glb.selectedFileCSV=fCCSV.getSelectedFile();
+                glb.selectedFileCSV = fCCSV.getSelectedFile();
+
             }
         }
 
@@ -680,44 +705,43 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btnCrearActionPerformed
     {//GEN-HEADEREND:event_btnCrearActionPerformed
-       //aqui se acaba de carga la clase da datos del proyecto con la informcio nsuminstrada
+        //aqui se acaba de carga la clase da datos del proyecto con la informcio nsuminstrada
         //datos generales del proyecto // la ruta queda cargada por file chosser
         glb.dp.setNombreProy(txtName.getText());
         glb.dp.setUbicacionProy(txtUbica.getText());
         glb.dp.setCiudadProy(txtCity.getText());
         glb.dp.setOperadorME(txtTec.getText());
         glb.dp.setTablero(txtTab.getText());
-        
 
 //datos de medicion
         glb.dp.setRelacionBobina(Integer.parseInt(cmbRelBob.getSelectedItem().toString()));
-        
-        try        
+
+        try
         {
             int relPrime = Integer.parseInt(txtRelPrim.getText());
             glb.dp.setRelacionTensionPrim(relPrime);
         } catch (NumberFormatException numberFormatException)
         {
-            JOptionPane.showMessageDialog(null , "Debe ser un numero entero", "Formato erroneo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Debe ser un numero entero", "Formato erroneo", JOptionPane.WARNING_MESSAGE);
             txtRelPrim.setBackground(Color.red);
         }
-        
-        try        
+
+        try
         {
             int relSec = Integer.parseInt(txtRelSec.getText());
             glb.dp.setRelacionTensionSec(relSec);
         } catch (NumberFormatException numberFormatException)
         {
-            JOptionPane.showMessageDialog(null , "Debe ser un numero entero", "Formato erroneo", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Debe ser un numero entero", "Formato erroneo", JOptionPane.WARNING_MESSAGE);
             txtRelSec.setBackground(Color.red);
         }
-        
+
         glb.dp.setPeriodoSD((int) spnPeriod.getModel().getValue());
-        
+
         //cierra el formualrio
         this.dispose();
-        
-        
+
+
     }//GEN-LAST:event_btnCrearActionPerformed
 
     private void fCVMDActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_fCVMDActionPerformed
@@ -728,12 +752,25 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
             String rutaArchivo = fCVMD.getSelectedFile().getAbsolutePath();
             if (rutaArchivo != null)
             {
-    
+
                 //carga el file de VMD de una pero 
-                glb.seletedFileVDM=fCVMD.getSelectedFile();
+                glb.seletedFileVDM = fCVMD.getSelectedFile();
+
+                //se hA creado el proyecto abriendo un dmv - se guarda en e HISTORICO
+                if (!glb.opc.IsRecienteExiste(rutaArchivo))
+                {
+                    try
+                    {
+                        glb.opc.insertarPathHistorico(rutaArchivo);
+                    } catch (IOException ex)
+                    {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+
             }
         }
-        
+
         //cierra el formualrio
         this.dispose();
     }//GEN-LAST:event_fCVMDActionPerformed
@@ -791,6 +828,8 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
     public javax.swing.JFileChooser fCCSV;
     private javax.swing.JFileChooser fCVMD;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel lbl1ph2wll;
     private javax.swing.JLabel lbl1ph2wln;
     private javax.swing.JLabel lbl1ph3wlln;
@@ -827,6 +866,7 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
     private javax.swing.JSpinner spnPeriod;
     private javax.swing.JTabbedPane tabbPnl;
     private javax.swing.JTextField txtCity;
+    private javax.swing.JTextArea txtComent;
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtRelPrim;
     private javax.swing.JTextField txtRelSec;

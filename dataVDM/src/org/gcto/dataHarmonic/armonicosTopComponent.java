@@ -38,6 +38,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.gcto.dataGlobal.FastChartPanel;
 import org.gcto.dataGlobal.baseTopComponent;
 import org.gcto.dataGlobal.glb;
+import org.gcto.dataOpciones.Opciones;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -454,12 +455,8 @@ public final class armonicosTopComponent extends baseTopComponent
                 for (int i = 0; i < headers.length; i++) {
                     String head = headers[i].toUpperCase();
                     if (head.contains(target) && head.contains("(%)")) {
-                        Color c = Color.GRAY;
-                        boolean isVoltage = head.contains("UTHD") || head.contains("UTH");
-                        if (head.contains("A") || head.contains("L1")) c = isVoltage ? Color.GREEN : glb.colorA;
-                        else if (head.contains("B") || head.contains("L2")) c = isVoltage ? Color.BLACK : glb.colorB;
-                        else if (head.contains("C") || head.contains("L3")) c = isVoltage ? Color.ORANGE : glb.colorC;
-                        
+                        // Usar el color del vector glb.opc.colorArm para el armónico correspondiente
+                        Color c = glb.colorDe_RGB_String(Opciones.colorArm[h]);
                         mappings.add(new HarmonicMapping(i, h, c, head));
                     }
                 }
@@ -579,14 +576,16 @@ public final class armonicosTopComponent extends baseTopComponent
                 g2.drawString(tip, tipX + 5, tipY + 15);
             }
 
-            // Etiquetas X (Órdenes)
+            // Etiquetas X (Órdenes) - Se muestran todos los armónicos rotados para evitar solapamiento
             g2.setColor(textColor);
             g2.setFont(new Font("Dialog", Font.PLAIN, 9));
             for (int i = 1; i <= 50; i++) {
-                if (i == 1 || i % 5 == 0) {
-                    int x = marginL + (i - 1) * barGroupW;
-                    g2.drawString("H" + String.format("%02d", i), x, marginT + chartH + 15);
-                }
+                int x = marginL + (i - 1) * barGroupW + (barGroupW / 2);
+                Graphics2D gRot = (Graphics2D) g2.create();
+                gRot.translate(x + 3, marginT + chartH + 5);
+                gRot.rotate(Math.toRadians(90));
+                gRot.drawString(String.format("%02d", i), 0, 0);
+                gRot.dispose();
             }
         }
     }

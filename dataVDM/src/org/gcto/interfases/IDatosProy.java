@@ -4,10 +4,11 @@
  */
 package org.gcto.interfases;
 
-import org.gcto.dataGlobal.ETipoRED;
+import org.gcto.dataEnum.ETipoRED;
 
 /**
- *
+ * Interfase para la clase de Datos del Poryecto
+ * 
  * @author camilo
  */
 public interface IDatosProy extends IBaseVDM
@@ -15,7 +16,6 @@ public interface IDatosProy extends IBaseVDM
 
     String PROP_CIUDADPROY = "ciudadProy";
     String PROP_CSVNAME = "csvName";
-    String PROP_LISTARECIENTES = "listaRecientes";
     String PROP_NOMBREPROY = "nombreProy";
     String PROP_OPERADORME = "operadorME";
     String PROP_PERIODOSD = "periodoSD";
@@ -26,6 +26,7 @@ public interface IDatosProy extends IBaseVDM
     String PROP_TIPORED = "tipoRed";
     String PROP_UBICACIONPROY = "ubicacionProy";
     String PROP_RUTAPROYECTO = "rutaProyecto";
+    String PROP_COMENTARIO = "comentario";
 
     /**
      * Get the value of ciudadProy
@@ -40,13 +41,6 @@ public interface IDatosProy extends IBaseVDM
      * @return the value of csvName
      */
     String getCsvName();
-
-    /**
-     * Get the value of listaRecientes / hasta 10 datos en el arreglo
-     *
-     * @return the value of listaRecientes
-     */
-    String[] getListaRecientes();
 
     /**
      * Get the value of nombreProy
@@ -126,13 +120,6 @@ public interface IDatosProy extends IBaseVDM
     void setCsvName(String csvName);
 
     /**
-     * Set the value of listaRecientes
-     *
-     * @param listaRecientes new value of listaRecientes
-     */
-    void setListaRecientes(String[] listaRecientes);
-
-    /**
      * Set the value of nombreProy
      *
      * @param nombreProy new value of nombreProy
@@ -210,5 +197,21 @@ public interface IDatosProy extends IBaseVDM
      * @param rutaProyecto new value of rutaProyecto
      */
     public void setRutaProyecto(String rutaProyecto);
+    
+     
+
+    /**
+     * Get the value of comentario
+     *
+     * @return the value of comentario
+     */
+    public String getComentario();
+    
+    /**
+     * Set the value of comentario
+     *
+     * @param comentario new value of comentario
+     */
+    public void setComentario(String comentario);
     
 }

@@ -29,6 +29,9 @@ import org.openide.windows.WindowManager;
             @ActionReference(path = "Toolbars/File", position = 1100)
         })
 @Messages("CTL_ExportAction=Exportar Gráfico para Informe")
+/**
+ * exporta la grafica actual vista en formato  png
+ */
 public final class ExportAction extends CallableSystemAction
 {
     public ExportAction() {

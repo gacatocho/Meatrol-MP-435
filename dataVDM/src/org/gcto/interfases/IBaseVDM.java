@@ -4,7 +4,7 @@
  */
 package org.gcto.interfases;
 
-import org.gcto.dataGlobal.EEstado;
+import org.gcto.dataEnum.EEstado;
 
 /**
  *

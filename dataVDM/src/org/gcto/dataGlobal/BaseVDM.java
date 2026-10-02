@@ -4,6 +4,7 @@
  */
 package org.gcto.dataGlobal;
 
+import org.gcto.dataEnum.EEstado;
 import org.gcto.interfases.IBaseVDM;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -12,15 +13,16 @@ import java.lang.reflect.Field;
 import javax.persistence.Entity;
 
 /**
+ * Base para generar las clases que se salvan en la base de datos o estan
+ * presentes en el manejo general del programa
  *
  * @author camilo
  */
 @Entity
 public class BaseVDM implements PropertyChangeListener, IBaseVDM
 {
-    
-private EEstado Estado = EEstado.NUEVO;
 
+    private EEstado Estado = EEstado.NUEVO;
 
     /**
      * Get the value of Estado
@@ -96,12 +98,11 @@ private EEstado Estado = EEstado.NUEVO;
     @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
-         this.setEstado(EEstado.EDITADO);
+        this.setEstado(EEstado.EDITADO);
     }
-    
+
     public transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-    
     /**
      * Add PropertyChangeListener.
      *
@@ -121,5 +122,5 @@ private EEstado Estado = EEstado.NUEVO;
     {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
-    
+
 }

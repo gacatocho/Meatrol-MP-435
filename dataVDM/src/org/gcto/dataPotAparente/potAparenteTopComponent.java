@@ -18,8 +18,8 @@ import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 
 /**
- * Top component que visualiza el análisis de potencia aparente.
- * Hereda toda la infraestructura de baseTopComponent.
+ * Top component que visualiza el análisis de potencia aparente. Hereda toda la
+ * infraestructura de baseTopComponent.
  */
 @ConvertAsProperties(
         dtd = "-//org.gcto.dataPotAparente//potAparente//EN",
@@ -68,11 +68,20 @@ public final class potAparenteTopComponent extends baseTopComponent
         {
             String h = masterHeaders[i].toUpperCase();
             Color c = null;
-            
-            if (isStrictApparent(h, "SA")) c = glb.colorA;
-            else if (isStrictApparent(h, "SB")) c = glb.colorB;
-            else if (isStrictApparent(h, "SC")) c = glb.colorC;
-            else if (isStrictApparent(h, "SSUM") || isStrictApparent(h, "S SUM")) c = Color.MAGENTA;
+
+            if (glb.isStrict(h, glb.APPARENT_POWER_FASE_A, glb.APPARENT_POWER))
+            {
+                c = glb.colorA;
+            } else if (glb.isStrict(h, glb.APPARENT_POWER_FASE_B, glb.APPARENT_POWER))
+            {
+                c = glb.colorB;
+            } else if (glb.isStrict(h, glb.APPARENT_POWER_FASE_C, glb.APPARENT_POWER))
+            {
+                c = glb.colorC;
+            } else if (glb.isStrict(h, glb.APPARENT_POWER_SUM, glb.APPARENT_POWER))
+            {
+                c = Color.MAGENTA;
+            }
 
             if (c != null)
             {
@@ -85,12 +94,6 @@ public final class potAparenteTopComponent extends baseTopComponent
 
         chartPanel.setSeries(chartIndices, chartNames, chartColors);
         updateStatsTableRows();
-    }
-    
-    private boolean isStrictApparent(String h, String key) {
-        if (!h.contains("APPARENT") && !h.contains("APARENTE")) return false;
-        if (h.contains("ENERGY") || h.contains("VAH")) return false;
-        return h.contains(" " + key) || h.contains(": " + key) || h.endsWith(" " + key) || h.endsWith(":" + key);
     }
 
     private void updateStatsTableRows()
@@ -121,9 +124,13 @@ public final class potAparenteTopComponent extends baseTopComponent
         updateChartData();
         updateStatistics();
     }
-    
-    private void updateChartData() {
-        if (masterData.isEmpty()) return;
+
+    private void updateChartData()
+    {
+        if (masterData.isEmpty())
+        {
+            return;
+        }
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
         chartPanel.setData(masterData, sIdx, eIdx);
@@ -131,19 +138,23 @@ public final class potAparenteTopComponent extends baseTopComponent
 
     private void updateStatistics()
     {
-        if (masterData.isEmpty() || phaseControls.isEmpty()) return;
+        if (masterData.isEmpty() || phaseControls.isEmpty())
+        {
+            return;
+        }
 
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
 
         List<FastChartPanel.TrendLine> trendLines = new ArrayList<>();
-        
+
         int rowInModel = 0;
         for (int i = 0; i < phaseControls.size(); i++)
         {
             PhaseControl pc = phaseControls.get(i);
             boolean isVisible = (boolean) statsModel.getValueAt(rowInModel, 2);
-            if (!isVisible) {
+            if (!isVisible)
+            {
                 rowInModel++;
                 continue;
             }
@@ -157,19 +168,34 @@ public final class potAparenteTopComponent extends baseTopComponent
             {
                 String[] row = masterData.get(r);
                 double val = glb.parseDoubleSafe(row[colIdx]);
-                if (val < min) { min = val; dateMin = row[0] + " " + row[1]; }
-                if (val > max) { max = val; dateMax = row[0] + " " + row[1]; }
-                sum += val; count++;
+                if (val < min)
+                {
+                    min = val;
+                    dateMin = row[0] + " " + row[1];
+                }
+                if (val > max)
+                {
+                    max = val;
+                    dateMax = row[0] + " " + row[1];
+                }
+                sum += val;
+                count++;
             }
 
             double avgArit = count > 0 ? sum / count : 0;
             int levelPercent = (int) statsModel.getValueAt(rowInModel, 10);
             double threshold = max * (levelPercent / 100.0);
-            double sumAbove = 0; int countAbove = 0;
+            double sumAbove = 0;
+            int countAbove = 0;
 
-            for (int r = sIdx; r <= eIdx; r++) {
+            for (int r = sIdx; r <= eIdx; r++)
+            {
                 double val = glb.parseDoubleSafe(masterData.get(r)[colIdx]);
-                if (val >= threshold) { sumAbove += val; countAbove++; }
+                if (val >= threshold)
+                {
+                    sumAbove += val;
+                    countAbove++;
+                }
             }
             double avgAbove = countAbove > 0 ? sumAbove / countAbove : 0;
 
@@ -183,9 +209,21 @@ public final class potAparenteTopComponent extends baseTopComponent
 
             boolean showP = (boolean) statsModel.getValueAt(rowInModel, 6);
             boolean showS = (boolean) statsModel.getValueAt(rowInModel, 11);
-            
-            if (showP) trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{10, 5}, 0)));
-            if (showS) trendLines.add(new FastChartPanel.TrendLine(avgAbove, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{2, 4}, 0)));
+
+            if (showP)
+            {
+                trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
+                {
+                    10, 5
+                }, 0)));
+            }
+            if (showS)
+            {
+                trendLines.add(new FastChartPanel.TrendLine(avgAbove, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
+                {
+                    2, 4
+                }, 0)));
+            }
 
             rowInModel++;
         }
@@ -194,6 +232,7 @@ public final class potAparenteTopComponent extends baseTopComponent
 
     private static class PhaseControl
     {
+
         int colIdx;
         String name;
         Color color;
@@ -206,6 +245,12 @@ public final class potAparenteTopComponent extends baseTopComponent
         }
     }
 
-    void writeProperties(java.util.Properties p) { p.setProperty("version", "1.0"); }
-    void readProperties(java.util.Properties p) {}
+    void writeProperties(java.util.Properties p)
+    {
+        p.setProperty("version", "1.0");
+    }
+
+    void readProperties(java.util.Properties p)
+    {
+    }
 }

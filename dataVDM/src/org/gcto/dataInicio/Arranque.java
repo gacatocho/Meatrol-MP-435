@@ -2,13 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package org.gcto.dataGlobal;
+package org.gcto.dataInicio;
 
+import org.gcto.dataBD.RecuperarClaseGenerica;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.JOptionPane;
+import org.gcto.dataGlobal.glb;
 import org.openide.modules.OnStart;
 import org.openide.util.Exceptions;
 
@@ -46,7 +48,17 @@ public class Arranque implements Runnable
         {
             JOptionPane.showMessageDialog(null,"No se reupero a Opciones", "Recuperando opciones",JOptionPane.WARNING_MESSAGE);
         }
+        
+        try        
+        {
+            glb.cargarColores();
+        } catch (Exception e)
+        {
+            JOptionPane.showMessageDialog(null,"No se cargaron colores - se usan los de defecto", "Recuperando colores",JOptionPane.WARNING_MESSAGE);
+        }
 
     }
+    
+    
 
 }

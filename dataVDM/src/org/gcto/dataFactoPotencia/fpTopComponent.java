@@ -69,13 +69,21 @@ public final class fpTopComponent extends baseTopComponent
         List<String> chartNames = new ArrayList<>();
         List<Color> chartColors = new ArrayList<>();
 
+        //investigamos aqui si es inductivo o capacitovo el factor de potencia (+ 0 -)
         int idxQA = -1, idxQB = -1, idxQC = -1;
         for (int i = 0; i < masterHeaders.length; i++)
         {
             String h = masterHeaders[i].toUpperCase();
-            if (isStrict(h, "QA", "REACTIVE")) idxQA = i;
-            else if (isStrict(h, "QB", "REACTIVE")) idxQB = i;
-            else if (isStrict(h, "QC", "REACTIVE")) idxQC = i;
+            if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_A, glb.REACTIVE_POWER))
+            {
+                idxQA = i;
+            } else if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_B, glb.REACTIVE_POWER))
+            {
+                idxQB = i;
+            } else if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_C, glb.REACTIVE_POWER))
+            {
+                idxQC = i;
+            }
         }
 
         for (int i = 0; i < masterHeaders.length; i++)
@@ -84,10 +92,23 @@ public final class fpTopComponent extends baseTopComponent
             Color c = null;
             int signIdx = -1;
 
-            if (isStrictFP(h, "PFA")) { c = glb.colorA; signIdx = idxQA; }
-            else if (isStrictFP(h, "PFB")) { c = glb.colorB; signIdx = idxQB; }
-            else if (isStrictFP(h, "PFC")) { c = glb.colorC; signIdx = idxQC; }
-            else if (isStrictFP(h, "AVERAGE") || h.contains("PF AVERAGE")) { c = Color.WHITE; signIdx = -1; }
+            if (glb.isStrict(h, glb.POWER_FACTOR_FASE_A, glb.POWER_FACTOR))
+            {
+                c = glb.colorA;
+                signIdx = idxQA;
+            } else if (glb.isStrict(h, glb.POWER_FACTOR_FASE_B, glb.POWER_FACTOR))
+            {
+                c = glb.colorB;
+                signIdx = idxQB;
+            } else if (glb.isStrict(h, glb.POWER_FACTOR_FASE_C, glb.POWER_FACTOR))
+            {
+                c = glb.colorC;
+                signIdx = idxQC;
+            } else if (glb.isStrict(h, glb.POWER_FACTOR_AVERAG, glb.POWER_FACTOR))
+            {
+                c = Color.WHITE;
+                signIdx = -1;
+            }
 
             if (c != null)
             {
@@ -101,24 +122,6 @@ public final class fpTopComponent extends baseTopComponent
 
         chartPanel.setSeriesWithSign(chartIndices, signIndices, chartNames, chartColors);
         updateStatsTableRows();
-    }
-
-    private boolean isStrict(String h, String key, String type)
-    {
-        if (!h.contains(type)) return false;
-        if (h.contains("ENERGY") || h.contains("VARH")) return false;
-        return h.contains(" " + key) || h.contains(": " + key) || h.endsWith(" " + key) || h.endsWith(":" + key);
-    }
-
-    private boolean isStrictFP(String h, String key)
-    {
-        if (!h.contains("POWER FACTOR")) return false;
-        String k = key.toUpperCase();
-        if (k.equals("PFA")) return h.contains("PFA")  || h.contains(" L1") ;
-        if (k.equals("PFB")) return h.contains("PFB") || h.contains(" L2") ;
-        if (k.equals("PFC")) return h.contains("PFC")  || h.contains(" L3") ;
-        if (k.equals("AVERAGE")) return h.contains("AVERAGE") || h.contains("PROMEDIO") || h.contains("PF AVERAGE");
-        return h.contains(" " + key) || h.contains(": " + key) || h.endsWith(" " + key) || h.endsWith(":" + key);
     }
 
     private void updateStatsTableRows()
@@ -136,12 +139,26 @@ public final class fpTopComponent extends baseTopComponent
         adjustStatsTableHeight();
     }
 
-    @Override protected void onDataLoaded() { updateChartData(); updateStatistics(); }
-    @Override protected void onTimeRangeUpdated() { updateChartData(); updateStatistics(); }
+    @Override
+    protected void onDataLoaded()
+    {
+        updateChartData();
+        updateStatistics();
+    }
+
+    @Override
+    protected void onTimeRangeUpdated()
+    {
+        updateChartData();
+        updateStatistics();
+    }
 
     private void updateChartData()
     {
-        if (masterData.isEmpty()) return;
+        if (masterData.isEmpty())
+        {
+            return;
+        }
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
         chartPanel.setData(masterData, sIdx, eIdx);
@@ -149,7 +166,10 @@ public final class fpTopComponent extends baseTopComponent
 
     private void updateStatistics()
     {
-        if (masterData.isEmpty() || phaseControls.isEmpty()) return;
+        if (masterData.isEmpty() || phaseControls.isEmpty())
+        {
+            return;
+        }
 
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
@@ -161,7 +181,11 @@ public final class fpTopComponent extends baseTopComponent
         {
             PhaseControl pc = phaseControls.get(i);
             boolean isVisible = (boolean) statsModel.getValueAt(rowInModel, 2);
-            if (!isVisible) { rowInModel++; continue; }
+            if (!isVisible)
+            {
+                rowInModel++;
+                continue;
+            }
 
             int colIdx = pc.colIdx;
             double min = Double.MAX_VALUE, max = -Double.MAX_VALUE, sum = 0;
@@ -172,9 +196,18 @@ public final class fpTopComponent extends baseTopComponent
             {
                 String[] row = masterData.get(r);
                 double val = glb.parseDoubleSafe(row[colIdx]);
-                if (val < min) { min = val; dateMin = row[0] + " " + row[1]; }
-                if (val > max) { max = val; dateMax = row[0] + " " + row[1]; }
-                sum += val; count++;
+                if (val < min)
+                {
+                    min = val;
+                    dateMin = row[0] + " " + row[1];
+                }
+                if (val > max)
+                {
+                    max = val;
+                    dateMax = row[0] + " " + row[1];
+                }
+                sum += val;
+                count++;
             }
 
             double avgArit = count > 0 ? sum / count : 0;
@@ -186,7 +219,13 @@ public final class fpTopComponent extends baseTopComponent
             statsModel.setValueAt(dateMax, rowInModel, 8);
 
             boolean showP = (boolean) statsModel.getValueAt(rowInModel, 6);
-            if (showP) trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{10, 5}, 0)));
+            if (showP)
+            {
+                trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
+                {
+                    10, 5
+                }, 0)));
+            }
 
             rowInModel++;
         }
@@ -195,6 +234,7 @@ public final class fpTopComponent extends baseTopComponent
 
     private static class PhaseControl
     {
+
         int colIdx;
         String name;
         Color color;
@@ -207,6 +247,12 @@ public final class fpTopComponent extends baseTopComponent
         }
     }
 
-    void writeProperties(java.util.Properties p) { p.setProperty("version", "1.0"); }
-    void readProperties(java.util.Properties p) {}
+    void writeProperties(java.util.Properties p)
+    {
+        p.setProperty("version", "1.0");
+    }
+
+    void readProperties(java.util.Properties p)
+    {
+    }
 }

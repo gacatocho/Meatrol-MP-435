@@ -23,8 +23,8 @@ import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 
 /**
- * Top component que visualiza el análisis de potencia reactiva.
- * Incluye comparativa entre Q medida y Q calculada, Distorsión y Calidad IEEE 1459.
+ * Top component que visualiza el análisis de potencia reactiva. Incluye
+ * comparativa entre Q medida y Q calculada, Distorsión y Calidad IEEE 1459.
  */
 @ConvertAsProperties(
         dtd = "-//org.gcto.dataPotReactiva//potReactiva//EN",
@@ -58,43 +58,56 @@ public final class potReactivaTopComponent extends baseTopComponent
     {
         setName(Bundle.CTL_potReactivaTopComponent());
         setToolTipText(Bundle.HINT_potReactivaTopComponent());
-        
+
         chartPanel.setSymmetricY(true);
         chartPanel.setShowIndCapLabels(true);
-        
+
         // Añadir columnas especiales (Índices 12 y 13 tras el rediseño)
         statsModel.addColumn("Distorsión %");
         statsModel.addColumn("Clasif. Calidad");
-        
+
         setupTableEditors();
-        
+
         tblStats.getColumnModel().getColumn(12).setPreferredWidth(100); // Distorsión
         tblStats.getColumnModel().getColumn(13).setPreferredWidth(160); // Clasificación
-        
-        tblStats.getTableHeader().addMouseMotionListener(new MouseMotionAdapter() {
+
+        tblStats.getTableHeader().addMouseMotionListener(new MouseMotionAdapter()
+        {
             @Override
-            public void mouseMoved(MouseEvent e) {
+            public void mouseMoved(MouseEvent e)
+            {
                 int col = tblStats.columnAtPoint(e.getPoint());
-                if (col == 12) tblStats.getTableHeader().setToolTipText("Factor de Potencia de Distorsión y Relación D/S");
-                else tblStats.getTableHeader().setToolTipText(null);
+                if (col == 12)
+                {
+                    tblStats.getTableHeader().setToolTipText("Factor de Potencia de Distorsión y Relación D/S");
+                } else
+                {
+                    tblStats.getTableHeader().setToolTipText(null);
+                }
             }
         });
-        
+
         setupBalloonTips();
     }
 
-    private void setupBalloonTips() {
-        tblStats.addMouseMotionListener(new MouseMotionAdapter() {
+    private void setupBalloonTips()
+    {
+        tblStats.addMouseMotionListener(new MouseMotionAdapter()
+        {
             @Override
-            public void mouseMoved(MouseEvent e) {
+            public void mouseMoved(MouseEvent e)
+            {
                 int row = tblStats.rowAtPoint(e.getPoint());
                 int col = tblStats.columnAtPoint(e.getPoint());
-                
-                if (row != -1 && col == 13) { // Nueva columna de Clasificación
+
+                if (row != -1 && col == 13)
+                { // Nueva columna de Clasificación
                     Object val = tblStats.getValueAt(row, col);
-                    if (val != null && !val.toString().equals("-")) {
+                    if (val != null && !val.toString().equals("-"))
+                    {
                         int idx = glb.clasificacion.indexOf(val.toString());
-                        if (idx != -1 && idx < glb.tipsClasificacion.size()) {
+                        if (idx != -1 && idx < glb.tipsClasificacion.size())
+                        {
                             showBalloon(row, col, glb.tipsClasificacion.get(idx));
                             return;
                         }
@@ -103,15 +116,25 @@ public final class potReactivaTopComponent extends baseTopComponent
                 hideBalloon();
             }
         });
-        
-        tblStats.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override public void mouseExited(MouseEvent e) { hideBalloon(); }
+
+        tblStats.addMouseListener(new java.awt.event.MouseAdapter()
+        {
+            @Override
+            public void mouseExited(MouseEvent e)
+            {
+                hideBalloon();
+            }
         });
     }
 
-    private void showBalloon(int row, int col, String text) {
-        if (currentBalloon != null) {
-            if (currentBalloon.isVisible() && currentBalloon.getAttachedRectangle().equals(tblStats.getCellRect(row, col, true))) return; 
+    private void showBalloon(int row, int col, String text)
+    {
+        if (currentBalloon != null)
+        {
+            if (currentBalloon.isVisible() && currentBalloon.getAttachedRectangle().equals(tblStats.getCellRect(row, col, true)))
+            {
+                return;
+            }
             currentBalloon.closeBalloon();
         }
         RoundedBalloonStyle style = new RoundedBalloonStyle(5, 5, new Color(40, 40, 40), Color.GRAY);
@@ -120,8 +143,13 @@ public final class potReactivaTopComponent extends baseTopComponent
         currentBalloon.setVisible(true);
     }
 
-    private void hideBalloon() {
-        if (currentBalloon != null) { currentBalloon.closeBalloon(); currentBalloon = null; }
+    private void hideBalloon()
+    {
+        if (currentBalloon != null)
+        {
+            currentBalloon.closeBalloon();
+            currentBalloon = null;
+        }
     }
 
     @Override
@@ -138,29 +166,58 @@ public final class potReactivaTopComponent extends baseTopComponent
         int idxQA_med = -1, idxQB_med = -1, idxQC_med = -1, idxQSum_med = -1;
         int idxQA_calc = -1, idxQB_calc = -1, idxQC_calc = -1, idxQSum_calc = -1;
 
-        for (int i = 0; i < masterHeaders.length; i++) {
+        for (int i = 0; i < masterHeaders.length; i++)
+        {
             String h = masterHeaders[i].toUpperCase();
-            if (isStrict(h, "SA", "APPARENT")) idxSA = i;
-            else if (isStrict(h, "SB", "APPARENT")) idxSB = i;
-            else if (isStrict(h, "SC", "APPARENT")) idxSC = i;
-            else if (isStrict(h, "SSUM", "APPARENT") || isStrict(h, "S SUM", "APPARENT")) idxSSum = i;
-            
-            if (isStrict(h, "QA", "REACTIVE") && !h.contains("CALC")) idxQA_med = i;
-            else if (isStrict(h, "QB", "REACTIVE") && !h.contains("CALC")) idxQB_med = i;
-            else if (isStrict(h, "QC", "REACTIVE") && !h.contains("CALC")) idxQC_med = i;
-            else if ((h.contains("QSUM") || h.contains("Q SUM")) && h.contains("REACTIVE") && !h.contains("CALC")) idxQSum_med = i;
-            
-            if (h.contains("REACTIVEPOWERCALC") && h.contains("QA")) idxQA_calc = i;
-            else if (h.contains("REACTIVEPOWERCALC") && h.contains("QB")) idxQB_calc = i;
-            else if (h.contains("REACTIVEPOWERCALC") && h.contains("QC")) idxQC_calc = i;
-            else if (h.contains("REACTIVEPOWERCALC") && h.contains("QSUM")) idxQSum_calc = i;
+            if (glb.isStrict(h, glb.APPARENT_POWER_FASE_A, glb.APPARENT_POWER))
+            {
+                idxSA = i;
+            } else if (glb.isStrict(h, glb.APPARENT_POWER_FASE_B, glb.APPARENT_POWER))
+            {
+                idxSB = i;
+            } else if (glb.isStrict(h, glb.APPARENT_POWER_FASE_C, glb.APPARENT_POWER))
+            {
+                idxSC = i;
+            } else if (glb.isStrict(h, glb.APPARENT_POWER_SUM, glb.APPARENT_POWER))
+            {
+                idxSSum = i;
+            }
+
+            if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_A, glb.REACTIVE_POWER))
+            {
+                idxQA_med = i;
+            } else if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_B, glb.REACTIVE_POWER))
+            {
+                idxQB_med = i;
+            } else if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_C, glb.REACTIVE_POWER))
+            {
+                idxQC_med = i;
+            } else if (glb.isStrict(h, glb.REACTIVE_POWER_SUM, glb.REACTIVE_POWER))
+            {
+                idxQSum_med = i;
+            }
+
+            if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_A, glb.REACTIVE_POWER_CALC))
+            {
+                idxQA_calc = i;
+            } else if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_B, glb.REACTIVE_POWER_CALC))
+            {
+                idxQB_calc = i;
+            } else if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_C, glb.REACTIVE_POWER_CALC))
+            {
+                idxQC_calc = i;
+            } else if (glb.isStrict(h, glb.REACTIVE_POWER_SUM, glb.REACTIVE_POWER_CALC))
+            {
+                idxQSum_calc = i;
+            }
+
         }
 
         addPhaseSeries("QA medido", idxQA_med, idxQA_calc, idxSA, glb.colorA, false, chartIndices, chartNames, chartColors);
         addPhaseSeries("QB medido", idxQB_med, idxQB_calc, idxSB, glb.colorB, false, chartIndices, chartNames, chartColors);
         addPhaseSeries("QC medido", idxQC_med, idxQC_calc, idxSC, glb.colorC, false, chartIndices, chartNames, chartColors);
         addPhaseSeries("QSum medido", idxQSum_med, idxQSum_calc, idxSSum, Color.CYAN, false, chartIndices, chartNames, chartColors);
-        
+
         addPhaseSeries("QA Calculada", idxQA_calc, -1, -1, new Color(255, 165, 0), true, chartIndices, chartNames, chartColors);
         addPhaseSeries("QB Calculada", idxQB_calc, -1, -1, new Color(0, 191, 255), true, chartIndices, chartNames, chartColors);
         addPhaseSeries("QC Calculada", idxQC_calc, -1, -1, new Color(255, 20, 147), true, chartIndices, chartNames, chartColors);
@@ -169,19 +226,17 @@ public final class potReactivaTopComponent extends baseTopComponent
         chartPanel.setSeries(chartIndices, chartNames, chartColors);
         updateStatsTableRows();
     }
-    
-    private void addPhaseSeries(String name, int colIdx, int idxCalc, int idxS, Color color, boolean isCalc, List<Integer> indices, List<String> names, List<Color> colors) {
-        if (colIdx == -1) return;
+
+    private void addPhaseSeries(String name, int colIdx, int idxCalc, int idxS, Color color, boolean isCalc, List<Integer> indices, List<String> names, List<Color> colors)
+    {
+        if (colIdx == -1)
+        {
+            return;
+        }
         phaseControls.add(new PhaseControlQ(colIdx, idxCalc, idxS, name, color, isCalc));
         indices.add(colIdx);
         names.add(name);
         colors.add(color);
-    }
-
-    private boolean isStrict(String h, String key, String type) {
-        if (!h.contains(type)) return false;
-        if (h.contains("ENERGY") || h.contains("VARH") || h.contains("VAH")) return false;
-        return h.contains(" " + key) || h.contains(": " + key) || h.endsWith(" " + key) || h.endsWith(":" + key);
     }
 
     private void updateStatsTableRows()
@@ -200,13 +255,25 @@ public final class potReactivaTopComponent extends baseTopComponent
     }
 
     @Override
-    protected void onDataLoaded() { updateChartData(); updateStatistics(); }
+    protected void onDataLoaded()
+    {
+        updateChartData();
+        updateStatistics();
+    }
 
     @Override
-    protected void onTimeRangeUpdated() { updateChartData(); updateStatistics(); }
-    
-    private void updateChartData() {
-        if (masterData.isEmpty()) return;
+    protected void onTimeRangeUpdated()
+    {
+        updateChartData();
+        updateStatistics();
+    }
+
+    private void updateChartData()
+    {
+        if (masterData.isEmpty())
+        {
+            return;
+        }
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
         chartPanel.setData(masterData, sIdx, eIdx);
@@ -214,20 +281,27 @@ public final class potReactivaTopComponent extends baseTopComponent
 
     private void updateStatistics()
     {
-        if (masterData.isEmpty() || phaseControls.isEmpty()) return;
+        if (masterData.isEmpty() || phaseControls.isEmpty())
+        {
+            return;
+        }
 
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
 
         List<FastChartPanel.TrendLine> trendLines = new ArrayList<>();
-        
+
         int rowInModel = 0;
         for (PhaseControlQ pc : phaseControls)
         {
             boolean isVisible = (boolean) statsModel.getValueAt(rowInModel, 2);
-            if (!isVisible) { rowInModel++; continue; }
+            if (!isVisible)
+            {
+                rowInModel++;
+                continue;
+            }
 
-            double min = Double.MAX_VALUE, max = -Double.MAX_VALUE, absMax = 0; 
+            double min = Double.MAX_VALUE, max = -Double.MAX_VALUE, absMax = 0;
             double sumMed = 0, sumCalc = 0, sumS = 0;
             String dateMin = "-", dateMax = "-";
             int count = 0;
@@ -236,27 +310,46 @@ public final class potReactivaTopComponent extends baseTopComponent
             {
                 String[] row = masterData.get(r);
                 double valMed = glb.parseDoubleSafe(row[pc.colIdx]);
-                if (!pc.isCalculated) {
+                if (!pc.isCalculated)
+                {
                     sumCalc += (pc.idxCalc != -1) ? glb.parseDoubleSafe(row[pc.idxCalc]) : 0;
                     sumS += (pc.idxS != -1) ? glb.parseDoubleSafe(row[pc.idxS]) : 0;
                 }
-                if (valMed < min) { min = valMed; dateMin = row[0] + " " + row[1]; }
-                if (valMed > max) { max = valMed; dateMax = row[0] + " " + row[1]; }
-                if (Math.abs(valMed) > absMax) absMax = Math.abs(valMed);
-                sumMed += valMed; count++;
+                if (valMed < min)
+                {
+                    min = valMed;
+                    dateMin = row[0] + " " + row[1];
+                }
+                if (valMed > max)
+                {
+                    max = valMed;
+                    dateMax = row[0] + " " + row[1];
+                }
+                if (Math.abs(valMed) > absMax)
+                {
+                    absMax = Math.abs(valMed);
+                }
+                sumMed += valMed;
+                count++;
             }
 
             double avgMed = count > 0 ? sumMed / count : 0;
             double avgCalc = count > 0 ? sumCalc / count : 0;
-            double avgS = count > 0 ? sumS / count : 1.0; 
+            double avgS = count > 0 ? sumS / count : 1.0;
 
             int levelPercent = (int) statsModel.getValueAt(rowInModel, 10);
             double threshold = absMax * (levelPercent / 100.0);
-            double sumAbove = 0; int countAbove = 0;
+            double sumAbove = 0;
+            int countAbove = 0;
 
-            for (int r = sIdx; r <= eIdx; r++) {
+            for (int r = sIdx; r <= eIdx; r++)
+            {
                 double val = glb.parseDoubleSafe(masterData.get(r)[pc.colIdx]);
-                if (Math.abs(val) >= threshold) { sumAbove += val; countAbove++; }
+                if (Math.abs(val) >= threshold)
+                {
+                    sumAbove += val;
+                    countAbove++;
+                }
             }
             double avgAbove = countAbove > 0 ? sumAbove / countAbove : 0;
 
@@ -268,33 +361,55 @@ public final class potReactivaTopComponent extends baseTopComponent
             statsModel.setValueAt(dateMax, rowInModel, 8);
             statsModel.setValueAt(String.format("%.2f", avgAbove), rowInModel, 9);
 
-            if (!pc.isCalculated && pc.idxCalc != -1 && pc.idxS != -1) {
+            if (!pc.isCalculated && pc.idxCalc != -1 && pc.idxS != -1)
+            {
                 double dVal = Math.sqrt(Math.max(0, Math.pow(avgCalc, 2) - Math.pow(avgMed, 2)));
                 double distPercent = (avgS != 0) ? (dVal / avgS) * 100 : 0;
                 String clasif = glb.clasificacion.get(0);
-                if (distPercent >= 30) clasif = glb.clasificacion.get(3);
-                else if (distPercent >= 15) clasif = glb.clasificacion.get(2);
-                else if (distPercent >= 5) clasif = glb.clasificacion.get(1);
+                if (distPercent >= 30)
+                {
+                    clasif = glb.clasificacion.get(3);
+                } else if (distPercent >= 15)
+                {
+                    clasif = glb.clasificacion.get(2);
+                } else if (distPercent >= 5)
+                {
+                    clasif = glb.clasificacion.get(1);
+                }
                 statsModel.setValueAt(String.format("%.1f%%", distPercent), rowInModel, 12);
                 statsModel.setValueAt(clasif, rowInModel, 13);
-            } else {
+            } else
+            {
                 statsModel.setValueAt("-", rowInModel, 12);
                 statsModel.setValueAt("-", rowInModel, 13);
             }
 
             boolean showP = (boolean) statsModel.getValueAt(rowInModel, 6);
             boolean showS = (boolean) statsModel.getValueAt(rowInModel, 11);
-            if (showP) trendLines.add(new FastChartPanel.TrendLine(avgMed, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{10, 5}, 0)));
-            if (showS) trendLines.add(new FastChartPanel.TrendLine(avgAbove, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{2, 4}, 0)));
+            if (showP)
+            {
+                trendLines.add(new FastChartPanel.TrendLine(avgMed, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
+                {
+                    10, 5
+                }, 0)));
+            }
+            if (showS)
+            {
+                trendLines.add(new FastChartPanel.TrendLine(avgAbove, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
+                {
+                    2, 4
+                }, 0)));
+            }
 
             rowInModel++;
         }
         chartPanel.setTrendLines(trendLines);
-        tblStats.repaint(); 
+        tblStats.repaint();
     }
 
     private static class PhaseControlQ
     {
+
         int colIdx, idxCalc, idxS;
         String name;
         Color color;
@@ -311,6 +426,12 @@ public final class potReactivaTopComponent extends baseTopComponent
         }
     }
 
-    void writeProperties(java.util.Properties p) { p.setProperty("version", "1.0"); }
-    void readProperties(java.util.Properties p) {}
+    void writeProperties(java.util.Properties p)
+    {
+        p.setProperty("version", "1.0");
+    }
+
+    void readProperties(java.util.Properties p)
+    {
+    }
 }

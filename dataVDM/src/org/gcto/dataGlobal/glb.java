@@ -4,6 +4,9 @@
  */
 package org.gcto.dataGlobal;
 
+import org.gcto.dataOpciones.Opciones;
+import org.gcto.dataEnum.ETipoRED;
+import org.gcto.dataProyecto.DatosProy;
 import java.awt.Color;
 import java.io.File;
 import java.util.Arrays;
@@ -55,12 +58,29 @@ public class glb
     /**
      * color alterno fase C
      */
-    public static Color colorCC = Color.PINK;
+    public static Color colorCC = Color.GREEN;
 
     /**
      * color del neutro. Se ajusta dinámicamente según el tema.
      */
     public static Color colorN = Color.WHITE;
+
+    /**
+     * color alterno Neutro
+     */
+    public static Color colorNN = Color.BLACK;
+    /**
+     * color para activas
+     */
+    public static Color colorPsum = Color.MAGENTA;
+    /**
+     * color para reactivas
+     */
+    public static Color colorQsum = Color.GREEN;
+    /**
+     * color para aparentes
+     */
+    public static Color colorSsum = Color.PINK;
 
     /**
      * tensión entre fases AB
@@ -333,7 +353,7 @@ public class glb
 
     //tensiones
     //termino general apra fultrar por columnas de tensión
-    public static String TENSION = "VOLTAJE(V)";
+    public static String TENSION = "VOLTAGE(V)";
     //terminos para ubicar las de fase y las de linea
     public static String TENSION_FASE_A = "UA";
     public static String TENSION_FASE_B = "UB";
@@ -357,6 +377,7 @@ public class glb
     public static String CORRIENTE_FASE_A = "IA";
     public static String CORRIENTE_FASE_B = "IB";
     public static String CORRIENTE_FASE_C = "IC";
+    public static String CORRIENTE_NEUTRO = "IN";
 
     //armonicos de corriente
     //termino generico para ubicar columna de armonicos de corriente - CUALQUIer numero o columnas
@@ -412,6 +433,10 @@ public class glb
     public static String APPARENT_POWER_FASE_C = "SC";
     public static String APPARENT_POWER_SUM = "SSUM";
 
+    //ENERGIA
+    //filtro general apra todas las energias
+    public static String ENERGY = "ENERGY";
+
     //ENERGIA activa
     //termino generico para ubicar columnas de energía activa
     public static String ACTIVE_ENERGY = "ACTIVE ENERGY";
@@ -440,8 +465,8 @@ public class glb
     public static String APPARENT_ENERGY_SUM = "ESSUM";
 
     //DEMANDA DE CORRIENTE
-    //termino generico para todas las columnas de demanda
-    public static String DEMAND = "DEMAND";
+    //termino generico para todas las columnas de demanda de corriente
+    public static String DEMAND_I = "DEMAND";
 
     //termino para refinar por demanda de corriente especificamente PARA CADA FASE
     public static String CURRENT_DEMAND_FASE_A = "DMIA";
@@ -456,25 +481,113 @@ public class glb
     public static String CURRENT_DATE_PEAK_DEMAND_FASE_B = "PDMIB_D/T";
     public static String CURRENT_DATE_PEAK_DEMAND_FASE_C = "PDMIC_D/T";
 
+    //termino generico para todas las columnas de demanda de potenci
+    public static String DEMAND_P = "DEAMND";
     //termino para refinar por demanda de POTENCIA ACTIVA TOTAL
-    public static String TOTAL_ACTIVE_POWER_DEMAND = "DMP";
+    public static String TOTAL_ACTIVE_POWER_DEMAND = "(W): DMP";
     //termino para refinar por PICO DE  demanda de POTENCIA ACTIVA TOTAL
     public static String TOTAL_PEAK_ACTIVE_POWER_DEMAND = "PDMP";
     //COLUMNA QUE REPRESENTANA LAS FECHAS POR FASE DEL PICO DE DEMANDA  DE POTENCIA ACTIVA TOTAL
     public static String TOTAL_ACTIVE_POWER_DATE_PEAK_DEMAND = "PDMP_D/T";
 
     //termino para refinar por demanda de POTENCIA REACTIVA TOTAL
-    public static String TOTAL_REACTIVE_POWER_DEMAND = "DMQ";
+    public static String TOTAL_REACTIVE_POWER_DEMAND = "(VAR): DMQ";
     //termino para refinar por PICO DE  demanda de POTENCIA REACTIVA TOTAL
     public static String TOTAL_PEAK_REACTIVE_POWER_DEMAND = "PDMQ";
     //COLUMNA QUE REPRESENTANA LAS FECHAS POR FASE DEL PICO DE DEMANDA  DE POTENCIA REACTIVA TOTAL
     public static String TOTAL_REACTIVE_POWER_DATE_PEAK_DEMAND = "PDMQ_D/T";
 
     //termino para refinar por demanda de POTENCIA APARENTE TOTAL
-    public static String TOTAL_APPARENT_POWER_DEMAND = "DMS";
+    public static String TOTAL_APPARENT_POWER_DEMAND = "(VA): DMS";
     //termino para refinar por PICO DE  demanda de POTENCIA APARENTE TOTAL
     public static String TOTAL_PEAK_APPARENT_POWER_DEMAND = "PDMS";
     //COLUMNA QUE REPRESENTANA LAS FECHAS POR FASE DEL PICO DE DEMANDA  DE POTENCIA APARENTE TOTAL
     public static String TOTAL_APPARENT_POWER_DATE_PEAK_DEMAND = "PDMS_D/T";
 //</editor-fold>
+
+    /**
+     * se busca las columnas po run parametor específico
+     *
+     * @param h - la columna
+     * @param key - la fase a buscar
+     * @param type - el typo de parametro
+     * @return
+     */
+    public static boolean isStrict(String h, String key, String type)
+    {
+        if (!h.contains(type))
+        {
+            return false;
+        }
+
+        return h.contains(" " + key) || h.contains(": " + key) || h.endsWith(" " + key) || h.endsWith(":" + key);
+
+    }
+
+    /**
+     * convierte un string del tipo RGB "r,g,b" en un objeto tipo color
+     *
+     * @param RGB
+     * @return el tipo Color
+     */
+    public static Color colorDe_RGB_String(String RGB)
+    {
+
+        String[] valores = RGB.split(",");
+        int r = Integer.parseInt(valores[0]);
+        int g = Integer.parseInt(valores[1]);
+        int b = Integer.parseInt(valores[2]);
+
+        Color color = new Color(r, g, b);
+
+        return color;
+    }
+
+    /**
+     * de un tipo Color se retorna un string por ","
+     *
+     * @param color
+     * @return String con el codigo "r,g,b"
+     */
+    public static String RGB_String_de_Color(Color color)
+    {
+        String rgb = color.getRed() + ","
+                + color.getGreen() + ","
+                + color.getBlue();
+
+        return rgb;
+    }
+
+    /**
+     * carga los colores para el uso del programa
+     */
+    public static void cargarColores()
+    {
+        if (glb.opc != null)
+        {
+
+            glb.colorA = colorDe_RGB_String(glb.opc.getColorFaseA());
+
+            glb.colorB = colorDe_RGB_String(glb.opc.getColorFaseB());
+
+            glb.colorC = colorDe_RGB_String(glb.opc.getColorFaseC());
+
+            glb.colorN = colorDe_RGB_String(glb.opc.getColorAltN());
+
+            glb.colorAA = colorDe_RGB_String(glb.opc.getColorAltA());
+
+            glb.colorBB = colorDe_RGB_String(glb.opc.getColorAltB());
+
+            glb.colorCC = colorDe_RGB_String(glb.opc.getColorAltC());
+
+            glb.colorNN = colorDe_RGB_String(glb.opc.getColorAltN());
+
+            glb.colorPsum = colorDe_RGB_String(glb.opc.getColorTotP_Act());
+
+            glb.colorQsum = colorDe_RGB_String(glb.opc.getColorTotQ_react());
+
+            glb.colorSsum = colorDe_RGB_String(glb.opc.getColorTotS_apar());
+
+        }
+    }
 }

@@ -2,16 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
-package org.gcto.dataGlobal;
+package org.gcto.dataInformes;
 
-import java.awt.FlowLayout;
 import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -37,27 +32,6 @@ public class GenerarInforme extends javax.swing.JDialog
         setLocationRelativeTo(null);
     }
 
-    
-
-
-    private void showPartialRangeDialog()
-    {
-        JPanel pnl = new JPanel(new FlowLayout());
-        JSlider s1 = new JSlider(0, 1000, partialStart);
-        JSlider s2 = new JSlider(0, 1000, partialEnd);
-        pnl.add(new JLabel("Inicio %:"));
-        pnl.add(s1);
-        pnl.add(new JLabel("Fin %:"));
-        pnl.add(s2);
-
-        if (JOptionPane.showConfirmDialog(this, pnl, "Seleccionar Rango de Informe", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION)
-        {
-            partialStart = s1.getValue();
-            partialEnd = s2.getValue();
-            jTextField1.setText(partialStart + "% - " + partialEnd + "%");
-        }
-    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -74,14 +48,15 @@ public class GenerarInforme extends javax.swing.JDialog
         buttonGroup1 = new javax.swing.ButtonGroup();
         buttonGroup2 = new javax.swing.ButtonGroup();
         jMenu1 = new javax.swing.JMenu();
-        jPanel1 = new javax.swing.JPanel();
-        rbParcial = new javax.swing.JRadioButton();
-        rbTotal = new javax.swing.JRadioButton();
-        jTextField1 = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
         btnAceptar = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        txtCometario = new javax.swing.JTextArea();
 
         jScrollPane1.setViewportView(jTextPane1);
 
@@ -91,49 +66,6 @@ public class GenerarInforme extends javax.swing.JDialog
         setTitle(org.openide.util.NbBundle.getMessage(GenerarInforme.class, "generarInforme.title")); // NOI18N
         setIconImage(null);
         setIconImages(null);
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 204, 153)));
-
-        btnGrp.add(rbParcial);
-        org.openide.awt.Mnemonics.setLocalizedText(rbParcial, org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.rbParcial.text")); // NOI18N
-        rbParcial.setToolTipText(org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.rbParcial.toolTipText")); // NOI18N
-
-        btnGrp.add(rbTotal);
-        org.openide.awt.Mnemonics.setLocalizedText(rbTotal, org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.rbTotal.text")); // NOI18N
-        rbTotal.setToolTipText(org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.rbTotal.toolTipText")); // NOI18N
-
-        jTextField1.setEditable(false);
-        jTextField1.setBackground(new java.awt.Color(255, 255, 204));
-        jTextField1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jTextField1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jTextField1.setText(org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.jTextField1.text")); // NOI18N
-        jTextField1.setToolTipText(org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.jTextField1.toolTipText")); // NOI18N
-        jTextField1.setEnabled(false);
-        jTextField1.setOpaque(true);
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(rbParcial)
-                .addGap(18, 18, 18)
-                .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 765, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(rbTotal)
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(rbParcial)
-                    .addComponent(rbTotal)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
 
         jLabel1.setBackground(new java.awt.Color(204, 255, 204));
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.jLabel1.text")); // NOI18N
@@ -158,7 +90,7 @@ public class GenerarInforme extends javax.swing.JDialog
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
                 .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -177,6 +109,39 @@ public class GenerarInforme extends javax.swing.JDialog
 
         jPanel3Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnAceptar, btnCancel});
 
+        jScrollPane2.setHorizontalScrollBar(null);
+
+        jTextArea1.setEditable(false);
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jTextArea1.setText(org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.jTextArea1.text")); // NOI18N
+        jTextArea1.setWrapStyleWord(true);
+        jTextArea1.setAutoscrolls(false);
+        jScrollPane2.setViewportView(jTextArea1);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.jPanel2.border.title"), javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION)); // NOI18N
+
+        txtCometario.setColumns(20);
+        txtCometario.setRows(5);
+        txtCometario.setToolTipText(org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.txtCometario.toolTipText")); // NOI18N
+        jScrollPane3.setViewportView(txtCometario);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane3)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -184,21 +149,24 @@ public class GenerarInforme extends javax.swing.JDialog
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(401, 401, 401)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -231,21 +199,6 @@ public class GenerarInforme extends javax.swing.JDialog
         }
 
     }
-
-    private void applyTimeRange(baseTopComponent tc)
-    {
-        if (rbParcial.isSelected())
-        {
-            tc.sliderStart.setValue(partialStart);
-            tc.sliderEnd.setValue(partialEnd);
-        } else
-        {
-            tc.sliderStart.setValue(0);
-            tc.sliderEnd.setValue(1000);
-        }
-    }
-
-   
 
     /**
      * @param args the command line arguments
@@ -301,12 +254,13 @@ public class GenerarInforme extends javax.swing.JDialog
     private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextPane jTextPane1;
-    private javax.swing.JRadioButton rbParcial;
-    private javax.swing.JRadioButton rbTotal;
+    private javax.swing.JTextArea txtCometario;
     // End of variables declaration//GEN-END:variables
 }

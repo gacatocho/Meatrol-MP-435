@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package org.gcto.dataGlobal;
+package org.gcto.dataBD;
 
+import org.gcto.dataProyecto.DatosProy;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,6 +14,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+import org.gcto.dataEnum.EEstado;
+import org.gcto.dataOpciones.Opciones;
+import org.gcto.dataGlobal.glb;
 import org.gcto.interfases.IBaseVDM;
 
 /**
@@ -114,7 +118,7 @@ public final class SalvarClaseGenerica
 
                     case EDITADO:
                         obj.setEstado(EEstado.SIN_CAMBIO);
-                        BaseVDM objeto = getObjetoPorClase(em, obj.getClass(), NOMBRE_CLASE);
+                        IBaseVDM objeto = getObjetoPorClase(em, obj.getClass(), NOMBRE_CLASE);
                         if (objeto != null)
                         {
                             //copiaar todas las propiedades donde la fuente es el de lista actual y el
@@ -163,17 +167,17 @@ public final class SalvarClaseGenerica
      * @param nombreClase
      * @return
      */
-    private static BaseVDM getObjetoPorClase(EntityManager em, Class<? extends Object> aClass, String nombreClase)
+    private static IBaseVDM getObjetoPorClase(EntityManager em, Class<? extends Object> aClass, String nombreClase)
     {
-        BaseVDM basevdm = null;
+        IBaseVDM basevdm = null;
 
-        String queryString = "SELECT c FROM " + nombreClase;
+        String queryString = "SELECT c FROM " + nombreClase + " c";
 
         System.out.println("*****************************************************************************************************************************************");
         System.out.println("el quertyString para el ejemplo es  " + queryString);
         System.out.println("*****************************************************************************************************************************************");
 
-        TypedQuery<BaseVDM> query = em.createQuery(queryString, BaseVDM.class);
+        TypedQuery<IBaseVDM> query = em.createQuery(queryString, IBaseVDM.class);
 
         basevdm = query.getSingleResult();
 
