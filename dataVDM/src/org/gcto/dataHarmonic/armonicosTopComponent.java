@@ -31,8 +31,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.gcto.dataGlobal.FastChartPanel;
@@ -75,8 +73,6 @@ public final class armonicosTopComponent extends baseTopComponent
 {
 
     private final List<PhaseControl> phaseControls = new ArrayList<>();
-    private JSpinner spnMinY;
-    private JSpinner spnMaxY;
     private JComboBox<String> cmbHarmonicOrder;
     private JCheckBox chkShowSpectrum;
     
@@ -95,7 +91,7 @@ public final class armonicosTopComponent extends baseTopComponent
         
         setupSpectrumView();
         setupHarmonicControls();
-        setupYRangeControls();
+        setupYRangeControls("%");
         hideStatsColumns(9, 10, 11);
         
         // Sincronizar el espectro con el cursor del gráfico de tendencia
@@ -173,31 +169,12 @@ public final class armonicosTopComponent extends baseTopComponent
         pnlSouth.add(pnlFilter, 2);
     }
 
-    private void setupYRangeControls()
+    @Override
+    protected void updateManualRange()
     {
-        spnMinY = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 1000.0, 0.5));
-        spnMaxY = new JSpinner(new SpinnerNumberModel(20.0, 0.0, 1000.0, 0.5));
-        spnMinY.setEditor(new JSpinner.NumberEditor(spnMinY, "0.0"));
-        spnMaxY.setEditor(new JSpinner.NumberEditor(spnMaxY, "0.0"));
-        spnMinY.addChangeListener(e -> updateManualRange());
-        spnMaxY.addChangeListener(e -> updateManualRange());
-
-        JPanel pnlY = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        pnlY.add(new JLabel("Escala Y (%):")); pnlY.add(spnMinY);
-        pnlY.add(new JLabel("Max:")); pnlY.add(spnMaxY);
-
-        pnlSouth.add(new JSeparator(JSeparator.VERTICAL));
-        pnlSouth.add(pnlY);
-        updateManualRange();
-    }
-
-    private void updateManualRange()
-    {
-        double min = (Double) spnMinY.getValue();
-        double max = (Double) spnMaxY.getValue();
-        if (min < max) {
-            chartPanel.setManualYRange(min, max);
-            spectrumPanel.setYRange(min, max);
+        super.updateManualRange();
+        if (spectrumPanel != null && spnMinY != null && spnMaxY != null) {
+            spectrumPanel.setYRange((Double) spnMinY.getValue(), (Double) spnMaxY.getValue());
         }
     }
 
@@ -278,11 +255,7 @@ public final class armonicosTopComponent extends baseTopComponent
                     maxVal = Math.max(maxVal, glb.parseDoubleSafe(row[colIdx]));
                 }
             }
-            if (maxVal > 0) {
-                double newMax = Math.ceil(maxVal * 1.1);
-                spnMaxY.setValue(newMax);
-                updateManualRange();
-            }
+            autoAdjustYRange(maxVal);
         }
     }
 

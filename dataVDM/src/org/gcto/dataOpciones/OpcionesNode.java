@@ -6,7 +6,6 @@ package org.gcto.dataOpciones;
 
 import java.awt.Color;
 import java.beans.PropertyEditor;
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import org.gcto.dataEnum.EEstado;
 import org.gcto.dataGlobal.glb;
@@ -230,6 +229,71 @@ public class OpcionesNode extends AbstractNode
         };
 
         setColores.put(colorSsumprop);
+
+        Property<Color> colorIAVG = new PropertySupport.ReadWrite<Color>("colorIAVG", Color.class, "Color de promedio de corrientes", "Color usado para identificar el promedio de corrientes")
+        {
+            @Override
+            public Color getValue() throws IllegalAccessException, InvocationTargetException
+            {
+                return glb.colorDe_RGB_String(opc.getColor_I_AVG());
+            }
+
+            @Override
+            public void setValue(Color t) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+            {
+                opc.setColor_I_AVG(glb.RGB_String_de_Color(t));
+            }
+        };
+
+        setColores.put(colorIAVG);
+
+        Property<Color> colorVAVG = new PropertySupport.ReadWrite<Color>("colorVAVG", Color.class, "Color para promedio tension", "Color usado para identificar el promedio de las tensiones de fase")
+        {
+            @Override
+            public Color getValue() throws IllegalAccessException, InvocationTargetException
+            {
+                return glb.colorDe_RGB_String(opc.getColor_V_AVG());
+            }
+
+            @Override
+            public void setValue(Color t) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+            {
+                opc.setColor_V_AVG(glb.RGB_String_de_Color(t));
+            }
+        };
+
+        setColores.put(colorVAVG);
+
+        Property<Color> colorFAVG = new PropertySupport.ReadWrite<Color>("colorFAVG", Color.class, "Color para promedio Frecuencia", "Color usado para identificar el promedio de la Frecuencia")
+        {
+            @Override
+            public Color getValue() throws IllegalAccessException, InvocationTargetException
+            {
+                return glb.colorDe_RGB_String(opc.getColor_F_AVG());
+            }
+
+            @Override
+            public void setValue(Color t) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+            {
+                opc.setColor_F_AVG(glb.RGB_String_de_Color(t));
+            }
+        };
+
+        Property<Color> colorIDMAVG = new PropertySupport.ReadWrite<Color>("colorIDMVG", Color.class, "Color para promedio Demanda de corriente", "Color usado para identificar el promedio de la Demanda de corriente")
+        {
+            @Override
+            public Color getValue() throws IllegalAccessException, InvocationTargetException
+            {
+                return glb.colorDe_RGB_String(opc.getColor_IDM_AVG());
+            }
+
+            @Override
+            public void setValue(Color t) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException
+            {
+                opc.setColor_IDM_AVG(glb.RGB_String_de_Color(t));
+            }
+        };
+        setColores.put(colorIDMAVG);
 //</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="ESTADO">
@@ -271,7 +335,6 @@ public class OpcionesNode extends AbstractNode
 
         setPath.put(patlLogoprop);
 //</editor-fold>
-
 
         //**********************
         sheet.put(setColores);

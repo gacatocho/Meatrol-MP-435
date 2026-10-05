@@ -52,6 +52,8 @@ public final class potAparenteTopComponent extends baseTopComponent
     {
         setName("Análisis de Potencia Aparente");
         setToolTipText("Visualización y análisis de potencia aparente por fase y total");
+        
+        setupYRangeControls("VA");
     }
 
     @Override
@@ -147,6 +149,7 @@ public final class potAparenteTopComponent extends baseTopComponent
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
 
         List<FastChartPanel.TrendLine> trendLines = new ArrayList<>();
+        double globalMaxInSelection = 0;
 
         int rowInModel = 0;
         for (int i = 0; i < phaseControls.size(); i++)
@@ -180,6 +183,11 @@ public final class potAparenteTopComponent extends baseTopComponent
                 }
                 sum += val;
                 count++;
+            }
+
+            if (count > 0 && max > globalMaxInSelection)
+            {
+                globalMaxInSelection = max;
             }
 
             double avgArit = count > 0 ? sum / count : 0;
@@ -227,6 +235,8 @@ public final class potAparenteTopComponent extends baseTopComponent
 
             rowInModel++;
         }
+        
+        autoAdjustYRange(globalMaxInSelection);
         chartPanel.setTrendLines(trendLines);
     }
 

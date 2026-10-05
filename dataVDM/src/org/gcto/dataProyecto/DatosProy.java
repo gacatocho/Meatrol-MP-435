@@ -7,11 +7,15 @@ package org.gcto.dataProyecto;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import org.gcto.interfases.IDatosProy;
 import javax.persistence.Entity;
+import org.gcto.dataBD.SalvarClaseGenerica;
 import org.gcto.dataEnum.EEstado;
 import org.gcto.dataEnum.ETipoRED;
+import org.gcto.dataGlobal.glb;
+import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -27,6 +31,7 @@ public class DatosProy implements IDatosProy, PropertyChangeListener
 
     public DatosProy()
     {
+        addPropertyChangeListener(this);
     }
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -422,7 +427,38 @@ public class DatosProy implements IDatosProy, PropertyChangeListener
     @Override
     public void propertyChange(PropertyChangeEvent evt)
     {
-        setEstado(EEstado.EDITADO);
+        if (!estado.equals(EEstado.NUEVO))
+        {
+            setEstado(EEstado.EDITADO);
+        }
+
+        try
+        {
+            SalvarClaseGenerica.salvarObjeto(glb.dp);
+        } catch (IOException ex)
+        {
+            Exceptions.printStackTrace(ex);
+        }
+    }
+    
+     /**
+     * Add PropertyChangeListener.
+     *
+     * @param listener
+     */
+    public void addPropertyChangeListener(PropertyChangeListener listener)
+    {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    /**
+     * Remove PropertyChangeListener.
+     *
+     * @param listener
+     */
+    public void removePropertyChangeListener(PropertyChangeListener listener)
+    {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
 }

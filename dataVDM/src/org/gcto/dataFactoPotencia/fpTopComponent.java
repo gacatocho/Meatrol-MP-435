@@ -55,6 +55,19 @@ public final class fpTopComponent extends baseTopComponent
         setToolTipText(Bundle.HINT_fpTopComponent());
 
         chartPanel.setPowerFactorMode(true);
+        setupYRangeControls("");
+
+        // Escala fija para FP: -1.0 a 1.0 (IND arriba, CAP abajo)
+        if (spnMinY != null)
+        {
+            spnMinY.setValue(-1.0);
+        }
+        if (spnMaxY != null)
+        {
+            spnMaxY.setValue(1.0);
+        }
+        updateManualRange();
+
         hideStatsColumns(9, 10, 11);
     }
 
@@ -69,8 +82,8 @@ public final class fpTopComponent extends baseTopComponent
         List<String> chartNames = new ArrayList<>();
         List<Color> chartColors = new ArrayList<>();
 
-        //investigamos aqui si es inductivo o capacitovo el factor de potencia (+ 0 -)
-        int idxQA = -1, idxQB = -1, idxQC = -1;
+        // Localizar columnas de Potencia Reactiva para determinar el signo (IND/CAP)
+        int idxQA = -1, idxQB = -1, idxQC = -1, idxQSum = -1;
         for (int i = 0; i < masterHeaders.length; i++)
         {
             String h = masterHeaders[i].toUpperCase();
@@ -83,6 +96,9 @@ public final class fpTopComponent extends baseTopComponent
             } else if (glb.isStrict(h, glb.REACTIVE_POWER_FASE_C, glb.REACTIVE_POWER))
             {
                 idxQC = i;
+            } else if (glb.isStrict(h, glb.REACTIVE_POWER_SUM, glb.REACTIVE_POWER))
+            {
+                idxQSum = i;
             }
         }
 
@@ -107,12 +123,12 @@ public final class fpTopComponent extends baseTopComponent
             } else if (glb.isStrict(h, glb.POWER_FACTOR_AVERAG, glb.POWER_FACTOR))
             {
                 c = Color.WHITE;
-                signIdx = -1;
+                signIdx = idxQSum;
             }
 
             if (c != null)
             {
-                phaseControls.add(new PhaseControl(i, masterHeaders[i], c));
+                phaseControls.add(new PhaseControl(i, signIdx, masterHeaders[i], c));
                 chartIndices.add(i);
                 signIndices.add(signIdx);
                 chartNames.add(masterHeaders[i]);
@@ -188,6 +204,7 @@ public final class fpTopComponent extends baseTopComponent
             }
 
             int colIdx = pc.colIdx;
+            int signIdx = pc.signColIdx;
             double min = Double.MAX_VALUE, max = -Double.MAX_VALUE, sum = 0;
             String dateMin = "-", dateMax = "-";
             int count = 0;
@@ -195,7 +212,19 @@ public final class fpTopComponent extends baseTopComponent
             for (int r = sIdx; r <= eIdx; r++)
             {
                 String[] row = masterData.get(r);
-                double val = glb.parseDoubleSafe(row[colIdx]);
+                // Aseguramos valor absoluto antes de aplicar el signo de Q
+                double val = Math.abs(glb.parseDoubleSafe(row[colIdx]));
+
+                // Aplicar signo para estadísticas si hay columna de reactiva (Q < 0 => Capacitivo)
+                if (signIdx != -1)
+                {
+                    double q = glb.parseDoubleSafe(row[signIdx]);
+                    if (q < 0)
+                    {
+                        val = -val;
+                    }
+                }
+
                 if (val < min)
                 {
                     min = val;
@@ -212,10 +241,11 @@ public final class fpTopComponent extends baseTopComponent
 
             double avgArit = count > 0 ? sum / count : 0;
 
-            statsModel.setValueAt(String.format("%.3f", Math.abs(min)), rowInModel, 3);
+            // Mostramos los valores con signo en la tabla para distinguir IND (+) de CAP (-)
+            statsModel.setValueAt(String.format("%.3f", min), rowInModel, 3);
             statsModel.setValueAt(dateMin, rowInModel, 4);
-            statsModel.setValueAt(String.format("%.3f", Math.abs(avgArit)), rowInModel, 5);
-            statsModel.setValueAt(String.format("%.3f", Math.abs(max)), rowInModel, 7);
+            statsModel.setValueAt(String.format("%.3f", avgArit), rowInModel, 5);
+            statsModel.setValueAt(String.format("%.3f", max), rowInModel, 7);
             statsModel.setValueAt(dateMax, rowInModel, 8);
 
             boolean showP = (boolean) statsModel.getValueAt(rowInModel, 6);
@@ -229,6 +259,7 @@ public final class fpTopComponent extends baseTopComponent
 
             rowInModel++;
         }
+
         chartPanel.setTrendLines(trendLines);
     }
 
@@ -236,12 +267,14 @@ public final class fpTopComponent extends baseTopComponent
     {
 
         int colIdx;
+        int signColIdx;
         String name;
         Color color;
 
-        PhaseControl(int colIdx, String name, Color color)
+        PhaseControl(int colIdx, int signColIdx, String name, Color color)
         {
             this.colIdx = colIdx;
+            this.signColIdx = signColIdx;
             this.name = name;
             this.color = color;
         }

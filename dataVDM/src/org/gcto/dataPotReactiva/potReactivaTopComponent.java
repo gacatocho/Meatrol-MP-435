@@ -67,6 +67,7 @@ public final class potReactivaTopComponent extends baseTopComponent
         statsModel.addColumn("Clasif. Calidad");
 
         setupTableEditors();
+        setupYRangeControls("VAr");
 
         tblStats.getColumnModel().getColumn(12).setPreferredWidth(100); // Distorsión
         tblStats.getColumnModel().getColumn(13).setPreferredWidth(160); // Clasificación
@@ -290,6 +291,9 @@ public final class potReactivaTopComponent extends baseTopComponent
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
 
         List<FastChartPanel.TrendLine> trendLines = new ArrayList<>();
+        double globalMaxInSelection = -Double.MAX_VALUE;
+        double globalMinInSelection = Double.MAX_VALUE;
+        boolean hasData = false;
 
         int rowInModel = 0;
         for (PhaseControlQ pc : phaseControls)
@@ -331,6 +335,13 @@ public final class potReactivaTopComponent extends baseTopComponent
                 }
                 sumMed += valMed;
                 count++;
+            }
+
+            if (count > 0)
+            {
+                hasData = true;
+                if (max > globalMaxInSelection) globalMaxInSelection = max;
+                if (min < globalMinInSelection) globalMinInSelection = min;
             }
 
             double avgMed = count > 0 ? sumMed / count : 0;
@@ -403,6 +414,12 @@ public final class potReactivaTopComponent extends baseTopComponent
 
             rowInModel++;
         }
+        
+        if (hasData)
+        {
+            autoAdjustYRange(globalMinInSelection, globalMaxInSelection);
+        }
+        
         chartPanel.setTrendLines(trendLines);
         tblStats.repaint();
     }

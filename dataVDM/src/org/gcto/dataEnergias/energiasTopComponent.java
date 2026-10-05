@@ -56,6 +56,7 @@ public final class energiasTopComponent extends baseTopComponent
         // Activar modo de área para visualizar acumulados de forma profesional
         chartPanel.setAreaFillMode(true);
         setupFilterControl();
+        setupYRangeControls("Wh/VArh/VAh");
         hideStatsColumns(9, 10, 11);
     }
 
@@ -216,6 +217,8 @@ public final class energiasTopComponent extends baseTopComponent
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
 
+        double globalMaxInSelection = 0;
+
         int rowInModel = 0;
         for (int i = 0; i < phaseControls.size(); i++)
         {
@@ -250,6 +253,11 @@ public final class energiasTopComponent extends baseTopComponent
                 count++;
             }
 
+            if (count > 0 && max > globalMaxInSelection)
+            {
+                globalMaxInSelection = max;
+            }
+
             double avgArit = count > 0 ? sum / count : 0;
 
             statsModel.setValueAt(String.format("%.2f", min), rowInModel, 3);
@@ -260,6 +268,8 @@ public final class energiasTopComponent extends baseTopComponent
 
             rowInModel++;
         }
+        
+        autoAdjustYRange(globalMaxInSelection);
     }
 
     private static class PhaseControl

@@ -5,7 +5,9 @@
 package org.gcto.dataVDM;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.gcto.dataEnum.ETipoRED;
@@ -44,6 +46,8 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
         txtTab.setText("Tablero TGA");
         spnPeriod.setValue(1);
         cmbRelBob.setSelectedIndex(0);
+        //arranca con un tipo de fsae predefinido
+        glb.dp.setTipoRed(ETipoRED.tresFases_FFFN);
 
     }
 
@@ -512,6 +516,7 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.openide.util.NbBundle.getMessage(AbrirProyectoNuevo.class, "AbrirProyectoNuevo.jPanel1.border.title"), javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION)); // NOI18N
 
         txtComent.setColumns(20);
+        txtComent.setLineWrap(true);
         txtComent.setRows(5);
         txtComent.setWrapStyleWord(true);
         jScrollPane1.setViewportView(txtComent);
@@ -538,9 +543,8 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
                 .addContainerGap()
                 .addGroup(pnlProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(pnlDatos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(pnlProyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(pnlDatosProy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(pnlDatoME435, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(pnlDatosProy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(pnlDatoME435, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(13, 13, 13))
@@ -682,7 +686,13 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
             {
                 //capturamos al ruta del archivo
                 txtRutaCSV.setText(rutaArchivo);
-                glb.dp.setCsvName(rutaArchivo);
+                try
+                {
+                    glb.dp.setCsvName(rutaArchivo);
+                } catch (Exception e)
+                {
+                    //se carga la propiedad pero aun no se ha cargado la ruta del proyecto
+                }
                 //podemos dar el crear al proyecto.
                 btnCrear.setEnabled(true);
                 //carga el file de csv
@@ -707,11 +717,35 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
     {//GEN-HEADEREND:event_btnCrearActionPerformed
         //aqui se acaba de carga la clase da datos del proyecto con la informcio nsuminstrada
         //datos generales del proyecto // la ruta queda cargada por file chosser
+        //debe coloar la ruta donde se va a salvar el proyecto
+        JFileChooser chooser = new JFileChooser();
+
+        chooser.setDialogTitle("Entre el directorio donde se guardará el proyecto");
+
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+        int resultado = chooser.showOpenDialog(null);
+
+        if (resultado == JFileChooser.APPROVE_OPTION)
+        {
+            File directorio = chooser.getSelectedFile();
+
+            System.out.println("Directorio seleccionado:");
+            System.out.println(directorio.getAbsolutePath());
+            glb.dp.setRutaProyecto(directorio.getAbsolutePath());
+
+        } else
+        {
+            System.out.println("Selección cancelada.");
+            JOptionPane.showMessageDialog(null, "Se cancela creación de proyecto", "Cancela proyecto", JOptionPane.INFORMATION_MESSAGE);
+        }
+
         glb.dp.setNombreProy(txtName.getText());
         glb.dp.setUbicacionProy(txtUbica.getText());
         glb.dp.setCiudadProy(txtCity.getText());
         glb.dp.setOperadorME(txtTec.getText());
         glb.dp.setTablero(txtTab.getText());
+        glb.dp.setComentario(txtComent.getText());
 
 //datos de medicion
         glb.dp.setRelacionBobina(Integer.parseInt(cmbRelBob.getSelectedItem().toString()));
@@ -736,7 +770,10 @@ public class AbrirProyectoNuevo extends javax.swing.JDialog
             txtRelSec.setBackground(Color.red);
         }
 
-        glb.dp.setPeriodoSD((int) spnPeriod.getModel().getValue());
+        glb.dp.setPeriodoSD(
+                (int) spnPeriod.getModel()
+                        .getValue()
+        );
 
         //cierra el formualrio
         this.dispose();

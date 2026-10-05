@@ -11,7 +11,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import javax.persistence.Entity;
 import org.gcto.dataBD.SalvarClaseGenerica;
 import org.gcto.dataGlobal.glb;
@@ -32,7 +31,6 @@ public class Opciones implements IOpciones, PropertyChangeListener
     public Opciones()
     {
         addPropertyChangeListener(this);
-        
     }
 
     /**
@@ -211,7 +209,7 @@ public class Opciones implements IOpciones, PropertyChangeListener
     /**
      * color alternativo a neutro
      */
-    private String colorAltN = "0,0,0";
+    private String colorAltN = "255,153,51";
 
     @Override
     public String getColorAltN()
@@ -285,6 +283,82 @@ public class Opciones implements IOpciones, PropertyChangeListener
     }
 
     /**
+     * color promedio corriente
+     */
+    private String color_I_AVG = "255,102,178";
+
+    @Override
+    public String getColor_I_AVG()
+    {
+        return color_I_AVG;
+    }
+
+    @Override
+    public void setColor_I_AVG(String color_I_AVG)
+    {
+        String oldColor_I_AVG = this.color_I_AVG;
+        this.color_I_AVG = color_I_AVG;
+        propertyChangeSupport.firePropertyChange(PROP_COLOR_I_AVG, oldColor_I_AVG, color_I_AVG);
+    }
+
+    /**
+     * color U promedio
+     */
+    private String color_V_AVG = "55,251,55";
+
+    @Override
+    public String getColor_V_AVG()
+    {
+        return color_V_AVG;
+    }
+
+    @Override
+    public void setColor_V_AVG(String color_V_AVG)
+    {
+        String oldColor_V_AVG = this.color_V_AVG;
+        this.color_V_AVG = color_V_AVG;
+        propertyChangeSupport.firePropertyChange(PROP_COLOR_V_AVG, oldColor_V_AVG, color_V_AVG);
+    }
+
+    /**
+     * color de promedio de frecuencia
+     */
+    private String color_F_AVG = "0,255,128";
+
+    @Override
+    public String getColor_F_AVG()
+    {
+        return color_F_AVG;
+    }
+
+    @Override
+    public void setColor_F_AVG(String color_F_AVG)
+    {
+        String oldColor_F_AVG = this.color_F_AVG;
+        this.color_F_AVG = color_F_AVG;
+        propertyChangeSupport.firePropertyChange(PROP_COLOR_F_AVG, oldColor_F_AVG, color_F_AVG);
+    }
+
+    /**
+     * color de promedio corrientes demanda
+     */
+    private String color_IDM_AVG = "0,255,0";
+
+    @Override
+    public String getColor_IDM_AVG()
+    {
+        return color_IDM_AVG;
+    }
+
+    @Override
+    public void setColor_IDM_AVG(String color_IDM_AVG)
+    {
+        String oldColor_IDM_AVG = this.color_IDM_AVG;
+        this.color_IDM_AVG = color_IDM_AVG;
+        propertyChangeSupport.firePropertyChange(PROP_COLOR_IDM_AVG, oldColor_IDM_AVG, color_IDM_AVG);
+    }
+
+    /**
      * ruta para el logo del informe
      */
     private String logoPath = "ENTRE LA RUTA DEL LOGO";
@@ -307,8 +381,6 @@ public class Opciones implements IOpciones, PropertyChangeListener
     {
         "", "", "", "", "", "", "", "", "", ""
     };
-    
-    
 
     /**
      * Get the value of listaRecientes / hasta 10 datos en el arreglo
@@ -338,62 +410,62 @@ public class Opciones implements IOpciones, PropertyChangeListener
     /**
      * vector para color de armonicos / es fijo no se cambia
      */
-    public static final  String[] colorArm = {
-    "230,25,75",    // rojo
-    "60,180,75",    // verde
-    "0,130,200",    // azul
-    "245,130,48",   // naranja
-    "145,30,180",   // púrpura
-    "70,240,240",   // cian
-    "240,50,230",   // magenta
-    "210,245,60",   // lima
-    "250,190,190",  // rosa
-    "0,128,128",    // teal
-    "230,190,255",  // lavanda
-    "170,110,40",   // marrón
-    "255,250,200",  // crema
-    "128,0,0",      // granate
-    "170,255,195",  // menta
-    "128,128,0",    // oliva
-    "255,215,180",  // melocotón
-    "0,0,128",      // azul marino
-    "128,128,128",  // gris medio
-    "255,255,25",   // amarillo vivo
-    "100,0,255",
-    "255,100,0",
-    "0,200,100",
-    "255,0,100",
-    "0,100,255",
-    "200,255,0",
-    "255,0,200",
-    "0,255,200",
-    "200,0,255",
-    "255,200,0",
-    "50,150,255",
-    "255,50,150",
-    "150,255,50",
-    "50,255,150",
-    "150,50,255",
-    "255,150,50",
-    "20,180,120",
-    "180,20,120",
-    "120,180,20",
-    "20,120,180",
-    "120,20,180",
-    "180,120,20",
-    "90,220,255",
-    "255,90,220",
-    "220,255,90",
-    "90,255,220",
-    "220,90,255",
-    "255,220,90",
-    "0,170,255",
-    "255,0,170",
-    "170,255,0",
-    "255,170,0",
-    "0,255,170"
-};
-
+    public static final String[] colorArm =
+    {
+        "230,25,75", // rojo
+        "60,180,75", // verde
+        "0,130,200", // azul
+        "245,130,48", // naranja
+        "145,30,180", // púrpura
+        "70,240,240", // cian
+        "240,50,230", // magenta
+        "210,245,60", // lima
+        "250,190,190", // rosa
+        "0,128,128", // teal
+        "230,190,255", // lavanda
+        "170,110,40", // marrón
+        "255,250,200", // crema
+        "128,0,0", // granate
+        "170,255,195", // menta
+        "128,128,0", // oliva
+        "255,215,180", // melocotón
+        "0,0,128", // azul marino
+        "128,128,128", // gris medio
+        "255,255,25", // amarillo vivo
+        "100,0,255",
+        "255,100,0",
+        "0,200,100",
+        "255,0,100",
+        "0,100,255",
+        "200,255,0",
+        "255,0,200",
+        "0,255,200",
+        "200,0,255",
+        "255,200,0",
+        "50,150,255",
+        "255,50,150",
+        "150,255,50",
+        "50,255,150",
+        "150,50,255",
+        "255,150,50",
+        "20,180,120",
+        "180,20,120",
+        "120,180,20",
+        "20,120,180",
+        "120,20,180",
+        "180,120,20",
+        "90,220,255",
+        "255,90,220",
+        "220,255,90",
+        "90,255,220",
+        "220,90,255",
+        "255,220,90",
+        "0,170,255",
+        "255,0,170",
+        "170,255,0",
+        "255,170,0",
+        "0,255,170"
+    };
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -485,7 +557,7 @@ public class Opciones implements IOpciones, PropertyChangeListener
         {
             setEstado(EEstado.EDITADO);
         }
-        
+
         //carga los colores por si alguno ha cambiado
         glb.cargarColores();
         try
@@ -496,29 +568,35 @@ public class Opciones implements IOpciones, PropertyChangeListener
             Exceptions.printStackTrace(ex);
         }
     }
-    
+
     /**
      * inserta un path para el historico del vistos
-     * 
-     * @param path 
+     *
+     * @param path
      */
     public void insertarPathHistorico(String path) throws IOException
     {
-        if (path == null || path.trim().isEmpty()) {
+        if (path == null || path.trim().isEmpty())
+        {
             return;
         }
 
         // Si ya existe, lo movemos al principio
-        if (IsRecienteExiste(path)) {
+        if (IsRecienteExiste(path))
+        {
             int index = -1;
-            for (int i = 0; i < 10; i++) {
-                if (path.equals(listaRecientes[i])) {
+            for (int i = 0; i < 10; i++)
+            {
+                if (path.equals(listaRecientes[i]))
+                {
                     index = i;
                     break;
                 }
             }
-            if (index != -1) {
-                for (int i = index; i > 0; i--) {
+            if (index != -1)
+            {
+                for (int i = index; i > 0; i--)
+                {
                     listaRecientes[i] = listaRecientes[i - 1];
                 }
                 listaRecientes[0] = path;
@@ -527,30 +605,29 @@ public class Opciones implements IOpciones, PropertyChangeListener
         }
 
         // Si no existe, desplazamos todos hacia la derecha y ponemos el nuevo en 0
-        for (int i = 8; i >= 0; i--)        
+        for (int i = 8; i >= 0; i--)
         {
-            listaRecientes[i+1] = listaRecientes[i];
+            listaRecientes[i + 1] = listaRecientes[i];
         }
         listaRecientes[0] = path;
-        
-        setListaRecientes(listaRecientes);
-        
 
-        
+        setListaRecientes(listaRecientes);
+
     }
-    
+
     /**
      * indica si este reciente ya existe en la lista o no
-     * 
+     *
      * @param path
-     * @return 
+     * @return
      */
     public boolean IsRecienteExiste(String path)
     {
-        if (path == null) {
+        if (path == null)
+        {
             return false;
         }
-        for (int i = 0; i < 10; i++)        
+        for (int i = 0; i < 10; i++)
         {
             if (path.equals(listaRecientes[i]))
             {
@@ -559,7 +636,5 @@ public class Opciones implements IOpciones, PropertyChangeListener
         }
         return false;
     }
-    
-   
 
 }

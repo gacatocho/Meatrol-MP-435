@@ -53,6 +53,7 @@ import org.gcto.dataGlobal.SaveProjectAction;
 import org.gcto.dataGlobal.SaveProjectAsAction;
 import org.gcto.dataGlobal.glb;
 import org.gcto.dataHarmonic.verHarmonicos;
+import org.gcto.dataInformes.genInforme;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -633,6 +634,9 @@ public final class dataTopComponent extends TopComponent
             // Habilitar acciones globales de guardado
             SystemAction.get(SaveProjectAction.class).setEnabled(dataPresent);
             SystemAction.get(SaveProjectAsAction.class).setEnabled(dataPresent);
+
+            //habilitar el informe
+            SystemAction.get(genInforme.class).setEnabled(dataPresent);
         });
     }
 
@@ -810,9 +814,9 @@ public final class dataTopComponent extends TopComponent
 
         // Mapeo para Neutro
         int inPos = -1;
-        boolean allowIn = glb.tipoRed == ETipoRED.monoFase_FFN
-                || glb.tipoRed == ETipoRED.tresFases_FFN
-                || glb.tipoRed == ETipoRED.tresFases_FFFN;
+        boolean allowIn = glb.dp.getTipoRed() == ETipoRED.monoFase_FFN
+                || glb.dp.getTipoRed() == ETipoRED.tresFases_FFN
+                || glb.dp.getTipoRed() == ETipoRED.tresFases_FFFN;
         int lastCurrentIdx = Math.max(idxIA, Math.max(idxIB, idxIC));
 
         // Mapeo para PF Average
@@ -824,10 +828,18 @@ public final class dataTopComponent extends TopComponent
         //con esta ansion FASE FASE sabemos lo demas
         boolean UABExist = columnaEXiste(headers, "Voltage(V) UAB");
         //averiguamos si la corriente de neutro existe
-        boolean INExist = columnaEXiste(headers, "Current(A): In");
+        boolean INExist = columnaEXiste(headers, "Current(A): In_calc");
         //averigua si el power factor existe en promedio
         boolean PFAvrgExist = columnaEXiste(headers, "Power Factor: PF Average");
 
+        //vamos a cambiar los AVG para que no sean un amolestia
+        cambiarNombreColumnaExistente(headers, "Voltage(V): UAvg", "Voltage(V): U_Avg");
+        cambiarNombreColumnaExistente(headers, "Current(A): IAvg", "Current(A): I_Avg");
+        cambiarNombreColumnaExistente(headers, "Frequency(Hz): FAvg", "Frequency(Hz): F_Avg");
+        cambiarNombreColumnaExistente(headers, "Current Demand(A): DmIAVG", "Current Demand(A): DmI_AVG");
+        //cambiamos el DEAMND por DEMAND
+        cambiarPalabraEnColumnaExistente(headers, "Deamnd", "Demand");
+        
         for (int i = 0; i < headers.length; i++)
         {
             newHeadersList.add(headers[i]);
@@ -872,13 +884,13 @@ public final class dataTopComponent extends TopComponent
                     if (i == lastVoltageIdx && numFases >= 2)
                     {
                         uCalcPositions.add(newHeadersList.size());
-                        newHeadersList.add("Voltage(V) UAB");
+                        newHeadersList.add("Voltage(V) U_AB");
                         if (numFases >= 3)
                         {
                             uCalcPositions.add(newHeadersList.size());
-                            newHeadersList.add("Voltage(V) UBC");
+                            newHeadersList.add("Voltage(V) U_BC");
                             uCalcPositions.add(newHeadersList.size());
-                            newHeadersList.add("Voltage(V) UAC");
+                            newHeadersList.add("Voltage(V) U_AC");
                         }
                     }
                 }
@@ -888,12 +900,12 @@ public final class dataTopComponent extends TopComponent
             {
                 // Inserción de Neutro (después del grupo IA, IB, IC)
                 //se pregunta si no existe antes de proceder con esta compracion
-                if (!headers[i].equals("Current(A): In"))
+                if (!headers[i].equals("Current(A): I_N_calc"))
                 {
                     if (i == lastCurrentIdx && allowIn && idxIA >= 0)
                     {
                         inPos = newHeadersList.size();
-                        newHeadersList.add("Current(A): In");
+                        newHeadersList.add("Current(A): I_N_calc");
                     }
                 }
             }
@@ -1019,10 +1031,13 @@ public final class dataTopComponent extends TopComponent
                     double sSum = (idxSSum >= 0 && idxSSum < oldRow.length) ? glb.parseDoubleSafe(oldRow[idxSSum]) : 0;
                     double qSumVal = (idxQSumOrig >= 0) ? glb.parseDoubleSafe(oldRow[idxQSumOrig]) : qSum;
                     double pf = (sSum != 0) ? (pSum / sSum) : 0;
-                    if (qSumVal < 0)
-                    {
-                        pf = -pf; // Aplicar signo basado en QSum (IND/CAP)
-                    }
+                   
+                    //no se camia el signo por cuanto el FP promedio ya viene negativo de ser aplicado / esto sobra 
+//                    if (qSumVal < 0)
+//                    {
+//                       pf = -pf; // Aplicar signo basado en QSum (IND/CAP)
+//                       
+//                    }
                     newRow[c] = String.valueOf(pf);
                     continue;
                 }
@@ -1139,6 +1154,39 @@ public final class dataTopComponent extends TopComponent
 
         loadBinary(glb.seletedFileVDM);
     }
+
+    private void cambiarNombreColumnaExistente(String[] headers, String nombreColActual, String nombreNuevo)
+    {
+       
+        for (int i = 0; i < headers.length; i++)
+        {
+            if (headers[i].equals(nombreColActual))
+            {
+                headers[i] = nombreNuevo;
+
+                return;
+            }
+
+        }
+
+    }
+    
+    private void cambiarPalabraEnColumnaExistente(String[] headers, String palabraColActual, String palabraNueva)
+    {
+       
+        for (int i = 0; i < headers.length; i++)
+        {
+            if (headers[i].contains(palabraColActual))
+            {
+                String colNomNueva=headers[i].replace(palabraColActual, palabraNueva);
+                headers[i]=colNomNueva;
+            }
+
+        }
+
+    }
+    
+    
 
     private static class DataTableModel extends AbstractTableModel
     {
@@ -1324,12 +1372,8 @@ public final class dataTopComponent extends TopComponent
         if (glb.seletedFileVDM != null)
         {
             cargarProyectoVDM();
-            
-            
-            
+
         }
     }
-    
-    
-    
+
 }

@@ -18,8 +18,8 @@ import org.openide.windows.TopComponent;
 import org.openide.util.NbBundle.Messages;
 
 /**
- * Top component que visualiza el análisis de tensiones.
- * Hereda toda la infraestructura de baseTopComponent.
+ * Top component que visualiza el análisis de tensiones. Hereda toda la
+ * infraestructura de baseTopComponent.
  */
 @ConvertAsProperties(
         dtd = "-//org.gcto.dataTensiones//tensiones//EN",
@@ -52,7 +52,8 @@ public final class tensionesTopComponent extends baseTopComponent
     {
         setName("Análisis de Tensiones");
         setToolTipText("Visualización y análisis de tensiones de fase y compuestas");
-        
+
+        setupYRangeControls("V");
         // Ocultar columnas de Promedio sobre % (9), % de Nivel (10) y Ver promedio sobre % (11)
         hideStatsColumns(9, 10, 11);
     }
@@ -71,13 +72,30 @@ public final class tensionesTopComponent extends baseTopComponent
         {
             String h = masterHeaders[i].toUpperCase();
             Color c = null;
-            
-            if (glb.isStrict(h, glb.TENSION_FASE_A, glb.TENSION)) c = glb.colorA;
-            else if (glb.isStrict(h, glb.TENSION_FASE_B, glb.TENSION)) c = glb.colorB;
-            else if (glb.isStrict(h, glb.TENSION_FASE_C, glb.TENSION)) c = glb.colorC;
-            else if (glb.isStrict(h, glb.TENSION_LINEA_AB, glb.TENSION)) c = glb.colorA.darker();
-            else if (glb.isStrict(h, glb.TENSION_LINEA_BC, glb.TENSION)) c = glb.colorB.darker();
-            else if (glb.isStrict(h, glb.TENSION_LINEA_AC, glb.TENSION)) c = glb.colorC.darker();
+
+            if (glb.isStrictTension(h, glb.TENSION_FASE_A, glb.TENSION,""))
+            {
+                c = glb.colorA;
+            } else if (glb.isStrictTension(h, glb.TENSION_FASE_B, glb.TENSION,""))
+            {
+                c = glb.colorB;
+            } else if (glb.isStrictTension(h, glb.TENSION_FASE_C, glb.TENSION,""))
+            {
+                c = glb.colorC;
+            } else if (glb.isStrictTension(h, glb.TENSION_LINEA_AB, glb.TENSION,""))
+            {
+                c = glb.colorAA;
+            } else if (glb.isStrictTension(h, glb.TENSION_LINEA_BC, glb.TENSION,""))
+            {
+                c = glb.colorBB;
+            } else if (glb.isStrictTension(h, glb.TENSION_LINEA_AC, glb.TENSION,""))
+            {
+                c = glb.colorCC;
+            }
+            else if (glb.isStrictTension(h, glb.TENSION_FASE_PROMEDIO, glb.TENSION,"UAVG"))
+            {
+                c = glb.colorQsum;
+            }
 
             if (c != null)
             {
@@ -120,9 +138,13 @@ public final class tensionesTopComponent extends baseTopComponent
         updateChartData();
         updateStatistics();
     }
-    
-    private void updateChartData() {
-        if (masterData.isEmpty()) return;
+
+    private void updateChartData()
+    {
+        if (masterData.isEmpty())
+        {
+            return;
+        }
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
         chartPanel.setData(masterData, sIdx, eIdx);
@@ -130,19 +152,25 @@ public final class tensionesTopComponent extends baseTopComponent
 
     private void updateStatistics()
     {
-        if (masterData.isEmpty() || phaseControls.isEmpty()) return;
+        if (masterData.isEmpty() || phaseControls.isEmpty())
+        {
+            return;
+        }
 
         int sIdx = (int) ((sliderStart.getValue() / 1000.0) * (masterData.size() - 1));
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
 
         List<FastChartPanel.TrendLine> trendLines = new ArrayList<>();
-        
+
+        double globalMaxInSelection = 0;
+
         int rowInModel = 0;
         for (int i = 0; i < phaseControls.size(); i++)
         {
             PhaseControl pc = phaseControls.get(i);
             boolean isVisible = (boolean) statsModel.getValueAt(rowInModel, 2);
-            if (!isVisible) {
+            if (!isVisible)
+            {
                 rowInModel++;
                 continue;
             }
@@ -156,9 +184,26 @@ public final class tensionesTopComponent extends baseTopComponent
             {
                 String[] row = masterData.get(r);
                 double val = glb.parseDoubleSafe(row[colIdx]);
-                if (val < min) { min = val; dateMin = row[0] + " " + row[1]; }
-                if (val > max) { max = val; dateMax = row[0] + " " + row[1]; }
-                sum += val; count++;
+                if (val < min)
+                {
+                    min = val;
+                    dateMin = row[0] + " " + row[1];
+                }
+                if (val > max)
+                {
+                    max = val;
+                    dateMax = row[0] + " " + row[1];
+                }
+                sum += val;
+                count++;
+            }
+
+            if (count > 0)
+            {
+                if (max > globalMaxInSelection)
+                {
+                    globalMaxInSelection = max;
+                }
             }
 
             double avgArit = count > 0 ? sum / count : 0;
@@ -171,15 +216,26 @@ public final class tensionesTopComponent extends baseTopComponent
             statsModel.setValueAt(dateMax, rowInModel, 8);
 
             boolean showP = (boolean) statsModel.getValueAt(rowInModel, 6);
-            if (showP) trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{10, 5}, 0)));
+            if (showP)
+            {
+                trendLines.add(new FastChartPanel.TrendLine(avgArit, pc.color, new BasicStroke(glb.grosLinProm, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]
+                {
+                    10, 5
+                }, 0)));
+            }
 
             rowInModel++;
         }
+
+        // Auto-ajuste dinámico del eje Y basado en la selección actual
+        autoAdjustYRange(globalMaxInSelection);
+
         chartPanel.setTrendLines(trendLines);
     }
 
     private static class PhaseControl
     {
+
         int colIdx;
         String name;
         Color color;
@@ -192,6 +248,12 @@ public final class tensionesTopComponent extends baseTopComponent
         }
     }
 
-    void writeProperties(java.util.Properties p) { p.setProperty("version", "1.0"); }
-    void readProperties(java.util.Properties p) {}
+    void writeProperties(java.util.Properties p)
+    {
+        p.setProperty("version", "1.0");
+    }
+
+    void readProperties(java.util.Properties p)
+    {
+    }
 }

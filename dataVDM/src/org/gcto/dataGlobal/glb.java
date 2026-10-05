@@ -26,8 +26,8 @@ public class glb
      */
     public static int numFases = 1;
 
-    //para ejemplo unicamente, luego se involucra en el formualrio de abrir un  proyecto nuevo
-    public static ETipoRED tipoRed = ETipoRED.tresFases_FFN; //por defecto para ejemplo
+//    //para ejemplo unicamente, luego se involucra en el formualrio de abrir un  proyecto nuevo
+//    public static ETipoRED tipoRed = ETipoRED.tresFases_FFN; //por defecto para ejemplo
 
     /**
      * Indica si el sistema está en modo oscuro (true) o claro (false).
@@ -82,6 +82,26 @@ public class glb
      */
     public static Color colorSsum = Color.PINK;
 
+     /**
+     * color para promedio de tensiones
+     */
+    public static Color colorUAVG = Color.PINK;
+    
+    /**
+     * color para promedio de corrientes
+     */
+    public static Color colorIAVG = Color.PINK;
+    
+    /**
+     * color para promedio de frecuencias
+     */
+    public static Color colorFAVG = Color.PINK;
+    
+     /**
+     * color para promedio de demnda de corriente
+     */
+    public static Color colorDMIAVG = Color.PINK;
+    
     /**
      * tensión entre fases AB
      */
@@ -167,7 +187,7 @@ public class glb
         double VCx;
         double VCy;
 
-        switch (tipoRed)
+        switch (glb.dp.getTipoRed())
         {
             case monFase_FN:
                 //no se calcula
@@ -358,9 +378,10 @@ public class glb
     public static String TENSION_FASE_A = "UA";
     public static String TENSION_FASE_B = "UB";
     public static String TENSION_FASE_C = "UC";
-    public static String TENSION_LINEA_AB = "UAB";
-    public static String TENSION_LINEA_BC = "UBC";
-    public static String TENSION_LINEA_AC = "UAC";
+    public static String TENSION_LINEA_AB = "U_AB";
+    public static String TENSION_LINEA_BC = "U_BC";
+    public static String TENSION_LINEA_AC = "U_AC";
+    public static String TENSION_FASE_PROMEDIO = "U_AVG";
 
     //armonicos de tension
     //termino generico para ubicar columna de armonicos de tension
@@ -378,6 +399,8 @@ public class glb
     public static String CORRIENTE_FASE_B = "IB";
     public static String CORRIENTE_FASE_C = "IC";
     public static String CORRIENTE_NEUTRO = "IN";
+    public static String CORRIENTE_PROMEDIO = "I_AVG";
+    public static String CORRIENTE_NEUTRO_CALC = "I_N_CALC";
 
     //armonicos de corriente
     //termino generico para ubicar columna de armonicos de corriente - CUALQUIer numero o columnas
@@ -394,6 +417,7 @@ public class glb
     public static String FREQ_FASE_A = "FA";
     public static String FREQ_FASE_B = "FB";
     public static String FREQ_FASE_C = "FC";
+    public static String FREQ_PROMEDIO = "F_AVG";
 
     //factor de potencia (Power Factor)
     //termino generico para ubicar columnas de power factor
@@ -472,6 +496,7 @@ public class glb
     public static String CURRENT_DEMAND_FASE_A = "DMIA";
     public static String CURRENT_DEMAND_FASE_B = "DMIB";
     public static String CURRENT_DEMAND_FASE_C = "DMIC";
+    public static String CURRENT_DEMAND_AVERAGE = "DMI_AVG";
     //termino para refinar por PICO DE demanda de corriente especificamente PARA CADA FASE
     public static String CURRENT_PEAK_DEMAND_FASE_A = "PDMIA";
     public static String CURRENT_PEAK_DEMAND_FASE_B = "PDMIB";
@@ -482,7 +507,7 @@ public class glb
     public static String CURRENT_DATE_PEAK_DEMAND_FASE_C = "PDMIC_D/T";
 
     //termino generico para todas las columnas de demanda de potenci
-    public static String DEMAND_P = "DEAMND";
+    public static String DEMAND_P = "DEMAND";
     //termino para refinar por demanda de POTENCIA ACTIVA TOTAL
     public static String TOTAL_ACTIVE_POWER_DEMAND = "(W): DMP";
     //termino para refinar por PICO DE  demanda de POTENCIA ACTIVA TOTAL
@@ -515,13 +540,25 @@ public class glb
      */
     public static boolean isStrict(String h, String key, String type)
     {
-        if (!h.contains(type))
+        if (!h.contains(type) )
         {
             return false;
         }
 
-        return h.contains(" " + key) || h.contains(": " + key) || h.endsWith(" " + key) || h.endsWith(":" + key);
+        //return h.contains(" " + key) || h.contains(": " + key) || h.endsWith(" " + key) || h.endsWith(":" + key);
+        return h.contains(key);
+    }
+    
+     public static boolean isStrictTension(String h, String key, String type, String particular)
+    {
+        if (!h.contains(type) )
+        {
+            return false;
+        }
+        
 
+        //return h.contains(" " + key) || h.contains(": " + key) || h.endsWith(" " + key) || h.endsWith(":" + key);
+        return h.contains(key) ;
     }
 
     /**
@@ -572,7 +609,7 @@ public class glb
 
             glb.colorC = colorDe_RGB_String(glb.opc.getColorFaseC());
 
-            glb.colorN = colorDe_RGB_String(glb.opc.getColorAltN());
+            glb.colorN = colorDe_RGB_String(glb.opc.getColorNeutro());
 
             glb.colorAA = colorDe_RGB_String(glb.opc.getColorAltA());
 
@@ -587,6 +624,14 @@ public class glb
             glb.colorQsum = colorDe_RGB_String(glb.opc.getColorTotQ_react());
 
             glb.colorSsum = colorDe_RGB_String(glb.opc.getColorTotS_apar());
+            
+            glb.colorIAVG = colorDe_RGB_String(glb.opc.getColor_I_AVG());
+            
+            glb.colorUAVG = colorDe_RGB_String(glb.opc.getColor_V_AVG());
+            
+             glb.colorFAVG = colorDe_RGB_String(glb.opc.getColor_F_AVG());
+             
+             glb.colorDMIAVG=colorDe_RGB_String(glb.opc.getColor_IDM_AVG());
 
         }
     }

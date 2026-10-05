@@ -4,10 +4,20 @@
  */
 package org.gcto.dataInformes;
 
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.gcto.dataGlobal.glb;
+
+
+
 
 /**
  * Diálogo para configurar y generar el informe técnico en PDF.
@@ -18,8 +28,6 @@ public class GenerarInforme extends javax.swing.JDialog
 {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(GenerarInforme.class.getName());
-    private int partialStart = 0;
-    private int partialEnd = 1000;
 
     /**
      * Creates new form generarInforme
@@ -42,32 +50,19 @@ public class GenerarInforme extends javax.swing.JDialog
     private void initComponents()
     {
 
-        btnGrp = new javax.swing.ButtonGroup();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
-        buttonGroup1 = new javax.swing.ButtonGroup();
-        buttonGroup2 = new javax.swing.ButtonGroup();
-        jMenu1 = new javax.swing.JMenu();
         jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         btnCancel = new javax.swing.JButton();
         btnAceptar = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
-        jPanel2 = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        txtCometario = new javax.swing.JTextArea();
-
-        jScrollPane1.setViewportView(jTextPane1);
-
-        org.openide.awt.Mnemonics.setLocalizedText(jMenu1, org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.jMenu1.text")); // NOI18N
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(org.openide.util.NbBundle.getMessage(GenerarInforme.class, "generarInforme.title")); // NOI18N
         setIconImage(null);
         setIconImages(null);
 
-        jLabel1.setBackground(new java.awt.Color(204, 255, 204));
+        jLabel1.setBackground(new java.awt.Color(255, 255, 255));
         org.openide.awt.Mnemonics.setLocalizedText(jLabel1, org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.jLabel1.text")); // NOI18N
         jLabel1.setOpaque(true);
 
@@ -76,12 +71,26 @@ public class GenerarInforme extends javax.swing.JDialog
         btnCancel.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(btnCancel, org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.btnCancel.text")); // NOI18N
         btnCancel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnCancel.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         btnAceptar.setBackground(new java.awt.Color(204, 255, 204));
         btnAceptar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         org.openide.awt.Mnemonics.setLocalizedText(btnAceptar, org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.btnAceptar.text")); // NOI18N
         btnAceptar.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnAceptar.setOpaque(true);
+        btnAceptar.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                btnAceptarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -119,29 +128,6 @@ public class GenerarInforme extends javax.swing.JDialog
         jTextArea1.setAutoscrolls(false);
         jScrollPane2.setViewportView(jTextArea1);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.jPanel2.border.title"), javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION)); // NOI18N
-
-        txtCometario.setColumns(20);
-        txtCometario.setRows(5);
-        txtCometario.setToolTipText(org.openide.util.NbBundle.getMessage(GenerarInforme.class, "GenerarInforme.txtCometario.toolTipText")); // NOI18N
-        jScrollPane3.setViewportView(txtCometario);
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jScrollPane3)
-                .addContainerGap())
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -149,7 +135,6 @@ public class GenerarInforme extends javax.swing.JDialog
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane2))
@@ -163,10 +148,8 @@ public class GenerarInforme extends javax.swing.JDialog
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -184,20 +167,117 @@ public class GenerarInforme extends javax.swing.JDialog
 
     private void generateReport()
     {
-        JFileChooser fc = new JFileChooser();
-        fc.setDialogTitle("Guardar Informe PDF");
-        fc.setFileFilter(new FileNameExtensionFilter("Documento PDF (*.pdf)", "pdf"));
-        if (fc.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+        File targetFile;
+        if (glb.seletedFileVDM != null)
         {
-            return;
+            String parent = glb.seletedFileVDM.getParent();
+            String name = glb.dp.getNombreProy().replaceAll("[^a-zA-Z0-9.-]", "_");
+            targetFile = new File(parent, "Informe_" + name + ".pdf");
+        } else
+        {
+            JFileChooser fc = new JFileChooser();
+            fc.setDialogTitle("Guardar Informe PDF");
+            fc.setFileFilter(new FileNameExtensionFilter("Documento PDF (*.pdf)", "pdf"));
+            if (fc.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+            {
+                return;
+            }
+            targetFile = fc.getSelectedFile();
+            if (!targetFile.getName().toLowerCase().endsWith(".pdf"))
+            {
+                targetFile = new File(targetFile.getAbsolutePath() + ".pdf");
+            }
         }
 
-        File file = fc.getSelectedFile();
-        if (!file.getName().toLowerCase().endsWith(".pdf"))
+        try (OutputStream os = new FileOutputStream(targetFile))
         {
-            file = new File(file.getAbsolutePath() + ".pdf");
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.useFastMode();
+            builder.withHtmlContent(getHtmlContent(), null);
+            builder.toStream(os);
+            builder.run();
+
+            JOptionPane.showMessageDialog(this, "Informe generado con éxito en:\n" + targetFile.getAbsolutePath());
+            dispose();
+        } catch (Exception e)
+        {
+            logger.log(java.util.logging.Level.SEVERE, "Error al generar el informe", e);
+            JOptionPane.showMessageDialog(this, "Error al generar el informe: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private String getHtmlContent()
+    {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String fecha = LocalDateTime.now().format(dtf);
+
+        StringBuilder html = new StringBuilder();
+        html.append("<!DOCTYPE html><html><head><style>");
+        html.append("body { font-family: 'Arial', sans-serif; margin: 10px 40px 40px 40px; color: #333; }");
+        html.append(".header { border-bottom: 2px solid #003333; padding-bottom: 10px; margin-bottom: 5px; }");
+        html.append(".title { font-size: 22pt; font-weight: bold; color: #003333; text-align: center; }");
+        html.append(".date { text-align: right; font-size: 10pt; margin-bottom: 20px; }");
+        html.append(".section { margin-top: 15px; }");
+        html.append(".section-title { font-weight: bold; background-color: #e6f2f2; padding: 5px 10px; border-left: 5px solid #003333; margin-bottom: 8px; font-size: 12pt; }");
+        html.append("table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }");
+        html.append("td { padding: 4px 8px; vertical-align: top; font-size: 11pt; }");
+        html.append(".label { font-weight: bold; width: 35%; color: #555; }");
+        html.append(".comment-box { padding: 10px; border: 1px solid #ccc; background-color: #fafafa; min-height: 50px; font-style: italic; }");
+        html.append("</style></head><body>");
+
+        String logoPath = glb.opc.getLogoPath();
+        String logoHtml = "";
+        if (logoPath != null && !logoPath.isEmpty() && !logoPath.equals("ENTRE LA RUTA DEL LOGO"))
+        {
+            File f = new File(logoPath);
+            if (f.exists())
+            {
+                logoHtml = "<div style='text-align: left;'><img src='" + f.toURI().toString() + "' style='width: 210px; height: 120px;' /></div>";
+            }
         }
 
+        html.append("<div class='header'>");
+        html.append(logoHtml);
+        html.append("<div class='title'>INFORME MEDICIÓN MEATROL ME 435</div></div>");
+        
+        html.append("<div class='date'>Fecha de creación: ").append(fecha).append("</div>");
+
+        // DATOS DEL CLIENTE
+        html.append("<div class='section'><div class='section-title'>DATOS DEL CLIENTE</div>");
+        html.append("<table>");
+        html.append("<tr><td class='label'>Nombre Proyecto:</td><td>").append(glb.dp.getNombreProy()).append("</td></tr>");
+        html.append("<tr><td class='label'>Ciudad:</td><td>").append(glb.dp.getCiudadProy()).append("</td></tr>");
+        html.append("<tr><td class='label'>Ubicación:</td><td>").append(glb.dp.getUbicacionProy()).append("</td></tr>");
+        html.append("</table></div>");
+
+        // OPERADOR
+        html.append("<div class='section'><div class='section-title'>OPERADOR</div>");
+        html.append("<table>");
+        html.append("<tr><td class='label'>Operador ME:</td><td>").append(glb.dp.getOperadorME()).append("</td></tr>");
+        html.append("</table></div>");
+
+        // DATOS DE EQUIPO
+        html.append("<div class='section'><div class='section-title'>DATOS DE EQUIPO</div>");
+        html.append("<table>");
+        html.append("<tr><td class='label'>Relación Bobina:</td><td>").append(glb.dp.getRelacionBobina()).append("</td></tr>");
+        html.append("<tr><td class='label'>Relación Tensión Primaria:</td><td>").append(glb.dp.getRelacionTensionPrim()).append("</td></tr>");
+        html.append("<tr><td class='label'>Relación Tensión Secundaria:</td><td>").append(glb.dp.getRelacionTensionSec()).append("</td></tr>");
+        html.append("<tr><td class='label'>Periodo SD (s):</td><td>").append(glb.dp.getPeriodoSD()).append("</td></tr>");
+        html.append("</table></div>");
+
+        // DATOS INSTALACION
+        html.append("<div class='section'><div class='section-title'>DATOS INSTALACIÓN</div>");
+        html.append("<table>");
+        html.append("<tr><td class='label'>Tablero:</td><td>").append(glb.dp.getTablero()).append("</td></tr>");
+        html.append("<tr><td class='label'>Tipo de Red:</td><td>").append(glb.dp.getTipoRed()).append("</td></tr>");
+        html.append("</table></div>");
+
+        // COMENTARIO
+        html.append("<div class='section'><div class='section-title'>COMENTARIO</div>");
+        html.append("<div class='comment-box'>").append(glb.dp.getComentario()).append("</div></div>");
+
+        html.append("</body></html>");
+        return html.toString();
     }
 
     /**
@@ -249,18 +329,9 @@ public class GenerarInforme extends javax.swing.JDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
     private javax.swing.JButton btnCancel;
-    private javax.swing.ButtonGroup btnGrp;
-    private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextPane jTextPane1;
-    private javax.swing.JTextArea txtCometario;
     // End of variables declaration//GEN-END:variables
 }

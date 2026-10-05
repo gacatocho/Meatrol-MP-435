@@ -12,9 +12,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import org.gcto.dataEnergias.energiasTopComponent;
 import org.gcto.dataGlobal.FastChartPanel;
 import org.gcto.dataGlobal.baseTopComponent;
 import org.gcto.dataGlobal.glb;
@@ -55,10 +52,7 @@ public final class demandaPotenciasTopComponent extends baseTopComponent
 {
 
     private final List<PhaseControl> phaseControls = new ArrayList<>();
-    // private final List<SeriesControl> seriesControls = new ArrayList<>();
     private JComboBox<String> cmbFilter;
-    private JSpinner spnMinY;
-    private JSpinner spnMaxY;
 
     public demandaPotenciasTopComponent()
     {
@@ -66,7 +60,7 @@ public final class demandaPotenciasTopComponent extends baseTopComponent
         setToolTipText(Bundle.HINT_demandaPotenciasTopComponent());
 
         setupFilterControl();
-        setupYRangeControls();
+        setupYRangeControls("W/VAr/VA");
         // Configurar tabla de estadísticas para demanda: Ocultar Min, F.Min, PromA, VerProm, y extras
         hideStatsColumns(3, 4, 5, 6,  9, 10, 11);
     }
@@ -85,35 +79,6 @@ public final class demandaPotenciasTopComponent extends baseTopComponent
 
         pnlSouth.add(new JSeparator(JSeparator.VERTICAL), 0);
         pnlSouth.add(pnlFilter, 0);
-    }
-
-    private void setupYRangeControls()
-    {
-        spnMinY = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 1000000.0, 10.0));
-        spnMaxY = new JSpinner(new SpinnerNumberModel(1000.0, 0.0, 1000000.0, 10.0));
-        spnMinY.setEditor(new JSpinner.NumberEditor(spnMinY, "0.0"));
-        spnMaxY.setEditor(new JSpinner.NumberEditor(spnMaxY, "0.0"));
-        spnMinY.addChangeListener(e -> updateManualRange());
-        spnMaxY.addChangeListener(e -> updateManualRange());
-
-        JPanel pnlY = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        pnlY.add(new JLabel("Escala Y:"));
-        pnlY.add(spnMinY);
-        pnlY.add(new JLabel("Max:"));
-        pnlY.add(spnMaxY);
-
-        pnlSouth.add(new JSeparator(JSeparator.VERTICAL), 2);
-        pnlSouth.add(pnlY, 2);
-    }
-
-    private void updateManualRange()
-    {
-        double min = (Double) spnMinY.getValue();
-        double max = (Double) spnMaxY.getValue();
-        if (min < max)
-        {
-            chartPanel.setManualYRange(min, max);
-        }
     }
 
     @Override
@@ -283,6 +248,11 @@ public final class demandaPotenciasTopComponent extends baseTopComponent
                 count++;
             }
 
+            if (count > 0 && max > globalMaxInSelection)
+            {
+                globalMaxInSelection = max;
+            }
+
             double avgArit = count > 0 ? sum / count : 0;
 
             statsModel.setValueAt(String.format("%.2f", min), rowInModel, 3);
@@ -294,35 +264,12 @@ public final class demandaPotenciasTopComponent extends baseTopComponent
             rowInModel++;
         }
 
-        // Auto-ajuste dinámico del eje Y basado en la selección actual (Máximo + 10%)
-        if (globalMaxInSelection > 0)
-        {
-            double newMaxY = globalMaxInSelection * 1.1;
-            // Solo actualizamos si hay un cambio significativo para evitar parpadeos
-            if (Math.abs((Double) spnMaxY.getValue() - newMaxY) > 0.01)
-            {
-                spnMaxY.setValue(newMaxY);
-            }
-        }
+        // Auto-ajuste dinámico del eje Y basado en la selección actual
+        autoAdjustYRange(globalMaxInSelection);
 
         chartPanel.setTrendLines(trendLines);
     }
 
-//    private static class SeriesControl
-//    {
-//
-//        int colIdx, idxDate;
-//        String name;
-//        Color color;
-//
-//        SeriesControl(int ci, int idt, String n, Color c)
-//        {
-//            this.colIdx = ci;
-//            this.idxDate = idt;
-//            this.name = n;
-//            this.color = c;
-//        }
-//    }
     private static class PhaseControl
     {
 

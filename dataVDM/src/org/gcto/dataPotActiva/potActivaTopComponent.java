@@ -52,6 +52,8 @@ public final class potActivaTopComponent extends baseTopComponent
     {
         setName(Bundle.CTL_potActivaTopComponent());
         setToolTipText(Bundle.HINT_potActivaTopComponent());
+        
+        setupYRangeControls("W");
     }
 
     @Override
@@ -147,6 +149,9 @@ public final class potActivaTopComponent extends baseTopComponent
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
 
         List<FastChartPanel.TrendLine> trendLines = new ArrayList<>();
+        double globalMaxInSelection = -Double.MAX_VALUE;
+        double globalMinInSelection = Double.MAX_VALUE;
+        boolean hasData = false;
 
         int rowInModel = 0;
         for (int i = 0; i < phaseControls.size(); i++)
@@ -182,16 +187,23 @@ public final class potActivaTopComponent extends baseTopComponent
                 count++;
             }
 
+            if (count > 0)
+            {
+                hasData = true;
+                if (max > globalMaxInSelection) globalMaxInSelection = max;
+                if (min < globalMinInSelection) globalMinInSelection = min;
+            }
+
             double avgArit = count > 0 ? sum / count : 0;
             int levelPercent = (int) statsModel.getValueAt(rowInModel, 10);
-            double threshold = max * (levelPercent / 100.0);
+            double threshold = Math.abs(max) * (levelPercent / 100.0);
             double sumAbove = 0;
             int countAbove = 0;
 
             for (int r = sIdx; r <= eIdx; r++)
             {
                 double val = glb.parseDoubleSafe(masterData.get(r)[colIdx]);
-                if (val >= threshold)
+                if (Math.abs(val) >= threshold)
                 {
                     sumAbove += val;
                     countAbove++;
@@ -227,6 +239,12 @@ public final class potActivaTopComponent extends baseTopComponent
 
             rowInModel++;
         }
+        
+        if (hasData)
+        {
+            autoAdjustYRange(globalMinInSelection, globalMaxInSelection);
+        }
+        
         chartPanel.setTrendLines(trendLines);
     }
 

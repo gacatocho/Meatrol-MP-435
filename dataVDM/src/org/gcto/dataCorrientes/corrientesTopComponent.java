@@ -72,6 +72,8 @@ public final class corrientesTopComponent extends baseTopComponent
         setToolTipText(Bundle.HINT_corrientesTopComponent());
 
         setupPhasorControl();
+        setupYRangeControls("A");
+        hideStatsColumns(9, 10, 11);
 
         // Sincronizar diagrama fasorial con el cursor
         chartPanel.setCursorDataListener((dataIdx, activeSeries) ->
@@ -183,7 +185,15 @@ public final class corrientesTopComponent extends baseTopComponent
             {
                 c = glb.colorN;
             }
-
+            else if (glb.isStrict(h, glb.CORRIENTE_PROMEDIO, glb.CORRIENTE))
+            {
+                c = glb.colorIAVG;
+            }
+            else if (glb.isStrict(h, glb.CORRIENTE_NEUTRO_CALC, glb.CORRIENTE))
+            {
+                c = glb.colorNN;
+            }
+            
             if (c != null)
             {
                 phaseControls.add(new PhaseControl(i, masterHeaders[i], c));
@@ -282,6 +292,7 @@ public final class corrientesTopComponent extends baseTopComponent
         int eIdx = (int) ((sliderEnd.getValue() / 1000.0) * (masterData.size() - 1));
 
         List<FastChartPanel.TrendLine> trendLines = new ArrayList<>();
+        double globalMaxInSelection = 0;
 
         int rowInModel = 0;
         for (int i = 0; i < phaseControls.size(); i++)
@@ -315,6 +326,11 @@ public final class corrientesTopComponent extends baseTopComponent
                 }
                 sum += val;
                 count++;
+            }
+
+            if (count > 0 && max > globalMaxInSelection)
+            {
+                globalMaxInSelection = max;
             }
 
             double avgArit = count > 0 ? sum / count : 0;
@@ -361,6 +377,8 @@ public final class corrientesTopComponent extends baseTopComponent
 
             rowInModel++;
         }
+        
+        autoAdjustYRange(globalMaxInSelection);
         chartPanel.setTrendLines(trendLines);
     }
 

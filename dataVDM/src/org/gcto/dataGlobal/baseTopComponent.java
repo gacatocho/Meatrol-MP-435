@@ -12,7 +12,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.PrintWriter;
 import java.text.ParseException;
@@ -31,10 +30,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.SpinnerDateModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.TableModelEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -51,7 +52,7 @@ import org.openide.windows.WindowManager;
  * Clase base para todos los formularios de análisis. Estructura optimizada:
  * - NORTH: Tabla de Estadísticas (Altura fija para 4 filas)
  * - CENTER: Contenedor del Gráfico (Java2D) con Tooltip dinámico
- * - SOUTH: Rango Temporal [Label, Slider, Slider, Label, CheckBox]
+ * - SOUTH: Rango Temporal y Controles de Escala Y
  *
  * @author camilo
  */
@@ -71,6 +72,10 @@ public abstract class baseTopComponent extends TopComponent
     protected JLabel lblTimeStart;
     protected JLabel lblTimeEnd;
     protected JCheckBox chkSyncAll;
+
+    // Controles de Escala Y
+    protected JSpinner spnMinY;
+    protected JSpinner spnMaxY;
 
     // Referencias a los datos maestros
     protected String[] masterHeaders = new String[0];
@@ -160,6 +165,97 @@ public abstract class baseTopComponent extends TopComponent
 
         sliderStart.addChangeListener(e -> handleTimeRangeChange());
         sliderEnd.addChangeListener(e -> handleTimeRangeChange());
+    }
+
+    /**
+     * Configura los controles de rango manual para el eje Y.
+     * @param unit Unidad de medida (V, A, Hz, etc.)
+     */
+    protected void setupYRangeControls(String unit)
+    {
+        // Permitir valores negativos para potencias reactivas y otros casos
+        spnMinY = new JSpinner(new SpinnerNumberModel(0.0, -1000000.0, 1000000.0, 1.0));
+        spnMaxY = new JSpinner(new SpinnerNumberModel(100.0, -1000000.0, 1000000.0, 1.0));
+
+        spnMinY.setEditor(new JSpinner.NumberEditor(spnMinY, "0.0"));
+        spnMaxY.setEditor(new JSpinner.NumberEditor(spnMaxY, "0.0"));
+
+        spnMinY.addChangeListener(e -> updateManualRange());
+        spnMaxY.addChangeListener(e -> updateManualRange());
+
+        JPanel pnlY = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        pnlY.add(new JLabel("Min Y (" + unit + "):"));
+        pnlY.add(spnMinY);
+        pnlY.add(new JLabel("Max Y (" + unit + "):"));
+        pnlY.add(spnMaxY);
+
+        pnlSouth.add(new JSeparator(JSeparator.VERTICAL));
+        pnlSouth.add(pnlY);
+
+        pnlSouth.revalidate();
+        pnlSouth.repaint();
+
+        updateManualRange();
+    }
+
+    /**
+     * Aplica los valores de los spinners al gráfico.
+     */
+    protected void updateManualRange()
+    {
+        if (spnMinY == null || spnMaxY == null) return;
+        double min = (Double) spnMinY.getValue();
+        double max = (Double) spnMaxY.getValue();
+        if (min < max)
+        {
+            chartPanel.setManualYRange(min, max);
+        }
+    }
+
+    /**
+     * Ajusta automáticamente el spinner de Max Y basado en el valor máximo detectado.
+     * Mantiene el mínimo en 0.
+     * @param maxVal Valor máximo en la selección actual.
+     */
+    protected void autoAdjustYRange(double maxVal)
+    {
+        if (spnMaxY == null || maxVal <= 0) return;
+        double newMaxY = maxVal * 1.1;
+        // Solo actualizamos si hay un cambio significativo (1%) para evitar parpadeos
+        if (Math.abs((Double) spnMaxY.getValue() - newMaxY) > (newMaxY * 0.01))
+        {
+            spnMaxY.setValue(newMaxY);
+        }
+    }
+
+    /**
+     * Ajusta automáticamente los spinners de Min Y y Max Y basado en el rango detectado.
+     * Útil para valores que pueden ser negativos (ej: Potencia Reactiva).
+     * @param minVal Valor mínimo en la selección actual.
+     * @param maxVal Valor máximo en la selección actual.
+     */
+    protected void autoAdjustYRange(double minVal, double maxVal)
+    {
+        if (spnMinY == null || spnMaxY == null) return;
+        if (minVal == Double.MAX_VALUE || maxVal == -Double.MAX_VALUE) return;
+
+        double range = maxVal - minVal;
+        if (range <= 0) range = Math.abs(maxVal) * 0.2;
+        if (range <= 0) range = 1.0;
+        
+        double newMinY = minVal - (range * 0.1);
+        double newMaxY = maxVal + (range * 0.1);
+        
+        // Solo actualizamos si hay un cambio significativo (1%) para evitar parpadeos
+        if (Math.abs((Double) spnMinY.getValue() - newMinY) > (range * 0.01))
+        {
+            spnMinY.setValue(newMinY);
+        }
+        
+        if (Math.abs((Double) spnMaxY.getValue() - newMaxY) > (range * 0.01))
+        {
+            spnMaxY.setValue(newMaxY);
+        }
     }
 
     private void setupTimeLabelInteractivity(JLabel label)

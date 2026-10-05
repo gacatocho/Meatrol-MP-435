@@ -6,14 +6,8 @@ package org.gcto.dataDemandaCorriente;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 import org.gcto.dataGlobal.FastChartPanel;
 import org.gcto.dataGlobal.baseTopComponent;
 import org.gcto.dataGlobal.glb;
@@ -55,49 +49,14 @@ public final class demandaCorrientesTopComponent extends baseTopComponent
 {
 
     private final List<PhaseControl> phaseControls = new ArrayList<>();
-    private JSpinner spnMinY;
-    private JSpinner spnMaxY;
 
     public demandaCorrientesTopComponent()
     {
         setName(Bundle.CTL_demandaCorrientesTopComponent());
         setToolTipText(Bundle.HINT_demandaCorrientesTopComponent());
 
-        setupYRangeControls();
+        setupYRangeControls("A");
         hideStatsColumns(9, 10, 11);
-    }
-
-    private void setupYRangeControls()
-    {
-        spnMinY = new JSpinner(new SpinnerNumberModel(0.0, 0.0, 10000.0, 0.1));
-        spnMaxY = new JSpinner(new SpinnerNumberModel(10.0, 0.0, 10000.0, 0.5));
-
-        spnMinY.setEditor(new JSpinner.NumberEditor(spnMinY, "0.0"));
-        spnMaxY.setEditor(new JSpinner.NumberEditor(spnMaxY, "0.0"));
-
-        spnMinY.addChangeListener(e -> updateManualRange());
-        spnMaxY.addChangeListener(e -> updateManualRange());
-
-        JPanel pnlY = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        pnlY.add(new JLabel("Min Y (A):"));
-        pnlY.add(spnMinY);
-        pnlY.add(new JLabel("Max Y (A):"));
-        pnlY.add(spnMaxY);
-
-        pnlSouth.add(new JSeparator(JSeparator.VERTICAL));
-        pnlSouth.add(pnlY);
-
-        updateManualRange();
-    }
-
-    private void updateManualRange()
-    {
-        double min = (Double) spnMinY.getValue();
-        double max = (Double) spnMaxY.getValue();
-        if (min < max)
-        {
-            chartPanel.setManualYRange(min, max);
-        }
     }
 
     @Override
@@ -124,7 +83,11 @@ public final class demandaCorrientesTopComponent extends baseTopComponent
             } else if ((glb.isStrict(h, glb.CURRENT_DEMAND_FASE_C, glb.DEMAND_I)) && !h.contains("P"))
             {
                 c = glb.colorC;
-            }
+            } 
+             else if ((glb.isStrict(h, glb.CURRENT_DEMAND_AVERAGE, glb.DEMAND_I)) && !h.contains("P"))
+            {
+                c = glb.colorDMIAVG;
+            } 
 
             if (c != null)
             {
@@ -268,16 +231,8 @@ public final class demandaCorrientesTopComponent extends baseTopComponent
             rowInModel++;
         }
 
-        // Auto-ajuste dinámico del eje Y basado en la selección actual (Máximo + 10%)
-        if (globalMaxInSelection > 0)
-        {
-            double newMaxY = globalMaxInSelection * 1.1;
-            // Solo actualizamos si hay un cambio significativo para evitar parpadeos
-            if (Math.abs((Double) spnMaxY.getValue() - newMaxY) > 0.01)
-            {
-                spnMaxY.setValue(newMaxY);
-            }
-        }
+        // Auto-ajuste dinámico del eje Y basado en la selección actual
+        autoAdjustYRange(globalMaxInSelection);
 
         chartPanel.setTrendLines(trendLines);
     }

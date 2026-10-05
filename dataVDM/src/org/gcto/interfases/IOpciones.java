@@ -25,7 +25,10 @@ public interface IOpciones extends IBaseVDM
     String PROP_COLORTOTP_ACT = "colorTotP_Act";
     String PROP_COLORTOTQ_REACT = "colorTotQ_react";
     String PROP_COLORTOTS_APAR = "colorTotS_apar";
-    
+    String PROP_COLOR_I_AVG = "color_I_AVG";
+    String PROP_COLOR_V_AVG = "color_V_AVG";
+    String PROP_COLOR_F_AVG = "color_F_AVG";
+    String PROP_COLOR_IDM_AVG = "color_IDM_AVG";
 
     /**
      * Get the value of listaRecientes / hasta 10 datos en el arreglo
@@ -197,12 +200,69 @@ public interface IOpciones extends IBaseVDM
      */
     public void setColorTotS_apar(String colorTotS_apar);
     
+    /**
+     * Get the value of color_I_AVG / promedio
+     *
+     * @return the value of color_I_AVG
+     */
+    public String getColor_I_AVG();
+    
+   /*
+     * Set the value of color_I_AVG / promedio
+     *
+     * @param color_I_AVG new value of color_I_AVG
+     */
+    public void setColor_I_AVG(String color_I_AVG);
 
+    /**
+     * Get the value of color_V_AVG / U promedio
+     *
+     * @return the value of color_V_AVG
+     */
+    public String getColor_V_AVG();
+    
+    /**
+     * Set the value of color_V_AVG / U promedio
+     *
+     * @param color_V_AVG new value of color_V_AVG
+     */
+    public void setColor_V_AVG(String color_V_AVG);
+    
+    /**
+     * Get the value of color_F_AVG /color de promedio de frecuencia
+     *
+     * @return the value of color_F_AVG
+     */
+    public String getColor_F_AVG();
+    
+        /**
+     * Set the value of color_F_AVG / color de promedio de frecuencia
+     *
+     * @param color_F_AVG new value of color_F_AVG
+     */
+    
+    public void setColor_F_AVG(String color_F_AVG);
+    
+        /**
+     * Get the value of color_IDM_AVG / promedio demanda de corriente
+     *
+     * @return the value of color_IDM_AVG
+     */
+    public String getColor_IDM_AVG();
+    
+    /**
+     * Set the value of color_IDM_AVG / promedio demanda de corriente
+     *
+     * @param color_IDM_AVG new value of color_IDM_AVG
+     */
+    public void setColor_IDM_AVG(String color_IDM_AVG);
+    
     /**
      * get ruta donde esta el logo para el informe
      *
      * @return String - ruta
      */
+    
     String getLogoPath();
 
     /**
