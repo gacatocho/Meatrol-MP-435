@@ -5,19 +5,26 @@
 package org.gcto.dataInformes;
 
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
+import java.util.Set;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
+import org.gcto.dataGlobal.baseTopComponent;
 import org.gcto.dataGlobal.glb;
-
-
-
+import org.openide.windows.TopComponent;
+import org.openide.windows.WindowManager;
 
 /**
  * Diálogo para configurar y generar el informe técnico en PDF.
@@ -99,7 +106,7 @@ public class GenerarInforme extends javax.swing.JDialog
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(btnCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 122, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -149,7 +156,7 @@ public class GenerarInforme extends javax.swing.JDialog
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, 32767))
         );
 
         pack();
@@ -171,7 +178,7 @@ public class GenerarInforme extends javax.swing.JDialog
         if (glb.seletedFileVDM != null)
         {
             String parent = glb.seletedFileVDM.getParent();
-            String name = glb.dp.getNombreProy().replaceAll("[^a-zA-Z0-9.-]", "_");
+            String name = glb.dp.getNombreProy() != null ? glb.dp.getNombreProy().replaceAll("[^a-zA-Z0-9.-]", "_") : "SinNombre";
             targetFile = new File(parent, "Informe_" + name + ".pdf");
         } else
         {
@@ -213,17 +220,29 @@ public class GenerarInforme extends javax.swing.JDialog
 
         StringBuilder html = new StringBuilder();
         html.append("<!DOCTYPE html><html><head><style>");
-        html.append("body { font-family: 'Arial', sans-serif; margin: 10px 40px 40px 40px; color: #333; }");
-        html.append(".header { border-bottom: 2px solid #003333; padding-bottom: 10px; margin-bottom: 5px; }");
-        html.append(".title { font-size: 22pt; font-weight: bold; color: #003333; text-align: center; }");
-        html.append(".date { text-align: right; font-size: 10pt; margin-bottom: 20px; }");
-        html.append(".section { margin-top: 15px; }");
-        html.append(".section-title { font-weight: bold; background-color: #e6f2f2; padding: 5px 10px; border-left: 5px solid #003333; margin-bottom: 8px; font-size: 12pt; }");
-        html.append("table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }");
-        html.append("td { padding: 4px 8px; vertical-align: top; font-size: 11pt; }");
-        html.append(".label { font-weight: bold; width: 35%; color: #555; }");
-        html.append(".comment-box { padding: 10px; border: 1px solid #ccc; background-color: #fafafa; min-height: 50px; font-style: italic; }");
+        html.append("body { font-family: 'Arial', sans-serif; margin: 5px 20px 20px 20px; color: #333; }");
+        html.append(".header { border-bottom: 1px solid #003333; padding-bottom: 2px; margin-bottom: 2px; }");
+        html.append(".title { font-size: 16pt; font-weight: bold; color: #003333; text-align: center; }"); 
+        html.append(".date { text-align: right; font-size: 10pt; margin-bottom: 10px; }");
+        html.append(".section { margin-top: 5px; }");
+        html.append(".section-title { font-weight: bold; background-color: #e6f2f2; padding: 2px 8px; border-left: 4px solid #003333; margin-bottom: 4px; font-size: 12pt; }");
+        html.append("table { width: 100%; border-collapse: collapse; margin-bottom: 5px; }");
+        html.append("td, th { padding: 0px 2px; vertical-align: top; font-size: 8pt; border: 1px solid #eee; }"); 
+        html.append("th { background-color: #f2f2f2; font-weight: bold; text-align: left; }");
+        html.append(".label { font-weight: bold; width: 35%; color: #555; border: none; }");
+        html.append(".comment-box { padding: 8px; border: 1px solid #ccc; background-color: #fafafa; min-height: 40px; font-style: italic; font-size: 10pt; }");
+        html.append(".chart-img { width: 100%; border: 1px solid #ddd; margin-bottom: 5px; }");
+        html.append(".page-break { page-break-before: always; }");
+        
+        // Estilos para el pie de página con numeración y línea divisoria
+        html.append("@page { size: letter; margin: 1.5cm; @bottom-right { content: element(footer); } }");
+        html.append("#footer { position: running(footer); width: 100%; border-top: 1px solid #003333; text-align: right; padding-top: 3px; font-size: 8pt; }");
+        html.append(".page-number:after { content: \"Hoja \" counter(page) \" de \" counter(pages); }");
+        
         html.append("</style></head><body>");
+
+        // Definición del pie de página que se repetirá en todas las hojas
+        html.append("<div id='footer'><span class='page-number'></span></div>");
 
         String logoPath = glb.opc.getLogoPath();
         String logoHtml = "";
@@ -232,52 +251,139 @@ public class GenerarInforme extends javax.swing.JDialog
             File f = new File(logoPath);
             if (f.exists())
             {
-                logoHtml = "<div style='text-align: left;'><img src='" + f.toURI().toString() + "' style='width: 210px; height: 120px;' /></div>";
+                logoHtml = "<div style='text-align: left;'><img src='" + f.toURI().toString() + "' style='width: 180px; height: 100px;' /></div>";
             }
         }
 
+        // --- HOJA 1: DATOS GENERALES ---
         html.append("<div class='header'>");
         html.append(logoHtml);
-        html.append("<div class='title'>INFORME MEDICIÓN MEATROL ME 435</div></div>");
+        String proyName = glb.dp.getNombreProy() != null ? glb.dp.getNombreProy() : "";
+        html.append("<div class='title'>INFORME MEDICIÓN MEATROL ME 435").append(proyName.isEmpty() ? "" : " - " + proyName).append("</div></div>");
         
         html.append("<div class='date'>Fecha de creación: ").append(fecha).append("</div>");
 
         // DATOS DEL CLIENTE
         html.append("<div class='section'><div class='section-title'>DATOS DEL CLIENTE</div>");
-        html.append("<table>");
-        html.append("<tr><td class='label'>Nombre Proyecto:</td><td>").append(glb.dp.getNombreProy()).append("</td></tr>");
-        html.append("<tr><td class='label'>Ciudad:</td><td>").append(glb.dp.getCiudadProy()).append("</td></tr>");
-        html.append("<tr><td class='label'>Ubicación:</td><td>").append(glb.dp.getUbicacionProy()).append("</td></tr>");
+        html.append("<table style='border: none;'>");
+        html.append("<tr><td class='label' style='font-size:12pt;'>Nombre Proyecto:</td><td style='border:none; font-size:12pt;'>").append(proyName).append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:12t;'>Ciudad:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getCiudadProy() != null ? glb.dp.getCiudadProy() : "").append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:12pt;'>Ubicación:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getUbicacionProy() != null ? glb.dp.getUbicacionProy() : "").append("</td></tr>");
         html.append("</table></div>");
 
         // OPERADOR
         html.append("<div class='section'><div class='section-title'>OPERADOR</div>");
-        html.append("<table>");
-        html.append("<tr><td class='label'>Operador ME:</td><td>").append(glb.dp.getOperadorME()).append("</td></tr>");
+        html.append("<table style='border: none;'>");
+        html.append("<tr><td class='label' style='font-size:12pt;'>Operador ME:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getOperadorME() != null ? glb.dp.getOperadorME() : "").append("</td></tr>");
         html.append("</table></div>");
 
         // DATOS DE EQUIPO
         html.append("<div class='section'><div class='section-title'>DATOS DE EQUIPO</div>");
-        html.append("<table>");
-        html.append("<tr><td class='label'>Relación Bobina:</td><td>").append(glb.dp.getRelacionBobina()).append("</td></tr>");
-        html.append("<tr><td class='label'>Relación Tensión Primaria:</td><td>").append(glb.dp.getRelacionTensionPrim()).append("</td></tr>");
-        html.append("<tr><td class='label'>Relación Tensión Secundaria:</td><td>").append(glb.dp.getRelacionTensionSec()).append("</td></tr>");
-        html.append("<tr><td class='label'>Periodo SD (s):</td><td>").append(glb.dp.getPeriodoSD()).append("</td></tr>");
+        html.append("<table style='border: none;'>");
+        html.append("<tr><td class='label' style='font-size:12pt;'>Relación Bobina:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getRelacionBobina()).append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:12pt;'>Relación Tensión Primaria:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getRelacionTensionPrim()).append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:12pt;'>Relación Tensión Secundaria:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getRelacionTensionSec()).append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:12pt;'>Periodo SD (s):</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getPeriodoSD()).append("</td></tr>");
         html.append("</table></div>");
 
         // DATOS INSTALACION
         html.append("<div class='section'><div class='section-title'>DATOS INSTALACIÓN</div>");
-        html.append("<table>");
-        html.append("<tr><td class='label'>Tablero:</td><td>").append(glb.dp.getTablero()).append("</td></tr>");
-        html.append("<tr><td class='label'>Tipo de Red:</td><td>").append(glb.dp.getTipoRed()).append("</td></tr>");
+        html.append("<table style='border: none;'>");
+        html.append("<tr><td class='label' style='font-size:12pt;'>Tablero:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getTablero() != null ? glb.dp.getTablero() : "").append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:12pt;'>Tipo de Red:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getTipoRed() != null ? glb.dp.getTipoRed() : "").append("</td></tr>");
         html.append("</table></div>");
 
         // COMENTARIO
         html.append("<div class='section'><div class='section-title'>COMENTARIO</div>");
-        html.append("<div class='comment-box'>").append(glb.dp.getComentario()).append("</div></div>");
+        html.append("<div class='comment-box'>").append(glb.dp.getComentario() != null ? glb.dp.getComentario() : "").append("</div></div>");
+
+        // --- HOJAS ADICIONALES: FORMULARIOS ABIERTOS ---
+        Set<TopComponent> opened = WindowManager.getDefault().getRegistry().getOpened();
+        for (TopComponent tc : opened)
+        {
+            if (tc instanceof baseTopComponent)
+            {
+                baseTopComponent btc = (baseTopComponent) tc;
+                html.append("<div class='page-break'>");
+                
+                // Título de la hoja (Nombre del formulario / Pestaña)
+                String title = btc.getDisplayName();
+                if (title == null) title = btc.getName();
+                
+                // Limpieza agresiva de "null -" y HTML
+                if (title != null) {
+                    title = title.replaceAll("<[^>]*>", ""); // Quitar HTML
+                    // Quitar "null" o "null -" al inicio (insensible a mayúsculas)
+                    title = title.replaceFirst("(?i)^null\\s*[-–—:]*\\s*", "");
+                    title = title.trim();
+                }
+                
+                if (title == null || title.isEmpty() || title.equalsIgnoreCase("null")) {
+                    title = "Análisis de Datos";
+                }
+                
+                html.append("<div class='header'><div class='title'>").append(title).append("</div></div>");
+                
+                // Captura del gráfico (Fondo blanco forzado)
+                BufferedImage chartImg = btc.getChartPanel().getSnapshotImage(1400, 900);
+                String base64Chart = imageToBase64(chartImg);
+                html.append("<div class='section'><img class='chart-img' src='").append(base64Chart).append("' /></div>");
+                
+                // Tabla de estadísticas estandarizada a 7 columnas
+                html.append("<div class='section'><div class='section-title'>ESTADÍSTICAS</div>");
+                html.append("<table><thead><tr>");
+                html.append("<th>Color</th>");
+                html.append("<th>Nombre</th>");
+                html.append("<th>Mínimo</th>");
+                html.append("<th>Fecha del Mínimo</th>");
+                html.append("<th>Promedio</th>");
+                html.append("<th>Máximo</th>");
+                html.append("<th>Fecha del Máximo</th>");
+                html.append("</tr></thead><tbody>");
+                
+                DefaultTableModel model = btc.getStatsModel();
+                // Mapeo exacto: Nombre(1), Min(3), Fecha Min(4), Prom(5), Max(7), Fecha Max(8)
+                int[] dataCols = {1, 3, 4, 5, 7, 8}; 
+                
+                for (int row = 0; row < model.getRowCount(); row++) {
+                    // Solo incluimos filas que el usuario tiene marcadas como visibles (columna 2)
+                    if (!(boolean) model.getValueAt(row, 2)) continue;
+                    
+                    html.append("<tr>");
+                    
+                    // Columna Color: Renderizado como caja de color con borde para contraste
+                    Color c = (Color) model.getValueAt(row, 0);
+                    String hexColor = String.format("#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue());
+                    html.append("<td style='text-align: center;'><div style='width: 14px; height: 9px; background-color: ").append(hexColor).append("; margin: auto; border: 1px solid #999;'></div></td>");
+                    
+                    for (int colIdx : dataCols) {
+                        Object val = model.getValueAt(row, colIdx);
+                        html.append("<td>").append(val != null ? val.toString() : "").append("</td>");
+                    }
+                    html.append("</tr>");
+                }
+                html.append("</tbody></table></div>");
+                
+                html.append("</div>"); // Fin de página
+            }
+        }
 
         html.append("</body></html>");
         return html.toString();
+    }
+
+    private String imageToBase64(BufferedImage img)
+    {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream())
+        {
+            ImageIO.write(img, "png", baos);
+            byte[] bytes = baos.toByteArray();
+            return "data:image/png;base64," + Base64.getEncoder().encodeToString(bytes);
+        } catch (Exception e)
+        {
+            logger.log(java.util.logging.Level.WARNING, "Error convirtiendo imagen a Base64", e);
+            return "";
+        }
     }
 
     /**

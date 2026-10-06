@@ -214,15 +214,15 @@ public final class potReactivaTopComponent extends baseTopComponent
 
         }
 
-        addPhaseSeries("QA medido", idxQA_med, idxQA_calc, idxSA, glb.colorA, false, chartIndices, chartNames, chartColors);
-        addPhaseSeries("QB medido", idxQB_med, idxQB_calc, idxSB, glb.colorB, false, chartIndices, chartNames, chartColors);
-        addPhaseSeries("QC medido", idxQC_med, idxQC_calc, idxSC, glb.colorC, false, chartIndices, chartNames, chartColors);
-        addPhaseSeries("QSum medido", idxQSum_med, idxQSum_calc, idxSSum, Color.CYAN, false, chartIndices, chartNames, chartColors);
+        addPhaseSeries("QA medido (VAR)", idxQA_med, idxQA_calc, idxSA, glb.colorA, false, chartIndices, chartNames, chartColors);
+        addPhaseSeries("QB medido (VAR)", idxQB_med, idxQB_calc, idxSB, glb.colorB, false, chartIndices, chartNames, chartColors);
+        addPhaseSeries("QC medido (VAR)", idxQC_med, idxQC_calc, idxSC, glb.colorC, false, chartIndices, chartNames, chartColors);
+        addPhaseSeries("QSum medido (VAR)", idxQSum_med, idxQSum_calc, idxSSum, Color.CYAN, false, chartIndices, chartNames, chartColors);
 
-        addPhaseSeries("QA Calculada", idxQA_calc, -1, -1, new Color(255, 165, 0), true, chartIndices, chartNames, chartColors);
-        addPhaseSeries("QB Calculada", idxQB_calc, -1, -1, new Color(0, 191, 255), true, chartIndices, chartNames, chartColors);
-        addPhaseSeries("QC Calculada", idxQC_calc, -1, -1, new Color(255, 20, 147), true, chartIndices, chartNames, chartColors);
-        addPhaseSeries("QSum Calculada", idxQSum_calc, -1, -1, new Color(50, 205, 50), true, chartIndices, chartNames, chartColors);
+        addPhaseSeries("QA Calculada (VAR)", idxQA_calc, -1, -1, new Color(255, 165, 0), true, chartIndices, chartNames, chartColors);
+        addPhaseSeries("QB Calculada (VAR)", idxQB_calc, -1, -1, new Color(0, 191, 255), true, chartIndices, chartNames, chartColors);
+        addPhaseSeries("QC Calculada (VAR)", idxQC_calc, -1, -1, new Color(255, 20, 147), true, chartIndices, chartNames, chartColors);
+        addPhaseSeries("QSum Calculada (VAR)", idxQSum_calc, -1, -1, new Color(50, 205, 50), true, chartIndices, chartNames, chartColors);
 
         chartPanel.setSeries(chartIndices, chartNames, chartColors);
         updateStatsTableRows();

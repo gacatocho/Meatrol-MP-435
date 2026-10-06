@@ -167,6 +167,21 @@ public abstract class baseTopComponent extends TopComponent
         sliderEnd.addChangeListener(e -> handleTimeRangeChange());
     }
 
+    public FastChartPanel getChartPanel()
+    {
+        return chartPanel;
+    }
+
+    public JTable getTblStats()
+    {
+        return tblStats;
+    }
+
+    public DefaultTableModel getStatsModel()
+    {
+        return statsModel;
+    }
+
     /**
      * Configura los controles de rango manual para el eje Y.
      * @param unit Unidad de medida (V, A, Hz, etc.)

@@ -751,7 +751,7 @@ public class FastChartPanel extends JPanel
             g2.drawLine(MARGIN_LEFT, yZero, MARGIN_LEFT + chartW, yZero);
         }
 
-        g2.setFont(new Font("Dialog", Font.BOLD, 12));
+        g2.setFont(new Font("Dialog", Font.BOLD, 16));
         double range = currentMaxVal - currentMinVal;
 
         // Usar 20 divisiones para FP asegura que con rango -1 a 1, el 0 sea una línea exacta (intervalo 0.1)
@@ -806,11 +806,11 @@ public class FastChartPanel extends JPanel
             g2.setColor(textColor);
             g2.drawLine(x, MARGIN_TOP + chartH, x, MARGIN_TOP + chartH + 5);
 
-            g2.setFont(new Font("Dialog", Font.BOLD, 13));
+            g2.setFont(new Font("Dialog", Font.BOLD, 15));
             int timeW = g2.getFontMetrics().stringWidth(row[1]);
             g2.drawString(row[1], x - timeW / 2, MARGIN_TOP + chartH + 20);
 
-            g2.setFont(new Font("Dialog", Font.PLAIN, 11));
+            g2.setFont(new Font("Dialog", Font.PLAIN, 12));
             int dateW = g2.getFontMetrics().stringWidth(row[0]);
             g2.drawString(row[0], x - dateW / 2, MARGIN_TOP + chartH + 35);
         }
