@@ -49,18 +49,16 @@ public final class verTensiones extends CallableSystemAction
             String[] headers = dtc.getHeaders();
             java.util.List<String[]> data = dtc.getDataList();
             
-            // 3. Buscar y preparar el componente de tensiones
-            TopComponent tensionesTC = WindowManager.getDefault().findTopComponent("tensionesTopComponent");
-            if (tensionesTC instanceof tensionesTopComponent) {
-                tensionesTopComponent ttc = (tensionesTopComponent) tensionesTC;
-                
-                // 4. Transferir datos
-                ttc.setData(headers, data);
-                
-                // 5. Mostrar
-                ttc.open();
-                ttc.requestActive();
-            }
+            // 3. Crear una NUEVA instancia en lugar de buscar la existente
+            // Esto permite al usuario tener múltiples ventanas de análisis abiertas
+            tensionesTopComponent ttc = new tensionesTopComponent();
+            
+            // 4. Transferir datos
+            ttc.setData(headers, data);
+            
+            // 5. Mostrar
+            ttc.open();
+            ttc.requestActive();
         }
     }
     

@@ -4,7 +4,6 @@
  */
 package org.gcto.dataEnergias;
 
-import org.gcto.dataFactoPotencia.fpTopComponent;
 import org.gcto.dataVDM.dataTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -49,14 +48,11 @@ public final class verEnergias extends CallableSystemAction
             String[] headers = dtc.getHeaders();
             java.util.List<String[]> data = dtc.getDataList();
 
-            TopComponent energTC = WindowManager.getDefault().findTopComponent("energiasTopComponent");
-            if (energTC instanceof energiasTopComponent)
-            {
-                energiasTopComponent energtc = (energiasTopComponent) energTC;
-                energtc.setData(headers, data);
-                energtc.open();
-                energtc.requestActive();
-            }
+            // Crear una NUEVA instancia
+            energiasTopComponent energtc = new energiasTopComponent();
+            energtc.setData(headers, data);
+            energtc.open();
+            energtc.requestActive();
         }
     }
 

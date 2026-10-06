@@ -45,13 +45,11 @@ public final class verFrecuencia extends CallableSystemAction
             String[] headers = dtc.getHeaders();
             java.util.List<String[]> data = dtc.getDataList();
             
-            TopComponent fzTC = WindowManager.getDefault().findTopComponent("frecuenciaTopComponent");
-            if (fzTC instanceof frecuenciaTopComponent) {
-                frecuenciaTopComponent ftc = (frecuenciaTopComponent) fzTC;
-                ftc.setData(headers, data);
-                ftc.open();
-                ftc.requestActive();
-            }
+            // Crear una NUEVA instancia
+            frecuenciaTopComponent ftc = new frecuenciaTopComponent();
+            ftc.setData(headers, data);
+            ftc.open();
+            ftc.requestActive();
         }
     }
 

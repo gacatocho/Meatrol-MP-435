@@ -51,18 +51,15 @@ public final class verPotAparente extends CallableSystemAction
             String[] headers = dtc.getHeaders();
             java.util.List<String[]> data = dtc.getDataList();
             
-            // 3. Buscar y preparar el componente de potencia aparente
-            TopComponent potTC = WindowManager.getDefault().findTopComponent("potAparenteTopComponent");
-            if (potTC instanceof potAparenteTopComponent) {
-                potAparenteTopComponent ptc = (potAparenteTopComponent) potTC;
-                
-                // 4. Transferir datos
-                ptc.setData(headers, data);
-                
-                // 5. Mostrar
-                ptc.open();
-                ptc.requestActive();
-            }
+            // 3. Crear una NUEVA instancia
+            potAparenteTopComponent ptc = new potAparenteTopComponent();
+            
+            // 4. Transferir datos
+            ptc.setData(headers, data);
+            
+            // 5. Mostrar
+            ptc.open();
+            ptc.requestActive();
         }
     }
 

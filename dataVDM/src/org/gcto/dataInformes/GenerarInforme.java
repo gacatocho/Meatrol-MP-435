@@ -230,7 +230,7 @@ public class GenerarInforme extends javax.swing.JDialog
         html.append("td, th { padding: 0px 2px; vertical-align: top; font-size: 8pt; border: 1px solid #eee; }"); 
         html.append("th { background-color: #f2f2f2; font-weight: bold; text-align: left; }");
         html.append(".label { font-weight: bold; width: 35%; color: #555; border: none; }");
-        html.append(".comment-box { padding: 8px; border: 1px solid #ccc; background-color: #fafafa; min-height: 40px; font-style: italic; font-size: 10pt; }");
+        html.append(".comment-box { padding: 8px; border: 1px solid #ccc; background-color: #fafafa; min-height: 40px; font-style: italic; font-size: 12pt; }");
         html.append(".chart-img { width: 100%; border: 1px solid #ddd; margin-bottom: 5px; }");
         html.append(".page-break { page-break-before: always; }");
         
@@ -251,7 +251,7 @@ public class GenerarInforme extends javax.swing.JDialog
             File f = new File(logoPath);
             if (f.exists())
             {
-                logoHtml = "<div style='text-align: left;'><img src='" + f.toURI().toString() + "' style='width: 180px; height: 100px;' /></div>";
+                logoHtml = "<div style='text-align: left;'><img src='" + f.toURI().toString() + "' style='width: 144px; height: 80px;' /></div>";
             }
         }
 
@@ -266,31 +266,31 @@ public class GenerarInforme extends javax.swing.JDialog
         // DATOS DEL CLIENTE
         html.append("<div class='section'><div class='section-title'>DATOS DEL CLIENTE</div>");
         html.append("<table style='border: none;'>");
-        html.append("<tr><td class='label' style='font-size:12pt;'>Nombre Proyecto:</td><td style='border:none; font-size:12pt;'>").append(proyName).append("</td></tr>");
-        html.append("<tr><td class='label' style='font-size:12t;'>Ciudad:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getCiudadProy() != null ? glb.dp.getCiudadProy() : "").append("</td></tr>");
-        html.append("<tr><td class='label' style='font-size:12pt;'>Ubicación:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getUbicacionProy() != null ? glb.dp.getUbicacionProy() : "").append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:11pt;'>Nombre Proyecto:</td><td style='border:none; font-size:12pt;'>").append(proyName).append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:11t;'>Ciudad:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getCiudadProy() != null ? glb.dp.getCiudadProy() : "").append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:11pt;'>Ubicación:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getUbicacionProy() != null ? glb.dp.getUbicacionProy() : "").append("</td></tr>");
         html.append("</table></div>");
 
         // OPERADOR
         html.append("<div class='section'><div class='section-title'>OPERADOR</div>");
         html.append("<table style='border: none;'>");
-        html.append("<tr><td class='label' style='font-size:12pt;'>Operador ME:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getOperadorME() != null ? glb.dp.getOperadorME() : "").append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:11pt;'>Operador ME:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getOperadorME() != null ? glb.dp.getOperadorME() : "").append("</td></tr>");
         html.append("</table></div>");
 
         // DATOS DE EQUIPO
         html.append("<div class='section'><div class='section-title'>DATOS DE EQUIPO</div>");
         html.append("<table style='border: none;'>");
-        html.append("<tr><td class='label' style='font-size:12pt;'>Relación Bobina:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getRelacionBobina()).append("</td></tr>");
-        html.append("<tr><td class='label' style='font-size:12pt;'>Relación Tensión Primaria:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getRelacionTensionPrim()).append("</td></tr>");
-        html.append("<tr><td class='label' style='font-size:12pt;'>Relación Tensión Secundaria:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getRelacionTensionSec()).append("</td></tr>");
-        html.append("<tr><td class='label' style='font-size:12pt;'>Periodo SD (s):</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getPeriodoSD()).append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:11pt;'>Relación Bobina:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getRelacionBobina()).append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:11pt;'>Relación Tensión Primaria:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getRelacionTensionPrim()).append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:11pt;'>Relación Tensión Secundaria:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getRelacionTensionSec()).append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:11pt;'>Periodo SD (s):</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getPeriodoSD()).append("</td></tr>");
         html.append("</table></div>");
 
         // DATOS INSTALACION
         html.append("<div class='section'><div class='section-title'>DATOS INSTALACIÓN</div>");
         html.append("<table style='border: none;'>");
-        html.append("<tr><td class='label' style='font-size:12pt;'>Tablero:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getTablero() != null ? glb.dp.getTablero() : "").append("</td></tr>");
-        html.append("<tr><td class='label' style='font-size:12pt;'>Tipo de Red:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getTipoRed() != null ? glb.dp.getTipoRed() : "").append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:11pt;'>Tablero:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getTablero() != null ? glb.dp.getTablero() : "").append("</td></tr>");
+        html.append("<tr><td class='label' style='font-size:11pt;'>Tipo de Red:</td><td style='border:none; font-size:12pt;'>").append(glb.dp.getTipoRed() != null ? glb.dp.getTipoRed() : "").append("</td></tr>");
         html.append("</table></div>");
 
         // COMENTARIO

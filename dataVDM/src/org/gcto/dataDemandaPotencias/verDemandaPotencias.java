@@ -11,8 +11,6 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.CallableSystemAction;
-import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
 
 @ActionID(
         category = "View",
@@ -39,16 +37,11 @@ public final class verDemandaPotencias extends CallableSystemAction
     @Override
     public void performAction()
     {
-        TopComponent tc = WindowManager.getDefault().findTopComponent("demandaPotenciasTopComponent");
-        if (tc != null)
-        {
-            tc.open();
-            tc.requestActive();
-            if (tc instanceof demandaPotenciasTopComponent)
-            {
-                ((demandaPotenciasTopComponent) tc).onRefresh();
-            }
-        }
+        // Crear una NUEVA instancia
+        demandaPotenciasTopComponent tc = new demandaPotenciasTopComponent();
+        tc.open();
+        tc.requestActive();
+        tc.onRefresh();
     }
 
     @Override

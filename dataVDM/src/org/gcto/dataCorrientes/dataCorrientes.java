@@ -52,18 +52,15 @@ public final class dataCorrientes extends CallableSystemAction
             String[] headers = dtc.getHeaders();
             java.util.List<String[]> data = dtc.getDataList();
             
-            // 3. Buscar y preparar el componente de corrientes
-            TopComponent corrientesTC = WindowManager.getDefault().findTopComponent("corrientesTopComponent");
-            if (corrientesTC instanceof corrientesTopComponent) {
-                corrientesTopComponent ctc = (corrientesTopComponent) corrientesTC;
-                
-                // 4. Transferir datos
-                ctc.setData(headers, data);
-                
-                // 5. Mostrar
-                ctc.open();
-                ctc.requestActive();
-            }
+            // 3. Crear una NUEVA instancia
+            corrientesTopComponent ctc = new corrientesTopComponent();
+            
+            // 4. Transferir datos
+            ctc.setData(headers, data);
+            
+            // 5. Mostrar
+            ctc.open();
+            ctc.requestActive();
         }
     }
 

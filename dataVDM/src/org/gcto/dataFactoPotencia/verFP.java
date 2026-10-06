@@ -47,13 +47,11 @@ public final class verFP extends CallableSystemAction
             String[] headers = dtc.getHeaders();
             java.util.List<String[]> data = dtc.getDataList();
             
-            TopComponent fpTC = WindowManager.getDefault().findTopComponent("fpTopComponent");
-            if (fpTC instanceof fpTopComponent) {
-                fpTopComponent ftc = (fpTopComponent) fpTC;
-                ftc.setData(headers, data);
-                ftc.open();
-                ftc.requestActive();
-            }
+            // Crear una NUEVA instancia
+            fpTopComponent ftc = new fpTopComponent();
+            ftc.setData(headers, data);
+            ftc.open();
+            ftc.requestActive();
         }
     }
 

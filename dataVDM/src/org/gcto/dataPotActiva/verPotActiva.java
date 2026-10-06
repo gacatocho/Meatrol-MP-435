@@ -45,13 +45,11 @@ public final class verPotActiva extends CallableSystemAction
             String[] headers = dtc.getHeaders();
             java.util.List<String[]> data = dtc.getDataList();
             
-            TopComponent potTC = WindowManager.getDefault().findTopComponent("potActivaTopComponent");
-            if (potTC instanceof potActivaTopComponent) {
-                potActivaTopComponent ptc = (potActivaTopComponent) potTC;
-                ptc.setData(headers, data);
-                potTC.open();
-                potTC.requestActive();
-            }
+            // Crear una NUEVA instancia
+            potActivaTopComponent ptc = new potActivaTopComponent();
+            ptc.setData(headers, data);
+            ptc.open();
+            ptc.requestActive();
         }
     }
 

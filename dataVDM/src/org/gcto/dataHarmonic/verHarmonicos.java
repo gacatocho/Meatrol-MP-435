@@ -47,14 +47,11 @@ public final class verHarmonicos extends CallableSystemAction
             String[] headers = dtc.getHeaders();
             java.util.List<String[]> data = dtc.getDataList();
 
-            TopComponent harmTC = WindowManager.getDefault().findTopComponent("armonicosTopComponent");
-            if (harmTC instanceof armonicosTopComponent)
-            {
-                armonicosTopComponent htc = (armonicosTopComponent) harmTC;
-                htc.setData(headers, data);
-                htc.open();
-                htc.requestActive();
-            }
+            // Crear una NUEVA instancia
+            armonicosTopComponent htc = new armonicosTopComponent();
+            htc.setData(headers, data);
+            htc.open();
+            htc.requestActive();
         }
     }
 
