@@ -12,3 +12,6 @@ Exportar en png cualquier gráfico en estudio
 Guardar el proyecto para recuperarlo luego.
 
 El software se puede usar totalmente gratis. Esta pensado para uso solo con el ME435.
+
+El instalador de la versión preliminar se puede hallar aqui:
+https://github.com/gacatocho/Meatrol-MP-435/releases/download/1.00/vistaDatosME435.exe
