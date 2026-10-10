@@ -19,7 +19,7 @@ import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(
-        category = "View",
+        category = "File",
         id = "org.gcto.dataGlobal.verDatosProy"
 )
 @ActionRegistration(
@@ -28,8 +28,8 @@ import org.openide.util.NbBundle.Messages;
 )
 @ActionReferences(
         {
-            @ActionReference(path = "Menu/View", position = -1400, separatorBefore = -1450),
-            @ActionReference(path = "Toolbars/View", position = -1000)
+            @ActionReference(path = "Menu/File", position = -1400, separatorBefore = -1450),
+            @ActionReference(path = "Toolbars/File", position = -1000)
         })
 @Messages("CTL_verDatosProy=var datos del proyecto")
 public final class verDatosProy implements ActionListener

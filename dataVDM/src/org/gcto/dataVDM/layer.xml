@@ -30,9 +30,11 @@
             <file name="org-openide-actions-SaveAllAction.instance_hidden"/>
             <file name="org-openide-actions-SaveAllAction.shadow_hidden"/>
         </folder>
-        <folder name="UndoRedo">
-            <file name="org-openide-actions-RedoAction.shadow_hidden"/>
-            <file name="org-openide-actions-UndoAction.shadow_hidden"/>
+    </folder>
+    
+    <folder name="Menu">
+        <folder name="Help">
+            <!-- El submenú verAyuda ahora se maneja dinámicamente desde verAyuda.java -->
         </folder>
     </folder>
 </filesystem>

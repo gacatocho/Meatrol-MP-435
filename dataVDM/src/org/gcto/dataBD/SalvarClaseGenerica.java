@@ -18,6 +18,7 @@ import org.gcto.dataEnum.EEstado;
 import org.gcto.dataOpciones.Opciones;
 import org.gcto.dataGlobal.glb;
 import org.gcto.interfases.IBaseVDM;
+import org.openide.modules.Places;
 
 /**
  * salva una clase generica en la base de datos
@@ -51,13 +52,13 @@ public final class SalvarClaseGenerica
         String BD = null;
 
         //se recuper ala ruta para guardar la base de datos
-        String rutaBD = null; 
+        String rutaBD = null;
 
         if (obj instanceof DatosProy)
         {
             nomBD = "datosProyecto";
             NOMBRE_CLASE = "DatosProy";
-            rutaBD  = glb.dp.getRutaProyecto();
+            rutaBD = glb.dp.getRutaProyecto();
 
         }
 
@@ -66,24 +67,28 @@ public final class SalvarClaseGenerica
             nomBD = "opciones";
             NOMBRE_CLASE = "Opciones";
             // Obtiene el directorio de datos de la aplicación de forma portable
+
             String userHome = System.getProperty("user.home");
-            
+
             // Carpeta común "dataApplications" dentro del home del usuario
             Path carpeta = Paths.get(userHome, "dataApplications");
-            
+
+            System.out.println("La carpeta es  : " + carpeta);
+
             // Crear la carpeta si no existe
-            if (!Files.exists(carpeta)) {
+            if (!Files.exists(carpeta))
+            {
                 Files.createDirectories(carpeta);
             }
             //se captura el path
             rutaBD = carpeta.toString();
-            
+
         }
         //aqui ya sabemos la ruta, el nombre y el objeto a guardar
 
         if (nomBD != null)
         {
-            BD = rutaBD + File.separator + nomBD+".odb";
+            BD = rutaBD + File.separator + nomBD + ".odb";
         } else
         {
             System.out.println("Error en lo snombres de la base de datos");
@@ -136,12 +141,10 @@ public final class SalvarClaseGenerica
                     default:
                         throw new AssertionError(estado.name());
                 }
-                
+
                 em.getTransaction().commit();
 
             }
-            
-            
 
         } catch (Exception e)
         {
@@ -151,10 +154,10 @@ public final class SalvarClaseGenerica
 
         } finally
         {
-            
+
             em.close();
             emf.close();
-           
+
         }
 
     }

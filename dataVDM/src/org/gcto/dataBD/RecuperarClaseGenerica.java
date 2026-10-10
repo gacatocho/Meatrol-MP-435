@@ -4,6 +4,7 @@
  */
 package org.gcto.dataBD;
 
+import java.awt.HeadlessException;
 import org.gcto.dataProyecto.DatosProy;
 import java.io.File;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
+import javax.swing.JOptionPane;
 import org.gcto.dataOpciones.Opciones;
 import org.gcto.dataGlobal.glb;
 import org.gcto.interfases.IBaseVDM;
@@ -49,9 +51,9 @@ public class RecuperarClaseGenerica
         }
 
         if (nombreClase.equals("Opciones"))
-        {  
+        {
             nomBD = "opciones";
-   
+
         }
         //aqui ya sabemos la ruta, el nombre y el objeto a guardar
 
@@ -61,7 +63,7 @@ public class RecuperarClaseGenerica
         } else
         {
             System.out.println("Error en lo snombres de la base de datos");
-            
+
             return false;
         }
 
@@ -84,12 +86,12 @@ public class RecuperarClaseGenerica
             System.out.println("*****************************************************************************************************************************************");
             System.out.println("Ha fallado el cargue de la clase " + nombreClase);
             System.out.println("*****************************************************************************************************************************************");
-            
+
             return false;
         }
 
         return true;
-        
+
     }
 
     /**
@@ -99,49 +101,58 @@ public class RecuperarClaseGenerica
     private static synchronized IBaseVDM recuperarElementosDeLaClase(String BD, String nombreClase)
     {
 
-        final EntityManagerFactory emf = Persistence.createEntityManagerFactory(BD);
-        final EntityManager em = emf.createEntityManager();
-
-        List<IBaseVDM> listaObjetos;
-
         try
         {
-            System.out.println("*****************************************************************************************************************************************");
-            System.out.println("cargando de la base de datos " + nombreClase);
-            System.out.println("*****************************************************************************************************************************************");
+            // JOptionPane.showMessageDialog(null, "RutaBD = " + BD + "  Nombre clase = " + nombreClase);
 
-            em.getTransaction().begin();
+            final EntityManagerFactory emf = Persistence.createEntityManagerFactory(BD);
+            final EntityManager em = emf.createEntityManager();
 
-            String queryString = "SELECT p FROM " + nombreClase + " p";
+            List<IBaseVDM> listaObjetos;
 
-            @SuppressWarnings(
-                    {
-                        "unchecked", "unchecked"
-                    })
-            TypedQuery<IBaseVDM> query = (TypedQuery<IBaseVDM>) em.createQuery(queryString);
+            try
+            {
+                System.out.println("*****************************************************************************************************************************************");
+                System.out.println("cargando de la base de datos " + nombreClase);
+                System.out.println("*****************************************************************************************************************************************");
 
-            listaObjetos = query.getResultList();
+                em.getTransaction().begin();
 
-            em.getTransaction().commit();
+                String queryString = "SELECT p FROM " + nombreClase + " p";
 
-            //se recupera el item 0  que en teoria es el unico que hay
-            return listaObjetos.get(0);
+                @SuppressWarnings(
+                        {
+                            "unchecked", "unchecked"
+                        })
+                TypedQuery<IBaseVDM> query = (TypedQuery<IBaseVDM>) em.createQuery(queryString);
 
-        } catch (Exception e)
+                listaObjetos = query.getResultList();
+
+                em.getTransaction().commit();
+
+                //se recupera el item 0  que en teoria es el unico que hay
+                return listaObjetos.get(0);
+
+            } catch (Exception e)
+            {
+
+                System.out.println("////////////////////////////////////////*****************\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+                System.out.println("error ------ : --------" + e.getMessage());
+                System.out.println("////////////////////////////////////////*****************\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+
+                return null;
+
+            } finally
+            {
+
+                em.close();
+                emf.close();
+
+            }
+        } catch (HeadlessException e)
         {
-
-            System.out.println("////////////////////////////////////////*****************\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
-            System.out.println("error ------ : --------" + e.getMessage());
-            System.out.println("////////////////////////////////////////*****************\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
-
+            System.out.println("Excepecion controlada : " + e.getMessage());
             return null;
-
-        } finally
-        {
-
-            em.close();
-            emf.close();
-
         }
 
     }

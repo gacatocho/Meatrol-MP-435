@@ -48,7 +48,6 @@ import org.gcto.dataFactoPotencia.verFP;
 import org.gcto.dataFrecuencia.verFrecuencia;
 import org.gcto.dataEnum.ETipoRED;
 import org.gcto.dataBD.RecuperarClaseGenerica;
-import org.gcto.dataBD.SalvarClaseGenerica;
 import org.gcto.dataGlobal.SaveProjectAction;
 import org.gcto.dataGlobal.SaveProjectAsAction;
 import org.gcto.dataGlobal.glb;
@@ -1148,11 +1147,21 @@ public final class dataTopComponent extends TopComponent
     {
         //carga  las bases de datos
         String rutaVMD = glb.seletedFileVDM.getParent();
+        
+        JOptionPane.showMessageDialog(null, "Ruta VDM = " + rutaVMD);
+        
         //conociendo la ruta cargar el archivo aqui solo
         //se recupera DatosProy pues Opciones se hace al inicio de la sesion
         RecuperarClaseGenerica.cargarObjeto("DatosProy", rutaVMD);
 
-        loadBinary(glb.seletedFileVDM);
+        try        
+        {
+            loadBinary(glb.seletedFileVDM);
+        } catch (Exception e)
+        {
+            showError("Cargando binario _:  ", e);
+            
+        }
     }
 
     private void cambiarNombreColumnaExistente(String[] headers, String nombreColActual, String nombreNuevo)
