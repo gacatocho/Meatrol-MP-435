@@ -4,10 +4,6 @@
  */
 package org.gcto.dataInformes;
 
-import com.openhtmltopdf.css.constants.IdentValue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import org.gcto.dataVDM.dataTopComponent;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -15,8 +11,6 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.CallableSystemAction;
-import org.openide.windows.TopComponent;
-import org.openide.windows.WindowManager;
 
 @ActionID(
         category = "File",

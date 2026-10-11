@@ -62,6 +62,7 @@ public final class corrientesTopComponent extends baseTopComponent
     // Índices para cálculo fasorial
     private int idxUA = -1, idxUB = -1, idxUC = -1;
     private int idxIA = -1, idxIB = -1, idxIC = -1;
+    private int idxIN = -1;
     private int idxFPA = -1, idxFPB = -1, idxFPC = -1;
     private int idxQA = -1, idxQB = -1, idxQC = -1;
 
@@ -157,6 +158,7 @@ public final class corrientesTopComponent extends baseTopComponent
         idxQA = -1;
         idxQB = -1;
         idxQC = -1;
+        idxIN = -1;
 
         List<Integer> chartIndices = new ArrayList<>();
         List<String> chartNames = new ArrayList<>();
@@ -183,16 +185,15 @@ public final class corrientesTopComponent extends baseTopComponent
             } else if (glb.isStrict(h, glb.CORRIENTE_NEUTRO, glb.CORRIENTE))
             {
                 c = glb.colorN;
-            }
-            else if (glb.isStrict(h, glb.CORRIENTE_PROMEDIO, glb.CORRIENTE))
+                idxIN = i;
+            } else if (glb.isStrict(h, glb.CORRIENTE_PROMEDIO, glb.CORRIENTE))
             {
                 c = glb.colorIAVG;
-            }
-            else if (glb.isStrict(h, glb.CORRIENTE_NEUTRO_CALC, glb.CORRIENTE))
+            } else if (glb.isStrict(h, glb.CORRIENTE_NEUTRO_CALC, glb.CORRIENTE))
             {
                 c = glb.colorNN;
             }
-            
+
             if (c != null)
             {
                 phaseControls.add(new PhaseControl(i, masterHeaders[i], c));
@@ -239,7 +240,6 @@ public final class corrientesTopComponent extends baseTopComponent
         chartPanel.setSeries(chartIndices, chartNames, chartColors);
         updateStatsTableRows();
     }
-
 
     private void updateStatsTableRows()
     {
@@ -376,7 +376,7 @@ public final class corrientesTopComponent extends baseTopComponent
 
             rowInModel++;
         }
-        
+
         autoAdjustYRange(globalMaxInSelection);
         chartPanel.setTrendLines(trendLines);
     }
@@ -507,15 +507,26 @@ public final class corrientesTopComponent extends baseTopComponent
             double angleC = calculateCurrentAngle(120, idxFPC, idxQC);
             double magC = (idxIC != -1) ? glb.parseDoubleSafe(rowData[idxIC]) : 0;
             drawPhasor(g2, cx, cy, (int) (radius * 0.85), angleC, "IC", glb.colorC, false, magC);
+
             inX += magC * Math.cos(Math.toRadians(angleC));
             inY += magC * Math.sin(Math.toRadians(angleC));
 
             // 3. Neutro Resultante (Suma Vectorial)
-            double magN = Math.sqrt(inX * inX + inY * inY);
+            //double magN = Math.sqrt(inX * inX + inY * inY);
+            double magN = 0;
             double angleN = Math.toDegrees(Math.atan2(inY, inX));
-            if (magN > 0.1)
+
+            if (isExistsIN(glb.CORRIENTE_NEUTRO))
             {
-                drawPhasor(g2, cx, cy, (int) (radius * 0.7), angleN, "In (Calc)", glb.colorN, false, magN);
+                magN = (idxIN != -1) ? glb.parseDoubleSafe(rowData[idxIN]) : 0;
+                drawPhasor(g2, cx, cy, (int) (radius * 0.7), angleN, "IN", glb.colorN, false, magN);
+            } else
+            {
+                magN = Math.sqrt(inX * inX + inY * inY);
+                if (magN > 0.01)
+                {
+                    drawPhasor(g2, cx, cy, (int) (radius * 0.7), angleN, "In (Calc)", glb.colorN, false, magN);
+                }
             }
 
             drawPFTable(g2);
@@ -644,5 +655,23 @@ public final class corrientesTopComponent extends baseTopComponent
 
     void readProperties(java.util.Properties p)
     {
+    }
+
+    /**
+     * investiga si la medida llega on neutro medido
+     *
+     * @param in sitrng - el nombre del nuetro en los encabezados si esta medido
+     * @return
+     */
+    private boolean isExistsIN(String in)
+    {
+        for (String masterHeader : masterHeaders)
+        {
+            if (masterHeader.contains(in))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

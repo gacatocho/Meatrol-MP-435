@@ -53,6 +53,7 @@ import org.gcto.dataGlobal.SaveProjectAsAction;
 import org.gcto.dataGlobal.glb;
 import org.gcto.dataHarmonic.verHarmonicos;
 import org.gcto.dataInformes.genInforme;
+import org.gcto.dataProyecto.verDatosProy;
 import org.netbeans.api.progress.ProgressHandle;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -307,7 +308,8 @@ public final class dataTopComponent extends TopComponent
                     String lineSN = br.readLine();
                     if (lineSN != null)
                     {
-                        sn = lineSN.trim();
+                        String snOrg = lineSN.trim();
+                        sn=snOrg.replace(",", "");
                         readBytes += lineSN.length() + 1;
                     }
 
@@ -606,8 +608,9 @@ public final class dataTopComponent extends TopComponent
     private void updateStatus()
     {
         int rows = tableModel.getRowCount();
-        String status = String.format("SN: %s | Filas: %,d",
+        String status = String.format("SN : %s | Filas : %,d",
                 productSN.isEmpty() ? "N/A" : productSN, rows);
+        status = status + " -- PROYECTO : " + glb.dp.getNombreProy();
         lblStatus.setText(status);
         updateActionState();
     }
@@ -636,6 +639,9 @@ public final class dataTopComponent extends TopComponent
 
             //habilitar el informe
             SystemAction.get(genInforme.class).setEnabled(dataPresent);
+            
+            //habilitar datos proyecto
+            SystemAction.get(verDatosProy.class).setEnabled(dataPresent);
         });
     }
 

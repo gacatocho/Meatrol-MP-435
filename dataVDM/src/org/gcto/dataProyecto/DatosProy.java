@@ -432,13 +432,13 @@ public class DatosProy implements IDatosProy, PropertyChangeListener
             setEstado(EEstado.EDITADO);
         }
 
-        try
-        {
-            SalvarClaseGenerica.salvarObjeto(glb.dp);
-        } catch (IOException ex)
-        {
-            Exceptions.printStackTrace(ex);
-        }
+//        try
+//        {
+//            SalvarClaseGenerica.salvarObjeto(glb.dp);
+//        } catch (IOException ex)
+//        {
+//            Exceptions.printStackTrace(ex);
+//        }
     }
     
      /**

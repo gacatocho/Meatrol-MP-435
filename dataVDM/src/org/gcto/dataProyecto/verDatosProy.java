@@ -4,9 +4,8 @@
  */
 package org.gcto.dataProyecto;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.IntrospectionException;
+import java.io.IOException;
+import org.gcto.dataBD.SalvarClaseGenerica;
 import org.gcto.dataGlobal.glb;
 import org.openide.*;
 import org.openide.awt.ActionID;
@@ -16,15 +15,17 @@ import org.openide.awt.ActionRegistration;
 import org.openide.explorer.propertysheet.PropertySheet;
 import org.openide.nodes.Node;
 import org.openide.util.Exceptions;
+import org.openide.util.HelpCtx;
 import org.openide.util.NbBundle.Messages;
+import org.openide.util.actions.CallableSystemAction;
 
 @ActionID(
         category = "File",
         id = "org.gcto.dataGlobal.verDatosProy"
 )
 @ActionRegistration(
-        iconBase = "org/gcto/dataProyecto/verDatosProy.png",
-        displayName = "#CTL_verDatosProy"
+        displayName = "#CTL_verDatosProy",
+        lazy = false
 )
 @ActionReferences(
         {
@@ -32,23 +33,69 @@ import org.openide.util.NbBundle.Messages;
             @ActionReference(path = "Toolbars/File", position = -1000)
         })
 @Messages("CTL_verDatosProy=var datos del proyecto")
-public final class verDatosProy implements ActionListener
+public final class verDatosProy extends CallableSystemAction
 {
 
+    public verDatosProy()
+    {
+        setEnabled(false);
+    }
+
     @Override
-    public void actionPerformed(ActionEvent e)
+    public void performAction()
     {
         PropertySheet ps = new PropertySheet();
 
+        DatosProy dpCop = new DatosProy();
+        //editamos una copia
+        glb.dp.copy(dpCop);
+        
         DatosProyNode beanNodeDatosProy;
 
-        beanNodeDatosProy = new DatosProyNode(glb.dp);
+        beanNodeDatosProy = new DatosProyNode(dpCop);
         ps.setNodes(new Node[]
         {
             beanNodeDatosProy
         });
         DialogDescriptor dd = new DialogDescriptor(ps, "Edición de Datos Proyecto");
         DialogDisplayer.getDefault().notify(dd);
+        
+        Object value = dd.getValue();
+        
+        if (value==DialogDescriptor.OK_OPTION)        
+        {
+            try
+            {
+                //salve el contenido de la copia en el originañ
+                dpCop.copy(glb.dp);
+                //salve el original
+                SalvarClaseGenerica.salvarObjeto(glb.dp);
+            } catch (IOException ex)
+            {
+                Exceptions.printStackTrace(ex);
+            }
+        } else        
+        {
+            System.out.println("Se cancelo la edicion de datos del proyecto");
+        }
+      
+    }
 
+    @Override
+    public String getName()
+    {
+        return Bundle.CTL_verDatosProy();
+    }
+
+    @Override
+    public HelpCtx getHelpCtx()
+    {
+    return HelpCtx.DEFAULT_HELP;    
+    }
+    
+     @Override
+    protected String iconResource()
+    {
+        return "org/gcto/dataProyecto/verDatosProy.png";
     }
 }

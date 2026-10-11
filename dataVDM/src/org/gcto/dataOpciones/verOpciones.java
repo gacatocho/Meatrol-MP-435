@@ -6,6 +6,8 @@ package org.gcto.dataOpciones;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import org.gcto.dataBD.SalvarClaseGenerica;
 import org.gcto.dataGlobal.glb;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
@@ -15,6 +17,7 @@ import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.explorer.propertysheet.PropertySheet;
 import org.openide.nodes.Node;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(
@@ -26,10 +29,10 @@ import org.openide.util.NbBundle.Messages;
         displayName = "#CTL_verOpciones"
 )
 @ActionReferences(
-{
-    @ActionReference(path = "Menu/Tools", position = 0, separatorBefore = -50),
-    @ActionReference(path = "Toolbars/File", position = 0)
-})
+        {
+            @ActionReference(path = "Menu/Tools", position = 0, separatorBefore = -50),
+            @ActionReference(path = "Toolbars/File", position = 0)
+        })
 @Messages("CTL_verOpciones=ver Opciones")
 public final class verOpciones implements ActionListener
 {
@@ -40,14 +43,37 @@ public final class verOpciones implements ActionListener
         // se lanza el formualrio de opciones para su edicion
         PropertySheet ps = new PropertySheet();
 
+        Opciones opc = new Opciones();
+
+        glb.opc.copy(opc);
+
         OpcionesNode opcNode;
 
-        opcNode = new OpcionesNode(glb.opc);
+        opcNode = new OpcionesNode(opc);
         ps.setNodes(new Node[]
         {
             opcNode
         });
         DialogDescriptor dd = new DialogDescriptor(ps, "Edición de Opciones del Proyecto");
         DialogDisplayer.getDefault().notify(dd);
+
+        Object value = dd.getValue();
+        if (value == DialogDescriptor.OK_OPTION)
+        {
+            opc.copy(glb.opc);
+            //carga los colores por si alguno ha cambiado
+            glb.cargarColores();
+            try
+        {
+            SalvarClaseGenerica.salvarObjeto(glb.opc);
+        } catch (IOException ex)
+        {
+            Exceptions.printStackTrace(ex);
+        }
+        } else
+        {
+            System.out.println("Se cancelo la edicion de opciones");
+        }
+
     }
 }

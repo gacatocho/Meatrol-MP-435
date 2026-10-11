@@ -558,15 +558,15 @@ public class Opciones implements IOpciones, PropertyChangeListener
             setEstado(EEstado.EDITADO);
         }
 
-        //carga los colores por si alguno ha cambiado
-        glb.cargarColores();
-        try
-        {
-            SalvarClaseGenerica.salvarObjeto(glb.opc);
-        } catch (IOException ex)
-        {
-            Exceptions.printStackTrace(ex);
-        }
+//        //carga los colores por si alguno ha cambiado
+//        glb.cargarColores();
+//        try
+//        {
+//            SalvarClaseGenerica.salvarObjeto(glb.opc);
+//        } catch (IOException ex)
+//        {
+//            Exceptions.printStackTrace(ex);
+//        }
     }
 
     /**
