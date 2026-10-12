@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.swing.JOptionPane;
+import org.gcto.dataBD.SalvarClaseGenerica;
 import org.gcto.dataGlobal.glb;
 import org.openide.modules.OnStart;
 import org.openide.modules.Places;
@@ -50,7 +51,16 @@ public class Arranque implements Runnable
         //se captura el path
         if (!RecuperarClaseGenerica.cargarObjeto("Opciones", carpeta.toString()))
         {
-            JOptionPane.showMessageDialog(null, "No se reupero a Opciones", "Recuperando opciones", JOptionPane.WARNING_MESSAGE);
+            System.out.println("No se reupero a Opciones " );
+            //JOptionPane.showMessageDialog(null, "No se reupero a Opciones", "Recuperando opciones", JOptionPane.WARNING_MESSAGE);
+            try
+            {
+                //si no se recupera es que es laprimera arrancada / salve una original y continue
+                SalvarClaseGenerica.salvarObjeto(glb.opc);
+            } catch (IOException ex)
+            {
+                Exceptions.printStackTrace(ex);
+            }
         }
 
         try
