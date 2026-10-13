@@ -18,10 +18,13 @@ encontré que el estudio de los datos era a traves de excel. Toda vez,  que no p
 software, y no lo pienso comprar, me tomé la libertad de hacer uno en la NetBeans Platform.
 
 Es de aclarar que este software no tiene respaldo de la marca del equipo, y no forma parte
-de su portafolio. Es un proyecto personal que puede ser usado tal y como esta. Sin garantías
-y sin obligaciones de ninguna clase. Como usuario de este equipo, lo he probado con varias 
-mediciones que he efectuado y los resultados a mi parecer, son muy satisfactorios, para el
-análsisis de los datos que genera.
+de su portafolio. Solo se nombra para poder identificar la referencia del equipo al cual ve
+dirigido este esfuerzo de programación. 
+Es un proyecto personal que puede ser usado tal y como esta. Sin garantías
+y sin obligaciones de ninguna clase. 
+
+Como usuario de este equipo, lo he probado con varias mediciones que he efectuado y los 
+resultados a mi parecer, son muy satisfactorios, para el análsisis de los datos que genera.
 
 El instalador de la versión preliminar se puede hallar aqui:
 https://github.com/gacatocho/Meatrol-MP-435/releases/download/1.00/vistaDatosME435.exe
